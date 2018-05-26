@@ -4,7 +4,7 @@
 #include "unistd.h"
 
 int main(int argc, char *argv[]){
-    log_init(LOG_DEBUG, "tianch-agent", "/root/logs/agent.log");
+    log_init(LOG_INFO, "tianch-agent", "/root/logs/agent.log");
     log_info("Hello Tianch!!!!!");
 
     cagent_start(argc, argv);

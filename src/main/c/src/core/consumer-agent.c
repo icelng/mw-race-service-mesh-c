@@ -3,22 +3,30 @@
 #include "http-server.h"
 #include "string.h"
 #include "stdio.h"
+#include "unistd.h"
 
 int get_parameter_start_index(char *str);
 int hash_code(char *str);
 
-void content_handler(struct hs_channel *p_channel, int content_size, char *content){
-    int param_start;
+
+static tdpl g_request_tdpl;
+
+void reqeust_thread(void *arg) {
+    struct hs_channel *p_channel = *(struct hs_channel**) arg;
+    char *content = &p_channel->buffer[p_channel->body_start];
     char response_body[32];
+    int param_start;
 
     hs_url_decode(content);
     param_start = get_parameter_start_index(content);
-
-    log_debug("content_size:%d, content:%s", content_size, content);
-    log_debug("parameter:%s", &content[param_start]);
-    log_debug("hash code:%d", hash_code(&content[param_start]));
     sprintf(response_body, "%d", hash_code(&content[param_start]));
+
+    usleep(50000);
     hs_response_ok(p_channel, response_body, strlen(response_body));
+}
+
+void content_handler(struct hs_channel *p_channel, int content_size, char *content){
+    tdpl_call_func(g_request_tdpl, reqeust_thread, &p_channel, sizeof(p_channel));
 }
  
 void cagent_start(int argc, char *argv[]){
@@ -26,6 +34,9 @@ void cagent_start(int argc, char *argv[]){
 
     struct hs_bootstrap hs_bt;
     struct hs_handle *p_hs_handle;
+
+    /*先初始化内存池*/
+    g_request_tdpl = tdpl_create(256, 512);  // 256个线程  512个等待
 
     hs_bt.buffer_size = 2048;  // channel的buffer大小为2k,用于读写request reponse
     hs_bt.max_connection = 512;  // 最大链接数

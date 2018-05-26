@@ -35,19 +35,19 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     p_new_hs_handle->content_handler = hs_bt->content_handler;
 
     /*创建线程池内存池*/
-    log_debug("Creating worker thread pool.");
+    log_info("Creating worker thread pool.");
     p_new_hs_handle->tdpl_worker = tdpl_create(hs_bt->worker_thread_num, 51200);  // n个线程，51200个等待
     if (p_new_hs_handle->tdpl_worker == NULL) {
         log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
         goto err2_ret;
     }
-    log_debug("Creating io thread pool.");
+    log_info("Creating io thread pool.");
     p_new_hs_handle->tdpl_io = tdpl_create(3, 128);  // 3个IO线程，128个等待
     if (p_new_hs_handle->tdpl_io == NULL) {
         log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
         goto err2_ret;
     }
-    log_debug("Creating channel memory pool.");
+    log_info("Creating channel memory pool.");
     struct mmpl_opt mmpl_opt;
     mmpl_opt.boundary = MMPL_BOUNDARY_1K;  // 1K对齐
     mmpl_opt.max_free_index = 5120;  // 最大空闲
@@ -58,7 +58,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     }
 
     /*创建服务端套接字*/
-    log_debug("Creating server socket and bind on %d.", hs_bt->server_port);
+    log_info("Creating server socket and bind on %d.", hs_bt->server_port);
     p_new_hs_handle->sockfd = hs_bind(hs_bt->server_port);
     if (p_new_hs_handle->sockfd < 0){
         log_err("创建服务端套接字失败!ret_no:%d", p_new_hs_handle->sockfd);
@@ -66,21 +66,21 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     }
 
     /*创建epoll*/
-    log_debug("Creating epoll.");
+    log_info("Creating epoll.");
     if((p_new_hs_handle->epoll_fd = epoll_create(1)) == -1){
         syslog(LOG_DEBUG,"启动http-server时，创建epoll失败:%s",strerror(errno));
         goto err2_ret;
     }
 
     /*启动io线程*/
-    log_debug("Starting io thread.");
+    log_info("Starting io thread.");
     if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
         log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
         goto err2_ret;
     }
 
     /*启动accept线程*/
-    log_debug("Starting accept thread.");
+    log_info("Starting accept thread.");
     if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_accept_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
         log_err("启动http-server时，启动accept线程失败:%s", strerror(errno));
         goto err2_ret;
