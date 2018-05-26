@@ -12,7 +12,7 @@ INC_DIR += -I ./inc/com
 CFLAGS +=  $(INC_DIR)
 LINKS = -pthread -lrt
 
-TARGET = server
+TARGET = consumer-agent
 
 $(TARGET):$(OBJS)
 	gcc -o $(BIN_DIR)/$(TARGET) $(OBJS) $(LINKS)

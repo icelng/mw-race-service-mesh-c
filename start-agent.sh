@@ -8,14 +8,7 @@ echo ETCD_URL = $ETCD_URL
 
 if [[ "$1" == "consumer" ]]; then
   echo "Starting consumer agent..."
-  java -jar \
-       -Xms1536M \
-       -Xmx1536M \
-       -Dtype=consumer \
-       -Dserver.port=20000 \
-       -Detcd.url=$ETCD_URL \
-       -Dlogs.dir=/root/logs \
-       /root/dists/mesh-agent.jar
+  /root/dists/consumer-agent
 elif [[ "$1" == "provider-small" ]]; then
   echo "Starting small provider agent..."
   java -jar \
