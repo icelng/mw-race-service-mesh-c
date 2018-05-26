@@ -23,7 +23,7 @@ RUN set -ex && apt-get install make -y
 RUN set -ex && apt-get install gcc -y
 RUN set -ex && make clean
 RUN set -ex && make
-COPY ./bin/consumer-agent /root/dists/consumer-agent
+RUN set -ex && cp ./bin/consumer-agent /root/dists/consumer-agent
 
 RUN set -ex && mkdir -p /root/logs
 RUN set -ex && chmod 777 /root/dists/consumer-agent
