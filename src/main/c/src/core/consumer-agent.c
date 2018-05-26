@@ -41,7 +41,7 @@ void cagent_start(int argc, char *argv[]){
     hs_bt.buffer_size = 2048;  // channel的buffer大小为2k,用于读写request reponse
     hs_bt.max_connection = 512;  // 最大链接数
     hs_bt.server_port = 20000;  // 端口
-    hs_bt.worker_thread_num = 8;  // 工作线程数
+    hs_bt.worker_thread_num = 16;  // 工作线程数
     hs_bt.content_handler = content_handler;  // content处理函数
 
     p_hs_handle = hs_start(&hs_bt);  // 启动http服务器
