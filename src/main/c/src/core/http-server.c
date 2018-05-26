@@ -84,11 +84,9 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     /*启动io线程*/
     log_info("Starting io thread.");
-    for(i = 0;i < hs_bt->io_thread_num;i++) {
-        if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
-            log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
-            goto err2_ret;
-        }
+    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
+        log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
+        goto err2_ret;
     }
 
     /*启动accept线程*/
