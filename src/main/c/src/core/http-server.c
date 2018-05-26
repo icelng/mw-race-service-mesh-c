@@ -25,6 +25,7 @@ int hs_io_do_write(struct hs_channel *p_channel);
  */
 struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     struct hs_handle *p_new_hs_handle = NULL;
+    int i;
 
     p_new_hs_handle = malloc(sizeof(struct hs_handle));
     if (p_new_hs_handle == NULL) {
@@ -43,7 +44,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     }
 
     log_info("Creating io thread pool.");
-    p_new_hs_handle->tdpl_io = tdpl_create(3, 128);  // 3个IO线程，128个等待
+    p_new_hs_handle->tdpl_io = tdpl_create(hs_bt->io_thread_num + 3, 128);  // 3个IO线程，128个等待
     if (p_new_hs_handle->tdpl_io == NULL) {
         log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
         goto err2_ret;
@@ -83,9 +84,11 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     /*启动io线程*/
     log_info("Starting io thread.");
-    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
-        log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
-        goto err2_ret;
+    for(i = 0;i < hs_bt->io_thread_num;i++) {
+        if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
+            log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
+            goto err2_ret;
+        }
     }
 
     /*启动accept线程*/
