@@ -17,6 +17,7 @@ COPY --from=builder /usr/local/bin/docker-entrypoint.sh /usr/local/bin
 COPY start-agent.sh /usr/local/bin
 COPY . /root/workspace/agent
 WORKDIR /root/workspace/agent/src/main/c
+RUN set -ex && mkdir bin
 RUN set -ex && apt-get update
 RUN set -ex && apt-get install make -y
 RUN set -ex && apt-get install gcc -y
