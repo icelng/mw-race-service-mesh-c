@@ -12,7 +12,7 @@
 void hs_accept_thread(void *arg);
 int hs_bind(int port);
 void hs_io_thread(void *arg);
-int hs_attempt_call_channel(struct hs_channel *p_hs_channel);
+int hs_call_channel(struct hs_channel *p_hs_channel);
 int hs_attempt_recall_channel(struct hs_channel *p_channel);
 int hs_io_do_read(struct hs_channel *p_channel);
 void hs_tolower(char *str);
@@ -300,8 +300,8 @@ int hs_io_do_read(struct hs_channel *p_channel){
         /*从epoll中移除,将不再读取数据*/
         epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
     }
-    /*尝试调用channel进行处理*/
-    hs_attempt_call_channel(p_channel);
+    /*调用channel进行处理*/
+    hs_call_channel(p_channel);
     
     return read_size;
 }
@@ -398,14 +398,27 @@ void hs_decoder(void *arg){
                 } else {
                     log_warning("The content handler is not setted!");
                 }
+                /*直接返回，不然下来的代码会添加套接字到epoll*/
+                return;
             }
         }
+    }
+
+    /*向epoll注册读事件*/
+    struct epoll_event event;
+    event.data.ptr = p_channel;  
+    event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
+    if(epoll_ctl(p_hs_handle->epoll_fd,
+                EPOLL_CTL_ADD,
+                p_channel->socket,
+                &event) == -1){  //把客户端的socket加入epoll
+        syslog(LOG_DEBUG,"Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
     }
 
     /* 到此，将会结束一次chennel的调用，然后尝试重新调用channel */
     /* 查看将要处理的processing_index是否大于正在处理的processing_index_now
      * 如果大于，直接在当前发起处理请求，把处理请求发送到Worker线程池队列*/
-    hs_attempt_recall_channel(p_channel);
+    //hs_attempt_recall_channel(p_channel);
 }
 
 /* 函数名: int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_size) 
@@ -494,21 +507,18 @@ int hs_attempt_recall_channel(struct hs_channel *p_channel){
          struct hs_channel *p_hs_channel,
  * 返回值: 
  */
-int hs_attempt_call_channel(struct hs_channel *p_channel){
+int hs_call_channel(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
 
-    sem_wait(&p_channel->processing_mutex);
     p_channel->processing_index = p_channel->read_index - 1;
-    if (p_channel->is_processing == 0) {
-        /*如果没有正在被处理，则启动worker线程，对该channel进行处理*/
-        p_channel->processing_index_now = p_channel->processing_index;
-        if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, &p_channel, sizeof(p_channel)) < 0) {
-            log_err("Failed to start worker thread for channel:%s", strerror(errno));
-            sem_post(&p_channel->processing_mutex);
-            return -1;
-        }
+    p_channel->processing_index_now = p_channel->processing_index;
+    if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, &p_channel, sizeof(p_channel)) < 0) {
+        log_err("Failed to start worker thread for channel:%s", strerror(errno));
+        return -1;
     }
-    sem_post(&p_channel->processing_mutex);
+    epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+
+    return 1;
 }
 
 
