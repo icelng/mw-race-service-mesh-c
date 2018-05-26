@@ -51,7 +51,6 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     log_info("Creating close thread pool.");
     /*这个方式会增加上下文切换的*/
-    p_new_hs_handle->tdpl_close = tdpl_create(1, 51200);  // 1个线程，51200个等待
     if (p_new_hs_handle->tdpl_io == NULL) {
         log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
         goto err2_ret;
@@ -256,19 +255,6 @@ void hs_io_thread(void *arg){
     }
 }
 
-/* 函数名: void hs_close(void *arg) 
- * 功能: 负责关闭链接
- * 参数: void *arg,
- * 返回值: 
- */
-void hs_close(void *arg){
-    struct hs_channel *p_channel = *(struct hs_channel**) arg;
-    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
-    
-    epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
-    close(p_channel->socket);
-    mmpl_rlsmem(p_hs_handle->mmpl, p_channel);
-}
 
 /* 函数名: int hs_io_do_write(struct hs_channel *p_channel) 
  * 功能: 把channel缓存数据写到tcp发送缓存里
@@ -281,7 +267,9 @@ int hs_io_do_write(struct hs_channel *p_channel){
 
     if (p_channel->write_index == p_channel->write_size) {
         /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
-        tdpl_call_func(p_hs_handle->tdpl_close, hs_close, &p_channel, sizeof(p_channel));
+        epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+        close(p_channel->socket);
+        mmpl_rlsmem(p_hs_handle->mmpl, p_channel);
         return 1;
     }
 
