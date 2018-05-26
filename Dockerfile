@@ -5,6 +5,7 @@ COPY . /root/workspace/agent
 WORKDIR /root/workspace/agent
 RUN set -ex && mvn clean package
 WORKDIR /root/workspace/agent/src/main/c
+RUN set -ex && apt-get install make -y
 RUN set -ex && make clean
 RUN set -ex && make
 
