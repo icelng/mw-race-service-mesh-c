@@ -9,15 +9,10 @@ int get_parameter_start_index(char *str);
 int hash_code(char *str);
 
 
-static tdpl g_request_tdpl;
 
-void reqeust_thread(void *arg) {
-    struct hs_channel *p_channel = *(struct hs_channel**) arg;
-    char *content = &p_channel->buffer[p_channel->body_start];
-}
 
 void content_handler(struct hs_channel *p_channel, int content_size, char *content){
-    char response_body[32];
+    char response_body[64];
     int param_start;
 
     hs_url_decode(content);
@@ -40,7 +35,7 @@ void cagent_start(int argc, char *argv[]){
     hs_bt.buffer_size = 2048;  // channel的buffer大小为2k,用于读写request reponse
     hs_bt.max_connection = 512;  // 最大链接数
     hs_bt.server_port = 20000;  // 端口
-    hs_bt.worker_thread_num = 256;  // 工作线程数
+    hs_bt.worker_thread_num = 260;  // 工作线程数
     hs_bt.content_handler = content_handler;  // content处理函数
 
     p_hs_handle = hs_start(&hs_bt);  // 启动http服务器

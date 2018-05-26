@@ -388,8 +388,6 @@ void hs_decoder(void *arg){
             p_channel->decode_index = p_channel->processing_index_now;
             if (p_channel->processing_index_now - p_channel->body_start + 1 == p_channel->body_size) {
                 /*表明body接受完毕*/
-                /*从epoll中移除,将不再读取数据*/
-                epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
                 p_channel->is_body = 0;
                 /*调用content处理函数*/
                 if (p_hs_handle->content_handler != NULL) {
@@ -404,7 +402,7 @@ void hs_decoder(void *arg){
         }
     }
 
-    /*向epoll注册读事件*/
+    /*向epoll注册读事件，表示要继续读取数据*/
     struct epoll_event event;
     event.data.ptr = p_channel;  
     event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
