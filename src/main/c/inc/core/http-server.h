@@ -14,6 +14,8 @@ struct hs_channel;  // 不完全声明
 struct hs_handle{
     tdpl tdpl_io;  // IO线程池
     tdpl tdpl_worker;  // 工作线程池
+    tdpl tdpl_accept;  // 负责accept
+    tdpl tdpl_close;  // 负责关闭链接
     mmpl mmpl;  // 内存池
     int max_connection;
     int buffer_size;
