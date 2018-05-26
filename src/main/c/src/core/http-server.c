@@ -51,7 +51,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     log_info("Creating close thread pool.");
     /*这个方式会增加上下文切换的*/
-    p_new_hs_handle->tdpl_close = tdpl_create(1, 128);  // 1个线程，51200个等待
+    p_new_hs_handle->tdpl_close = tdpl_create(1, 51200);  // 1个线程，51200个等待
     if (p_new_hs_handle->tdpl_io == NULL) {
         log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
         goto err2_ret;
