@@ -1,5 +1,6 @@
 #include "http-server.h"
 #include "stdio.h"
+#include "stdlib.h"
 #include "string.h"
 #include "log.h"
 #include "sys/socket.h"
@@ -25,7 +26,6 @@ int hs_io_do_write(struct hs_channel *p_channel);
  */
 struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     struct hs_handle *p_new_hs_handle = NULL;
-    int i;
 
     p_new_hs_handle = malloc(sizeof(struct hs_handle));
     if (p_new_hs_handle == NULL) {
@@ -84,14 +84,14 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     /*启动io线程*/
     log_info("Starting io thread.");
-    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
+    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, p_new_hs_handle) < 0) {
         log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
         goto err2_ret;
     }
 
     /*启动accept线程*/
     log_info("Starting accept thread.");
-    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_accept_thread, &p_new_hs_handle, sizeof(p_new_hs_handle)) < 0) {
+    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_accept_thread, p_new_hs_handle) < 0) {
         log_err("启动http-server时，启动accept线程失败:%s", strerror(errno));
         goto err2_ret;
     }
@@ -174,7 +174,7 @@ void hs_accept_thread(void *arg){
     log_info("Start accept thread sucessfully!");
 
     struct sockaddr_in client_addr;
-    struct hs_handle *hs_h = *(struct hs_handle**)arg;
+    struct hs_handle *hs_h = (struct hs_handle*)arg;
     int sin_size;
     int client_sockfd;
 
@@ -208,7 +208,7 @@ void hs_accept_thread(void *arg){
 void hs_io_thread(void *arg){
     log_info("Start io thread successfully!");
 
-    struct hs_handle *p_hs_handle = *(struct hs_handle**)arg;
+    struct hs_handle *p_hs_handle = (struct hs_handle*)arg;
     struct epoll_event events[MAX_EPOLL_EVENTS];
     struct hs_channel *p_channel;
     int epoll_fd = p_hs_handle->epoll_fd;
@@ -324,7 +324,7 @@ int hs_io_do_read(struct hs_channel *p_channel){
  * 返回值: 
  */
 void hs_decoder(void *arg){
-    struct hs_channel *p_channel = *((struct hs_channel**)arg);
+    struct hs_channel *p_channel = (struct hs_channel*)arg;
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
     char *buffer = p_channel->buffer;
     char parse_char;
@@ -496,7 +496,7 @@ int hs_attempt_recall_channel(struct hs_channel *p_channel){
     sem_wait(&p_channel->processing_mutex);
     if (p_channel->processing_index > p_channel->processing_index_now) {
         p_channel->processing_index_now = p_channel->processing_index;
-        if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, &p_channel, sizeof(p_channel)) < 0) {
+        if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
             log_err("Failed to continue(restart) worker thread for channel:%s", strerror(errno));
             sem_post(&p_channel->processing_mutex);
             return -1;
@@ -521,7 +521,7 @@ int hs_call_channel(struct hs_channel *p_channel){
 
     p_channel->processing_index = p_channel->read_index - 1;
     p_channel->processing_index_now = p_channel->processing_index;
-    if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, &p_channel, sizeof(p_channel)) < 0) {
+    if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
         log_err("Failed to start worker thread for channel:%s", strerror(errno));
         return -1;
     }

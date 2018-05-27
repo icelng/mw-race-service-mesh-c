@@ -3,9 +3,11 @@
 #include "unistd.h"
 #include "stdio.h"
 #include "string.h"
-#include "mmpool.h"
+#include "stdlib.h"
 
 
+void *tdpl_worker_thread(void *arg);
+void *tdpl_master_thread(void *arg);
 
 
 /* 函数名: void tdpl_wktd_cleanup(void *arg)
@@ -14,9 +16,9 @@
  * 返回值:
  */
 void tdpl_wktd_cleanup(void *arg){
-    struct tdpl_td_i *p_tti;
-    p_tti = (struct tdpl_td_i*)arg;
-    sem_destroy(&p_tti->run); //释放信号量
+    struct tdpl_td_handle *p_td_handle;
+    p_td_handle = (struct tdpl_td_handle*)arg;
+    sem_destroy(&p_td_handle->run); //释放信号量
     
 }
 
@@ -35,28 +37,28 @@ void tdpl_mastertd_cleanup(void *arg){
  * 参数: void *arg,指向线程池结构体的指针
  * 返回值:
  */
-void *tdpl_destroy_thread(void *arg){
-    struct tdpl_s *pts;
-    struct tdpl_td_i *p_tti;
-    int i;
-    pts = (struct tdpl_s *)arg;
-    /*取消所有的worker线程*/
-    for(i = 0;i < pts->thread_num;i++){
-        p_tti = &pts->tti_array[i];
-        pthread_cancel(p_tti->tid); //给worker线程发送取消信号
-        /*因为worker线程的取消点设置在sem_wait()的后面，所以得执行下面的语句*/
-        sem_post(&p_tti->run);
-        pthread_join(p_tti->tid,NULL); //等待线程取消完毕
-    }
-    /*销毁各种信号量*/
-    sem_destroy(&pts->req_list_mutex);
-    sem_destroy(&pts->avali_list_mutex);
-    sem_destroy(&pts->req_n);
-    sem_destroy(&pts->avali_td_n);
-    sem_destroy(&pts->req_n_emty);
-    /*销毁内存池*/
-    mmpl_destroy(pts->mmpl);
-}
+//void *tdpl_destroy_thread(void *arg){
+//    struct tdpl_s *pts;
+//    struct tdpl_td_i *p_tti;
+//    int i;
+//    pts = (struct tdpl_s *)arg;
+//    /*取消所有的worker线程*/
+//    for(i = 0;i < pts->thread_num;i++){
+//        p_tti = &pts->tti_array[i];
+//        pthread_cancel(p_tti->tid); //给worker线程发送取消信号
+//        /*因为worker线程的取消点设置在sem_wait()的后面，所以得执行下面的语句*/
+//        sem_post(&p_tti->run);
+//        pthread_join(p_tti->tid,NULL); //等待线程取消完毕
+//    }
+//    /*销毁各种信号量*/
+//    sem_destroy(&pts->req_list_mutex);
+//    sem_destroy(&pts->avali_list_mutex);
+//    sem_destroy(&pts->req_n);
+//    sem_destroy(&pts->avali_td_n);
+//    sem_destroy(&pts->req_n_emty);
+//    /*销毁内存池*/
+//    mmpl_destroy(pts->mmpl);
+//}
 
 /* 函数名: int tdpl_destroy(struct tdpl_s *pts)
  * 功能: 销毁线程池
@@ -64,25 +66,25 @@ void *tdpl_destroy_thread(void *arg){
  * 返回值: -1,
  *          1,
  */
-int tdpl_destroy(struct tdpl_s *pts){
-    unsigned long tid;
-
-    if(pts == NULL){
-        return -1;
-    }
-    pthread_cancel(pts->master_tid); //给master线程发送线程取消信号
-    /*因为master线程取消点是设置在等待两个信号量之后的位置，所以得进行两个V操作*/
-    sem_post(&pts->avali_td_n);
-    sem_post(&pts->req_n);
-    pthread_join(pts->master_tid,NULL); //等待master线程取消完毕
-    /*下面是消耗完请求队列的位置，即是拒绝指定函数的调用请求*/
-    while(sem_trywait(&pts->req_n_emty) != -1); 
-    /*启动线程池销毁线程，下来的清理工作交由线程tdpl_destroy_thread负责*/
-    if(pthread_create(&tid,NULL,tdpl_destroy_thread,pts) == -1){ 
-        return -1;
-    }
-    return 1;
-}
+//int tdpl_destroy(struct tdpl_s *pts){
+//    unsigned long tid;
+//
+//    if(pts == NULL){
+//        return -1;
+//    }
+//    pthread_cancel(pts->master_tid); //给master线程发送线程取消信号
+//    /*因为master线程取消点是设置在等待两个信号量之后的位置，所以得进行两个V操作*/
+//    sem_post(&pts->avali_td_n);
+//    sem_post(&pts->req_n);
+//    pthread_join(pts->master_tid,NULL); //等待master线程取消完毕
+//    /*下面是消耗完请求队列的位置，即是拒绝指定函数的调用请求*/
+//    while(sem_trywait(&pts->req_n_emty) != -1); 
+//    /*启动线程池销毁线程，下来的清理工作交由线程tdpl_destroy_thread负责*/
+//    if(pthread_create(&tid,NULL,tdpl_destroy_thread,pts) == -1){ 
+//        return -1;
+//    }
+//    return 1;
+//}
 
 /* 函数名: void *tdpl_worker_thread(*arg)
  * 功能: 调用函数的线程
@@ -90,28 +92,26 @@ int tdpl_destroy(struct tdpl_s *pts){
  * 返回值:
  */
 void *tdpl_worker_thread(void *arg){
-    struct tdpl_td_i *p_tti; //指向线程信息结构体的指针
+    struct tdpl_td_handle *p_td_handle; // 线程handle
     struct tdpl_s *pts;  //指向线程所属线程池的结构体
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL); //设置线程可被取消
-    p_tti = (struct tdpl_td_i *)arg;
-    pts = p_tti->p_tdpl_s;
-    pthread_cleanup_push(tdpl_wktd_cleanup,p_tti);
+    p_td_handle = (struct tdpl_td_handle *)arg;
+    pts = p_td_handle->p_tdpl_s;
+    pthread_cleanup_push(tdpl_wktd_cleanup,p_td_handle);
     sem_post(&pts->ready_n);
     while(1){
-        sem_wait(&p_tti->run); //等待至可以调用函数
+        sem_wait(&p_td_handle->run); // 等待master通知执行
         pthread_testcancel(); //设置线程取消点,在销毁线程池时，线程会被取消
         /*下一条语句为调用函数*/
-        (p_tti->call_func)(p_tti->arg); 
+        (p_td_handle->call_func)(p_td_handle->arg); 
         /* 函数执行完了之后，把该线程的信息结构体插入可用队列中,并且把参数所占用
          * 的内存空间还给内存池*/
         /* 有时候在调用函数的过程中接收到了线程取消信号,所以在函数执行完了之后马
          * 上取消线程。*/
         pthread_testcancel(); 
-        mmpl_rlsmem(pts->mmpl,p_tti->arg);
-        p_tti->arg = NULL;
-        sem_wait(&pts->avali_list_mutex); //互斥访问可用线程链表
-        list_add_tail(&p_tti->list,&pts->avali_list_h); //插入队尾
-        sem_post(&pts->avali_list_mutex);
+        p_td_handle->arg = NULL;
+        /*向可用线程队列入队*/
+        pts->avali_queue[(pts->avali_queue_tail++) % pts->avali_queue_period] = p_td_handle;
         sem_post(&pts->avali_td_n);  //可利用线程数+1
     }
     pthread_cleanup_pop(0);
@@ -119,36 +119,28 @@ void *tdpl_worker_thread(void *arg){
 }
 
 /* 函数名: void *tdpl_master_thread(void *arg)
- * 功能: 管理worker线程的线程
+ * 功能: 管理worker线程的线程，通知worker执行
  * 参数: void *arg,指向线程池结构体的指针
  * 返回值:
  */
 void *tdpl_master_thread(void *arg){
     struct tdpl_s *pts;
-    struct tdpl_td_i *p_tti;  //线程信息结构体
-    struct tdpl_req_node *p_trn;
+    struct tdpl_td_handle *p_td_handle;  //线程信息结构体
+    struct tdpl_call_node *p_call_node;
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL); //设置线程可被取消
     pts = (struct tdpl_s*)arg;
     pthread_cleanup_push(tdpl_mastertd_cleanup,NULL);
     while(1){
-        sem_wait(&pts->avali_td_n); //等待至有可用线程
-        sem_wait(&pts->req_n);  //等待有函数调用请求
+        sem_wait(&pts->avali_td_n); // 等待至有可用线程
+        sem_wait(&pts->call_wait_n);  // 等待有函数调用请求
         pthread_testcancel();  //设置线程取消点，销毁线程时，该线程会在这被取消
-        sem_wait(&pts->avali_list_mutex); //互斥访问可用线程链表
-        /*从可用线程链表中取出一个线程*/
-        p_tti = list_entry(pts->avali_list_h.next,struct tdpl_td_i,list);
-        list_del(&p_tti->list);
-        sem_post(&pts->avali_list_mutex);
-        sem_wait(&pts->req_list_mutex); //互斥访问请求队列
+        /*从可用线程队列中取出一个线程handle*/
+        p_td_handle = pts->avali_queue[(++pts->avali_queue_head) % pts->avali_queue_period];
         /*从请求队列中取出一个请求*/
-        p_trn = list_entry(pts->req_list_h.next,struct tdpl_req_node,list);
-        list_del(&p_trn->list);
-        sem_post(&pts->req_list_mutex);
-        sem_post(&pts->req_n_emty);  //请求队列位置+1
-        p_tti->call_func = p_trn->call_func;
-        p_tti->arg = p_trn->arg;
-        mmpl_rlsmem(pts->mmpl,p_trn);
-        sem_post(&p_tti->run); //告知线程开始调用函数
+        p_call_node = &pts->call_queue[(++pts->call_queue_head) % pts->call_queue_period];
+        p_td_handle->call_func = p_call_node->call_func;
+        p_td_handle->arg = p_call_node->arg;
+        sem_post(&p_td_handle->run); //告知worker线程开始调用函数
     }
     pthread_cleanup_pop(0);
 }
@@ -164,48 +156,50 @@ void *tdpl_master_thread(void *arg){
  *        !NULL,线程池结构体指针
  */
 struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
-    struct mm_pool_s *tdpl_mmpl = NULL;
     struct tdpl_s *p_new_tdpl_s;
-    struct tdpl_td_i *p_tti; //指向线程池的线程信息结构体
+    struct tdpl_td_handle *p_td_handle; //指向线程池的worker线程handle
     int i;
-     //创建内存池
-    if((tdpl_mmpl = mmpl_create(NULL)) == NULL){
+
+    /*创建线程池结构体*/
+    p_new_tdpl_s = (struct tdpl_s *)malloc(sizeof(struct tdpl_s));
+    if(p_new_tdpl_s == NULL){
         goto err1_ret;
     }
-    /*创建线程池结构体*/
-    p_new_tdpl_s = (struct tdpl_s *)mmpl_getmem(tdpl_mmpl,sizeof(struct tdpl_s));
-    if(p_new_tdpl_s == NULL){
-        goto err2_ret;
-    }
     /*为worker线程信息结构体数组安排内存空间*/
-    p_new_tdpl_s->tti_array = mmpl_getmem(tdpl_mmpl,thread_num*sizeof(struct tdpl_td_i));
-    if(p_new_tdpl_s->tti_array == NULL){
+    p_new_tdpl_s->td_handle_array = malloc(thread_num * sizeof(struct tdpl_td_handle));
+    if(p_new_tdpl_s->td_handle_array == NULL){
         goto err2_ret;
     }
-    p_new_tdpl_s->mmpl = tdpl_mmpl;
     p_new_tdpl_s->thread_num = thread_num;
     p_new_tdpl_s->max_wait_n = max_wait_n;
+
     /*初始化各种信号量*/
     sem_init(&p_new_tdpl_s->ready_n, 0, 0 - thread_num + 1);
-    sem_init(&p_new_tdpl_s->req_list_mutex,0,1);
-    sem_init(&p_new_tdpl_s->avali_list_mutex,0,1);
-    sem_init(&p_new_tdpl_s->avali_td_n,0,thread_num);
-    sem_init(&p_new_tdpl_s->req_n,0,0);
-    sem_init(&p_new_tdpl_s->req_n_emty,0,max_wait_n);
-    INIT_LIST_HEAD(&p_new_tdpl_s->avali_list_h); //初始化链表
-    INIT_LIST_HEAD(&p_new_tdpl_s->req_list_h);
+    sem_init(&p_new_tdpl_s->avali_td_n, 0, thread_num);
+    sem_init(&p_new_tdpl_s->call_wait_n, 0, 0);
+
+    /*初始化队列*/
+    p_new_tdpl_s->avali_queue_period = thread_num + 1;
+    p_new_tdpl_s->avali_queue = malloc((thread_num + 1) * sizeof(void *));
+    p_new_tdpl_s->avali_queue_head = 0;
+    p_new_tdpl_s->avali_queue_tail = 1;
+    p_new_tdpl_s->call_queue_period = max_wait_n + 1;
+    p_new_tdpl_s->call_queue = malloc((max_wait_n + 1) * sizeof(struct tdpl_call_node));
+    p_new_tdpl_s->call_queue_head = 0;
+    p_new_tdpl_s->call_queue_tail = 1;
+
     /*启动master线程*/
     if(pthread_create(&p_new_tdpl_s->master_tid,NULL,tdpl_master_thread,p_new_tdpl_s) == -1){ 
         goto err3_ret;
     }
-    /*建立线程*/
+    /*建立worker线程*/
     for(i = 0;i < thread_num;i++){
-        p_tti = &p_new_tdpl_s->tti_array[i];
-        list_add_tail(&p_tti->list,&p_new_tdpl_s->avali_list_h); //加入队列
-        p_tti->p_tdpl_s = p_new_tdpl_s; //设置所属线程池
-        sem_init(&p_tti->run,0,0);//初始化线程继续运行的信号量
-        if(pthread_create(&p_tti->tid,NULL,tdpl_worker_thread,p_tti) == -1){ 
-            sem_destroy(&p_tti->run);
+        p_td_handle = &p_new_tdpl_s->td_handle_array[i];
+        p_td_handle->p_tdpl_s = p_new_tdpl_s; //设置所属线程池
+        p_new_tdpl_s->avali_queue[(p_new_tdpl_s->avali_queue_tail++)%p_new_tdpl_s->avali_queue_period] = p_td_handle;
+        sem_init(&p_td_handle->run,0,0);//初始化线程继续运行的信号量
+        if(pthread_create(&p_td_handle->tid,NULL,tdpl_worker_thread,p_td_handle) == -1){ 
+            sem_destroy(&p_td_handle->run);
             goto err4_ret;
         }
     }
@@ -216,53 +210,49 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
 
 err4_ret:
     while(i-- != 0){
-        p_tti = list_entry(p_new_tdpl_s->avali_list_h.next,struct tdpl_td_i,list);
-        list_del(&p_tti->list);
-        sem_destroy(&p_tti->run);
+        p_td_handle = &p_new_tdpl_s->td_handle_array[i];
+        sem_destroy(&p_td_handle->run);
     }
 err3_ret:
-    sem_destroy(&p_new_tdpl_s->req_list_mutex);
-    sem_destroy(&p_new_tdpl_s->avali_list_mutex);
-    sem_destroy(&p_new_tdpl_s->req_n);
+    sem_destroy(&p_new_tdpl_s->ready_n);
     sem_destroy(&p_new_tdpl_s->avali_td_n);
-    sem_destroy(&p_new_tdpl_s->req_n_emty);
+    sem_destroy(&p_new_tdpl_s->call_wait_n);
+    free(p_new_tdpl_s->td_handle_array);
+    free(p_new_tdpl_s->avali_queue);
+    free(p_new_tdpl_s->call_queue);
 err2_ret:
-    mmpl_destroy(tdpl_mmpl);
+    free(p_new_tdpl_s);
 err1_ret:
     return NULL;
 }
 
 
-/* 函数名: int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg),void *arg,int arg_size)
+/* 函数名: int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg))
  * 功能: 使用线程池的一个线程来调用函数,参数所占用的内存空间的释放由线程池负责，
  *       不用被调用的函数来负责。
  * 参数: struct tdpl_s *pts,指向线程池结构体的指针
  *       void (*call_func)(void *arg),需要调用的函数地址
  *       void *arg,需要调用的函数的参数首地址
- *       int arg_size,参数大小
  * 返回值: 1,
  *        -1,
  */
-int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg),void *arg,int arg_size){
-    struct tdpl_req_node *p_trn;
-    void *call_arg;
-    if(sem_trywait(&pts->req_n_emty) == -1){ //查看请求队列是否已满
-        return -1; //如果满则放弃请求
-    }
-    /*为请求队列节点申请内存空间*/
-    p_trn = mmpl_getmem(pts->mmpl,sizeof(struct tdpl_req_node));
-    /*为需调用的函数的参数申请内存空间，释放也由线程池负责*/
-    call_arg = mmpl_getmem(pts->mmpl,arg_size);
-    memcpy(call_arg,arg,arg_size);
-    if(p_trn == NULL || arg == NULL){
+int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){
+    struct tdpl_call_node *p_call_node;
+
+    if(call_func == NULL){
         return -1;
     }
-    p_trn->call_func = call_func;
-    p_trn->arg = call_arg;
-    sem_wait(&pts->req_list_mutex);
-    list_add_tail(&p_trn->list,&pts->req_list_h);
-    sem_post(&pts->req_list_mutex);
-    sem_post(&pts->req_n);  // 告知有请求
+
+    if(pts->call_queue_head == pts->call_queue_tail){ //查看请求队列是否已满
+        return -2; //如果满则放弃请求
+    }
+
+    /*请求队列节点入队*/
+    p_call_node = &pts->call_queue[(pts->call_queue_tail++)%pts->call_queue_period];
+    p_call_node->call_func = call_func;
+    p_call_node->arg = arg;
+    sem_post(&pts->call_wait_n);  // 告知有调用请求
+
     return 1;
 }
 
