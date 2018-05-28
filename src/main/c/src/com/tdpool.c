@@ -110,8 +110,10 @@ void *tdpl_worker_thread(void *arg){
          * 上取消线程。*/
         pthread_testcancel(); 
         p_td_handle->arg = NULL;
-        /*向可用线程队列入队*/
+        /*向可用线程队列入队，自旋锁*/
+        while(sem_trywait(&pts->avali_queue_write_mutex) < 0);
         pts->avali_queue[(pts->avali_queue_tail++) % pts->avali_queue_period] = p_td_handle;
+        sem_post(&pts->avali_queue_write_mutex);
         sem_post(&pts->avali_td_n);  //可利用线程数+1
     }
     pthread_cleanup_pop(0);
@@ -177,6 +179,8 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     sem_init(&p_new_tdpl_s->ready_n, 0, 0 - thread_num + 1);
     sem_init(&p_new_tdpl_s->avali_td_n, 0, thread_num);
     sem_init(&p_new_tdpl_s->call_wait_n, 0, 0);
+    sem_init(&p_new_tdpl_s->call_queue_write_mutex, 0, 1);
+    sem_init(&p_new_tdpl_s->avali_queue_write_mutex, 0, 1);
 
     /*初始化队列*/
     p_new_tdpl_s->avali_queue_period = thread_num + 1;
@@ -228,11 +232,10 @@ err1_ret:
 
 
 /* 函数名: int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg))
- * 功能: 使用线程池的一个线程来调用函数,参数所占用的内存空间的释放由线程池负责，
- *       不用被调用的函数来负责。
+ * 功能: 使用线程池的一个worker线程来调用函数
  * 参数: struct tdpl_s *pts,指向线程池结构体的指针
- *       void (*call_func)(void *arg),需要调用的函数地址
- *       void *arg,需要调用的函数的参数首地址
+ *       void (*call_func)(void *arg), 需要调用的函数地址
+ *       void *arg, 需要调用的函数的参数
  * 返回值: 1,
  *        -1,
  */
@@ -243,12 +246,15 @@ int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){
         return -1;
     }
 
-    if(pts->call_queue_head == pts->call_queue_tail){ //查看请求队列是否已满
-        return -2; //如果满则放弃请求
+    /*因为没有加锁，所以被判断成满的那一瞬间，队列的节点被消费了*/
+    if(pts->call_queue_head == pts->call_queue_tail){  // 查看请求队列是否已满
+        return -2;  // 如果满则放弃请求
     }
 
-    /*请求队列节点入队*/
+    /*请求队列节点入队,自旋锁*/
+    while(sem_trywait(&pts->call_queue_write_mutex) < 0);
     p_call_node = &pts->call_queue[(pts->call_queue_tail++)%pts->call_queue_period];
+    sem_post(&pts->call_queue_write_mutex);
     p_call_node->call_func = call_func;
     p_call_node->arg = arg;
     sem_post(&pts->call_wait_n);  // 告知有调用请求

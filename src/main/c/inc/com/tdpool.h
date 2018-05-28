@@ -27,9 +27,12 @@ typedef struct tdpl_s{
     unsigned long avali_queue_tail;  // 可用队列尾索引
 
     /*信号量*/
-    sem_t ready_n; 
+    sem_t ready_n;  // 初始化时用
     sem_t avali_td_n;   //用信号量表示可用线程数
-    sem_t call_wait_n;   //用信号量表示当前调用请求等待数
+    sem_t avali_queue_write_mutex;
+    //用信号量表示当前调用请求等待数, 因为该队列只有master线程读，所以不用加读锁
+    sem_t call_wait_n;   
+    sem_t call_queue_write_mutex;  // 调用队列写着锁
 }*tdpl;
 
 /*线程handle*/

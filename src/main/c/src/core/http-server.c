@@ -18,6 +18,7 @@ int hs_attempt_recall_channel(struct hs_channel *p_channel);
 int hs_io_do_read(struct hs_channel *p_channel);
 void hs_tolower(char *str);
 int hs_io_do_write(struct hs_channel *p_channel);
+int hs_close_channel(struct hs_channel *p_channel);
 
 /* 函数名: struct hs_handle* hs_start(struct hs_bootstrap *hs_bt) 
  * 功能: 启动http服务器
@@ -39,21 +40,21 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     log_info("Creating worker thread pool.");
     p_new_hs_handle->tdpl_worker = tdpl_create(hs_bt->worker_thread_num, 51200);  // n个线程，51200个等待
     if (p_new_hs_handle->tdpl_worker == NULL) {
-        log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
+        log_err("启动http-server时，worker线程池创建失败!%s", strerror(errno));
         goto err2_ret;
     }
 
     log_info("Creating io thread pool.");
     p_new_hs_handle->tdpl_io = tdpl_create(hs_bt->io_thread_num + 3, 128);  // 3个IO线程，128个等待
     if (p_new_hs_handle->tdpl_io == NULL) {
-        log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
+        log_err("启动http-server时，IO线程池创建失败!%s", strerror(errno));
         goto err2_ret;
     }
 
     log_info("Creating close thread pool.");
-    /*这个方式会增加上下文切换的*/
-    if (p_new_hs_handle->tdpl_io == NULL) {
-        log_err("启动http-server时，创建线程池失败!%s", strerror(errno));
+    p_new_hs_handle->tdpl_close = tdpl_create(8, 51200);  // 8个线程负责关闭，51200个等待
+    if (p_new_hs_handle->tdpl_close == NULL) {
+        log_err("启动http-server时，线程池close创建失败!%s", strerror(errno));
         goto err2_ret;
     }
 
@@ -78,7 +79,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     /*创建epoll*/
     log_info("Creating epoll.");
     if((p_new_hs_handle->epoll_fd = epoll_create(1)) == -1){
-        syslog(LOG_DEBUG,"启动http-server时，创建epoll失败:%s",strerror(errno));
+        log_err("启动http-server时，创建epoll失败:%s",strerror(errno));
         goto err2_ret;
     }
 
@@ -150,7 +151,7 @@ int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
                 EPOLL_CTL_ADD,
                 client_sockfd,
                 &event) == -1){  //把客户端的socket加入epoll
-        syslog(LOG_DEBUG,"Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
+        log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
         ret_value = -2;
         goto err2_ret;
     }
@@ -188,7 +189,7 @@ void hs_accept_thread(void *arg){
         if((client_sockfd = accept(hs_h->sockfd, 
                         (struct sockaddr*)&client_addr, 
                         (socklen_t *)&sin_size)) < 0){
-            syslog(LOG_DEBUG,"Accept error:%s",strerror(errno));
+            log_err("Accept error:%s",strerror(errno));
             continue;
         }
         /*建立新链接*/
@@ -269,8 +270,7 @@ int hs_io_do_write(struct hs_channel *p_channel){
     if (p_channel->write_index == p_channel->write_size) {
         /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
         epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
-        close(p_channel->socket);
-        mmpl_rlsmem(p_hs_handle->mmpl, p_channel);
+        hs_close_channel(p_channel);
         return 1;
     }
 
@@ -315,6 +315,33 @@ int hs_io_do_read(struct hs_channel *p_channel){
     hs_call_channel(p_channel);
     
     return read_size;
+}
+
+/* 函数名: void hs_close_channel_thread(void *arg) 
+ * 功能: 关闭链接(channel)
+ * 参数: void *arg, 实际上为struct hs_channel*，其是需要关闭的channel
+ * 返回值: 
+ */
+void hs_close_channel_thread(void *arg){
+    struct hs_channel *p_channel = arg;
+    close(p_channel->socket);
+    mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+}
+
+/* 函数名: int hs_close_channel(struct hs_channel *p_channel) 
+ * 功能: 关闭链接
+ * 参数: struct hs_channel *p_channel,
+ * 返回值: 
+ */
+int hs_close_channel(struct hs_channel *p_channel){
+    struct hs_handle *p_hs_handel = p_channel->p_hs_handle;
+
+    if (tdpl_call_func(p_hs_handel->tdpl_close, hs_close_channel_thread, p_channel) < 0) {
+        log_err("Failed to start thread for closing channel!");
+        return -1;
+    }
+    
+    return 1;
 }
 
 
@@ -413,6 +440,11 @@ void hs_decoder(void *arg){
         }
     }
 
+    if (p_channel->read_index >= p_channel->buffer_size) {
+        /*如果buffer满了，直接退出*/
+        return;
+    }
+
     /*向epoll注册读事件，表示要继续读取数据*/
     struct epoll_event event;
     event.data.ptr = p_channel;  
@@ -421,7 +453,7 @@ void hs_decoder(void *arg){
                 EPOLL_CTL_ADD,
                 p_channel->socket,
                 &event) == -1){  //把客户端的socket加入epoll
-        syslog(LOG_DEBUG,"Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
+        log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
     }
 
     /* 到此，将会结束一次chennel的调用，然后尝试重新调用channel */
@@ -476,7 +508,7 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
                 EPOLL_CTL_ADD,
                 p_channel->socket,
                 &event) == -1) {
-        syslog(LOG_DEBUG,"Failed to add sockfd to epoll for EPOLLOUT:%s",strerror(errno));
+        log_err("Failed to add sockfd to epoll for EPOLLOUT:%s",strerror(errno));
         return -2;
     }
     

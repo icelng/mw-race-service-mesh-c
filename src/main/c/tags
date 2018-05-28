@@ -5,8 +5,6 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 BIN_DIR	Makefile	/^BIN_DIR = .\/bin$/;"	m	language:Make
-BIN_DIR	test/usrmng/Makefile	/^BIN_DIR = .$/;"	m	language:Make
-BIN_DIR	test/usrmng/client/Makefile	/^BIN_DIR = .$/;"	m	language:Make
 CJSON_EXPORT_SYMBOLS	inc/com/cJSON.h	108;"	d	language:C++
 CJSON_EXPORT_SYMBOLS	lib/cJSON/cJSON.h	108;"	d	language:C++
 CJSON_NESTING_LIMIT	inc/com/cJSON.h	129;"	d	language:C++
@@ -69,26 +67,11 @@ INIT_HLIST_NODE	inc/com/list.h	210;"	d	language:C++
 INIT_LIST_HEAD	inc/com/list.h	26;"	d	language:C++
 IsHeaderFile	.ycm_extra_conf.py	/^def IsHeaderFile( filename ):$/;"	f	language:Python
 LINKS	Makefile	/^LINKS = -pthread -lrt$/;"	m	language:Make
-LINKS	src/core/Makefile	/^LINKS = -lssl -lcrypto -L\/usr\/lib\/mysql -lmysqlclient -pthread -lrt$/;"	m	language:Make
-LINKS	test/usrmng/Makefile	/^LINKS = -lssl -lcrypto -L\/usr\/lib\/mysql -lmysqlclient -pthread -lrt$/;"	m	language:Make
-LINKS	test/usrmng/client/Makefile	/^LINKS = -lssl -lcrypto -L\/usr\/lib\/mysql -lmysqlclient -pthread -lrt$/;"	m	language:Make
 LIST_HEAD	inc/com/list.h	23;"	d	language:C++
 LIST_HEAD_INIT	inc/com/list.h	21;"	d	language:C++
 LIST_POISON1	inc/com/list.h	14;"	d	language:C++
 LIST_POISON2	inc/com/list.h	15;"	d	language:C++
 MAX_EPOLL_EVENTS	inc/core/http-server.h	5;"	d	language:C++
-MIDDLEWARE_COMPLETE	inc/com/middleware.h	66;"	d	language:C++
-MIDDLEWARE_DEFINE	inc/com/middleware.h	36;"	d	language:C++
-MIDDLEWARE_DEFINE_END	inc/com/middleware.h	46;"	d	language:C++
-MIDDLEWARE_EVENT_TYPE_COMPLETE	inc/com/middleware.h	33;"	d	language:C++
-MIDDLEWARE_EVENT_TYPE_EXCEPTION	inc/com/middleware.h	30;"	d	language:C++
-MIDDLEWARE_EVENT_TYPE_NEXT	inc/com/middleware.h	31;"	d	language:C++
-MIDDLEWARE_EVENT_TYPE_RECALL	inc/com/middleware.h	32;"	d	language:C++
-MIDDLEWARE_EXCEPTION	inc/com/middleware.h	74;"	d	language:C++
-MIDDLEWARE_EXCEPTION_DEFINE	inc/com/middleware.h	41;"	d	language:C++
-MIDDLEWARE_MAX_EXCEPTION_TYPE	inc/com/middleware.h	28;"	d	language:C++
-MIDDLEWARE_NEXT	inc/com/middleware.h	50;"	d	language:C++
-MIDDLEWARE_RECALL	inc/com/middleware.h	58;"	d	language:C++
 MMPL_ALIGN	inc/com/mmpool.h	22;"	d	language:C++
 MMPL_ALIGN_DEFAULT	inc/com/mmpool.h	24;"	d	language:C++
 MMPL_BOUNDARY_16K	inc/com/mmpool.h	16;"	d	language:C++
@@ -103,23 +86,13 @@ MMPL_MAX_INDEX	inc/com/mmpool.h	9;"	d	language:C++
 MMPL_OLDEST_RANGE	inc/com/mmpool.h	20;"	d	language:C++
 MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	f	language:Python
 OBJS	Makefile	/^OBJS = $(patsubst %.c, %.o, $(SRC_COM_FILES) $(SRC_CORE_FILES))$/;"	m	language:Make
-OBJS	test/usrmng/Makefile	/^OBJS = $(patsubst %.c, %.o, $(SRC_FILES))$/;"	m	language:Make
-OBJS	test/usrmng/client/Makefile	/^OBJS = $(patsubst %.c, %.o, $(SRC_FILES))$/;"	m	language:Make
 RB_BLACK	inc/com/rbtree.h	4;"	d	language:C++
 RB_RED	inc/com/rbtree.h	3;"	d	language:C++
 SOURCE_EXTENSIONS	.ycm_extra_conf.py	/^SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]$/;"	v	language:Python
 SRC_COM_FILES	Makefile	/^SRC_COM_FILES = $(wildcard $(SRC_DIR)\/com\/*.c)$/;"	m	language:Make
 SRC_CORE_FILES	Makefile	/^SRC_CORE_FILES = $(wildcard $(SRC_DIR)\/core\/*.c)$/;"	m	language:Make
 SRC_DIR	Makefile	/^SRC_DIR = .\/src$/;"	m	language:Make
-SRC_DIR_COM	test/usrmng/Makefile	/^SRC_DIR_COM = ..\/..\/src\/com$/;"	m	language:Make
-SRC_DIR_COM	test/usrmng/client/Makefile	/^SRC_DIR_COM = ..\/..\/..\/src\/com$/;"	m	language:Make
-SRC_DIR_CORE	test/usrmng/Makefile	/^SRC_DIR_CORE = ..\/..\/src\/core$/;"	m	language:Make
-SRC_DIR_CORE	test/usrmng/client/Makefile	/^SRC_DIR_CORE = ..\/..\/..\/src\/core$/;"	m	language:Make
-SRC_FILES	test/usrmng/Makefile	/^SRC_FILES = $(wildcard .\/*.c)$/;"	m	language:Make
-SRC_FILES	test/usrmng/client/Makefile	/^SRC_FILES = $(wildcard .\/*.c)$/;"	m	language:Make
-TARGET	Makefile	/^TARGET = server$/;"	m	language:Make
-TARGET	test/usrmng/Makefile	/^TARGET = usrmng$/;"	m	language:Make
-TARGET	test/usrmng/client/Makefile	/^TARGET = client$/;"	m	language:Make
+TARGET	Makefile	/^TARGET = consumer-agent$/;"	m	language:Make
 UMSG_TYPE_FD	inc/com/ipc-uds.h	4;"	d	language:C++
 _LINUX_LIST_H	inc/com/list.h	3;"	d	language:C++
 __WINDOWS__	inc/com/cJSON.h	84;"	d	language:C++
@@ -129,16 +102,17 @@ __list_add	inc/com/list.h	/^static inline void __list_add(struct list_head *new,
 __list_del	inc/com/list.h	/^static inline void __list_del(struct list_head * prev, struct list_head * next)   $/;"	f	language:C++
 __list_for_each	inc/com/list.h	163;"	d	language:C++
 __list_splice	inc/com/list.h	/^static inline void __list_splice(struct list_head *list,   $/;"	f	language:C++
-__snd_data	test/usrmng/client/usrmng_test.c	/^int __snd_data(int sockfd,char *data,unsigned short data_size){$/;"	f	language:C
 _uds_sendfd	src/com/ipc-uds.c	/^int _uds_sendfd(int usockfd, int fd){$/;"	f	language:C
 allocate	lib/cJSON/cJSON.c	/^    void *(*allocate)(size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 allocate	src/com/cJSON.c	/^    void *(*allocate)(size_t size);$/;"	m	language:C	struct:internal_hooks	file:
-arg	inc/com/tdpool.h	/^    void *arg;  \/\/线程调用函数的参数$/;"	m	language:C++	struct:tdpl_td_i
-arg	inc/com/tdpool.h	/^    void *arg;$/;"	m	language:C++	struct:tdpl_req_node
+arg	inc/com/tdpool.h	/^    void *arg;  \/\/线程调用函数的参数$/;"	m	language:C++	struct:tdpl_td_handle
+arg	inc/com/tdpool.h	/^    void *arg;$/;"	m	language:C++	struct:tdpl_call_node
 array	inc/com/cJSON.h	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array);$/;"	v	language:C++
 array	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array);$/;"	v	language:C++
-avali_list_h	inc/com/tdpool.h	/^    struct list_head avali_list_h;  \/\/可用线程的链表头$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::list_head
-avali_list_mutex	inc/com/tdpool.h	/^    sem_t avali_list_mutex; \/\/可用线程链表的互斥信号量$/;"	m	language:C++	struct:tdpl_s
+avali_queue	inc/com/tdpool.h	/^    struct tdpl_td_handle **avali_queue;  \/\/ 可用线程队列$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_td_handle
+avali_queue_head	inc/com/tdpool.h	/^    unsigned long avali_queue_head;  \/\/ 可用队列头索引$/;"	m	language:C++	struct:tdpl_s
+avali_queue_period	inc/com/tdpool.h	/^    int avali_queue_period;$/;"	m	language:C++	struct:tdpl_s
+avali_queue_tail	inc/com/tdpool.h	/^    unsigned long avali_queue_tail;  \/\/ 可用队列尾索引$/;"	m	language:C++	struct:tdpl_s
 avali_td_n	inc/com/tdpool.h	/^    sem_t avali_td_n;   \/\/用信号量表示可用线程数$/;"	m	language:C++	struct:tdpl_s
 body_size	inc/core/http-server.h	/^    int body_size;  \/\/ content 大小$/;"	m	language:C++	struct:hs_channel
 body_start	inc/core/http-server.h	/^    int body_start;  \/\/ body起始指针$/;"	m	language:C++	struct:hs_channel
@@ -311,8 +285,13 @@ cJSON_malloc	src/com/cJSON.c	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size)$/;
 cJSON_strdup	lib/cJSON/cJSON.c	/^static unsigned char* cJSON_strdup(const unsigned char* string, const internal_hooks * const hooks)$/;"	f	language:C	file:
 cJSON_strdup	src/com/cJSON.c	/^static unsigned char* cJSON_strdup(const unsigned char* string, const internal_hooks * const hooks)$/;"	f	language:C	file:
 cagent_start	src/core/consumer-agent.c	/^void cagent_start(int argc, char *argv[]){$/;"	f	language:C
-call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用的函数$/;"	m	language:C++	struct:tdpl_req_node
-call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用的函数$/;"	m	language:C++	struct:tdpl_td_i
+call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用的函数$/;"	m	language:C++	struct:tdpl_call_node
+call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用的函数$/;"	m	language:C++	struct:tdpl_td_handle
+call_queue	inc/com/tdpool.h	/^    struct tdpl_call_node *call_queue; \/\/ 调用队列$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_call_node
+call_queue_head	inc/com/tdpool.h	/^    unsigned long call_queue_head;  \/\/ 调用队列头索引$/;"	m	language:C++	struct:tdpl_s
+call_queue_period	inc/com/tdpool.h	/^    int call_queue_period;$/;"	m	language:C++	struct:tdpl_s
+call_queue_tail	inc/com/tdpool.h	/^    unsigned long call_queue_tail;  \/\/ 调用队列尾索引$/;"	m	language:C++	struct:tdpl_s
+call_wait_n	inc/com/tdpool.h	/^    sem_t call_wait_n;   \/\/用信号量表示当前调用请求等待数$/;"	m	language:C++	struct:tdpl_s
 can_access_at_index	lib/cJSON/cJSON.c	213;"	d	language:C	file:
 can_access_at_index	src/com/cJSON.c	213;"	d	language:C	file:
 can_read	lib/cJSON/cJSON.c	210;"	d	language:C	file:
@@ -340,10 +319,8 @@ create_reference	lib/cJSON/cJSON.c	/^static cJSON *create_reference(const cJSON 
 create_reference	src/com/cJSON.c	/^static cJSON *create_reference(const cJSON *item, const internal_hooks * const hooks)$/;"	f	language:C	file:
 current_free_index	inc/com/mmpool.h	/^    unsigned int current_free_index;   \/\/当前内存池空闲的内存$/;"	m	language:C++	struct:mm_pool_s
 data	inc/com/ipc-uds.h	/^    void *data;  \/\/ 数据$/;"	m	language:C++	struct:uds_umsg
-data	inc/com/middleware.h	/^    void *data;$/;"	m	language:C++	struct:mw_middata
 data_size	inc/com/ipc-uds.h	/^    unsigned int data_size;  \/\/ data大小$/;"	m	language:C++	struct:uds_umsg
 data_size	inc/com/ipc-uds.h	/^    unsigned int data_size;$/;"	m	language:C++	struct:uds_umsg_h
-data_size	inc/com/middleware.h	/^    unsigned int data_size;$/;"	m	language:C++	struct:mw_middata
 data_type	inc/com/ipc-uds.h	/^    int data_type;  \/\/ 数据类型$/;"	m	language:C++	struct:uds_umsg
 data_type	inc/com/ipc-uds.h	/^    int data_type;$/;"	m	language:C++	struct:uds_umsg_h
 database	.ycm_extra_conf.py	/^  database = None$/;"	v	language:Python
@@ -351,7 +328,6 @@ database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compila
 deallocate	lib/cJSON/cJSON.c	/^    void (*deallocate)(void *pointer);$/;"	m	language:C	struct:internal_hooks	file:
 deallocate	src/com/cJSON.c	/^    void (*deallocate)(void *pointer);$/;"	m	language:C	struct:internal_hooks	file:
 decode_index	inc/core/http-server.h	/^    int decode_index;  \/\/ 解码索引$/;"	m	language:C++	struct:hs_channel
-dependece	src/core/Makefile	/^dependece = $(src_files:.c=.d)$/;"	m	language:Make
 depth	lib/cJSON/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/objects) is the input at the current offset. *\/$/;"	m	language:C	struct:__anon3	file:
 depth	lib/cJSON/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon4	file:
 depth	src/com/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/objects) is the input at the current offset. *\/$/;"	m	language:C	struct:__anon6	file:
@@ -361,8 +337,6 @@ ensure	src/com/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, siz
 epoll_fd	inc/core/http-server.h	/^    int epoll_fd;  \/\/ epoll码，描述符$/;"	m	language:C++	struct:hs_handle
 error	lib/cJSON/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon2	file:
 error	src/com/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon5	file:
-event_type	inc/com/middleware.h	/^    unsigned int event_type;$/;"	m	language:C++	struct:mw_event
-exception_type	inc/com/middleware.h	/^    unsigned int exception_type;  \/\/ 异常号$/;"	m	language:C++	struct:mw_dispatcher_arg
 false	lib/cJSON/cJSON.c	47;"	d	language:C	file:
 false	src/com/cJSON.c	47;"	d	language:C	file:
 first	inc/com/list.h	/^struct hlist_node *first;   $/;"	m	language:C++	struct:hlist_head	typeref:struct:hlist_head::hlist_node
@@ -374,7 +348,6 @@ free_fn	inc/com/cJSON.h	/^      void (*free_fn)(void *ptr);$/;"	m	language:C++	s
 free_fn	lib/cJSON/cJSON.h	/^      void (*free_fn)(void *ptr);$/;"	m	language:C++	struct:cJSON_Hooks
 free_size	inc/com/mmpool.h	/^    unsigned int free_size[MMPL_MAX_INDEX + 1];  \/\/ 记录free数组对应index含有index(空闲内存)大小$/;"	m	language:C++	struct:mm_pool_s
 g_log_level	src/com/log.c	/^static int g_log_level = 0;$/;"	v	language:C	file:
-g_server_rsa_pubkey	test/usrmng/client/usrmng_test.c	/^static char* g_server_rsa_pubkey = "-----BEGIN PUBLIC KEY-----\\n\\$/;"	v	language:C	file:
 g_uds_mmpl	src/com/ipc-uds.c	/^static mmpl g_uds_mmpl;  \/\/ 使用到的内存池$/;"	v	language:C	file:
 get_array_item	lib/cJSON/cJSON.c	/^static cJSON* get_array_item(const cJSON *array, size_t index)$/;"	f	language:C	file:
 get_array_item	src/com/cJSON.c	/^static cJSON* get_array_item(const cJSON *array, size_t index)$/;"	f	language:C	file:
@@ -383,11 +356,13 @@ get_decimal_point	lib/cJSON/cJSON.c	/^static unsigned char get_decimal_point(voi
 get_decimal_point	src/com/cJSON.c	/^static unsigned char get_decimal_point(void)$/;"	f	language:C	file:
 get_object_item	lib/cJSON/cJSON.c	/^static cJSON *get_object_item(const cJSON * const object, const char * const name, const cJSON_bool case_sensitive)$/;"	f	language:C	file:
 get_object_item	src/com/cJSON.c	/^static cJSON *get_object_item(const cJSON * const object, const char * const name, const cJSON_bool case_sensitive)$/;"	f	language:C	file:
+get_parameter_start_index	src/core/consumer-agent.c	/^int get_parameter_start_index(char *str){$/;"	f	language:C
 global_error	lib/cJSON/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	language:C	file:
 global_error	src/com/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	language:C	file:
 global_hooks	lib/cJSON/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
 global_hooks	src/com/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
-head	inc/com/middleware.h	/^    struct middleware head;  \/\/ 头结点，也表示异常中间件调度机$/;"	m	language:C++	struct:mw_list	typeref:struct:mw_list::middleware
+hash_code	src/core/consumer-agent.c	/^int hash_code(char *str){$/;"	f	language:C
+hex2dec	src/core/http-server.c	/^int hex2dec(char c){$/;"	f	language:C
 hlist_add_after	inc/com/list.h	/^static inline void hlist_add_after(struct hlist_node *n,   $/;"	f	language:C++
 hlist_add_before	inc/com/list.h	/^static inline void hlist_add_before(struct hlist_node *n,   $/;"	f	language:C++
 hlist_add_head	inc/com/list.h	/^static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)   $/;"	f	language:C++
@@ -411,10 +386,10 @@ hooks	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks* hooks)
 hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon6	file:
 hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon7	file:
 hs_accept_thread	src/core/http-server.c	/^void hs_accept_thread(void *arg){$/;"	f	language:C
-hs_attempt_call_channel	src/core/http-server.c	/^int hs_attempt_call_channel(struct hs_channel *p_channel){$/;"	f	language:C
 hs_attempt_recall_channel	src/core/http-server.c	/^int hs_attempt_recall_channel(struct hs_channel *p_channel){$/;"	f	language:C
 hs_bind	src/core/http-server.c	/^int hs_bind(int port){$/;"	f	language:C
 hs_bootstrap	inc/core/http-server.h	/^struct hs_bootstrap{$/;"	s	language:C++
+hs_call_channel	src/core/http-server.c	/^int hs_call_channel(struct hs_channel *p_channel){$/;"	f	language:C
 hs_channel	inc/core/http-server.h	/^struct hs_channel{$/;"	s	language:C++
 hs_decoder	src/core/http-server.c	/^void hs_decoder(void *arg){$/;"	f	language:C
 hs_handle	inc/core/http-server.h	/^struct hs_handle{$/;"	s	language:C++
@@ -472,8 +447,6 @@ length	lib/cJSON/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon3	fi
 length	lib/cJSON/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon4	file:
 length	src/com/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon6	file:
 length	src/com/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon7	file:
-list	inc/com/tdpool.h	/^    struct list_head list; \/\/会嵌入到可用线程链表$/;"	m	language:C++	struct:tdpl_td_i	typeref:struct:tdpl_td_i::list_head
-list	inc/com/tdpool.h	/^    struct list_head list; \/\/嵌入到请求链表中$/;"	m	language:C++	struct:tdpl_req_node	typeref:struct:tdpl_req_node::list_head
 list_add_tail	inc/com/list.h	/^static inline void list_add_tail(struct list_head *new, struct list_head *head)   $/;"	f	language:C++
 list_del	inc/com/list.h	/^static inline void list_del(struct list_head *entry)   $/;"	f	language:C++
 list_del_init	inc/com/list.h	/^static inline void list_del_init(struct list_head *entry)   $/;"	f	language:C++
@@ -505,8 +478,6 @@ log_out	src/com/log.c	/^int log_out(int level, char *fmt, ...){$/;"	f	language:C
 log_set_level	src/com/log.c	/^int log_set_level(int level){$/;"	f	language:C
 log_warning	inc/com/log.h	26;"	d	language:C++
 main	src/core/main.c	/^int main(int argc, char *argv[]){$/;"	f	language:C
-main	test/usrmng/client/usrmng_test.c	/^int main(){$/;"	f	language:C
-main	test/usrmng/usrmng_test.c	/^int main(){$/;"	f	language:C
 malloc_fn	inc/com/cJSON.h	/^      void *(*malloc_fn)(size_t sz);$/;"	m	language:C++	struct:cJSON_Hooks
 malloc_fn	lib/cJSON/cJSON.h	/^      void *(*malloc_fn)(size_t sz);$/;"	m	language:C++	struct:cJSON_Hooks
 master_tid	inc/com/tdpool.h	/^    unsigned long master_tid; \/\/master线程id$/;"	m	language:C++	struct:tdpl_s
@@ -514,14 +485,10 @@ max_connection	inc/core/http-server.h	/^    int max_connection;  \/\/ 最大连�
 max_connection	inc/core/http-server.h	/^    int max_connection;$/;"	m	language:C++	struct:hs_handle
 max_free_index	inc/com/mmpool.h	/^    unsigned int max_free_index; \/\/最大空闲内存$/;"	m	language:C++	struct:mm_pool_s
 max_free_index	inc/com/mmpool.h	/^    unsigned int max_free_index; \/\/最大空闲内存$/;"	m	language:C++	struct:mmpl_opt
-max_wait_n	inc/com/tdpool.h	/^    int max_wait_n;  \/\/最大等待数,或者说是请求链表的最大节点数$/;"	m	language:C++	struct:tdpl_s
-middleware	inc/com/middleware.h	/^struct middleware{$/;"	s	language:C++
-middleware_func	inc/com/middleware.h	/^    struct mw_event (*middleware_func)(struct mw_chain *pchain, struct mw_middata *pmdata);  \/\/ 中间件执行函数$/;"	m	language:C++	struct:middleware	typeref:struct:middleware::middleware_func
+max_wait_n	inc/com/tdpool.h	/^    int max_wait_n;  \/\/最大等待数,或者说是请求队列最大长度$/;"	m	language:C++	struct:tdpl_s
 mm_node	inc/com/mmpool.h	/^struct mm_node{$/;"	s	language:C++
 mm_pool_s	inc/com/mmpool.h	/^typedef struct mm_pool_s{$/;"	s	language:C++
-mmpl	inc/com/middleware.h	/^    mmpl mmpl;  \/\/ 内存池$/;"	m	language:C++	struct:mw_chain
 mmpl	inc/com/mmpool.h	/^}*mmpl;$/;"	t	language:C++	typeref:struct:mm_pool_s
-mmpl	inc/com/tdpool.h	/^    struct mm_pool_s *mmpl;  \/\/线程池中会使用到的内存池$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::mm_pool_s
 mmpl	inc/core/http-server.h	/^    mmpl mmpl;  \/\/ 内存池$/;"	m	language:C++	struct:hs_handle
 mmpl_create	src/com/mmpool.c	/^mmpl mmpl_create(struct mmpl_opt *popt){$/;"	f	language:C
 mmpl_destroy	src/com/mmpool.c	/^int mmpl_destroy(struct mm_pool_s *mmpl){$/;"	f	language:C
@@ -532,47 +499,23 @@ mmpl_opt	inc/com/mmpool.h	/^struct mmpl_opt{$/;"	s	language:C++
 mmpl_rls_oldestfree	src/com/mmpool.c	/^int mmpl_rls_oldestfree(struct mm_pool_s *mmpl){$/;"	f	language:C
 mmpl_rlsmem	src/com/mmpool.c	/^int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){$/;"	f	language:C
 mutex	inc/com/mmpool.h	/^    sem_t mutex;  \/\/锁，用来互斥访问内存池$/;"	m	language:C++	struct:mm_pool_s
-mw_chain	inc/com/middleware.h	/^struct mw_chain{$/;"	s	language:C++
-mw_chain_add	src/com/middleware.c	/^int mw_chain_add(struct mw_chain *pchain, struct mw_event (*func)(struct mw_chain *pchain, struct mw_middata *pmdatqa)){$/;"	f	language:C
-mw_chain_exception_add	src/com/middleware.c	/^int mw_chain_exception_add(struct mw_chain *pchain, unsigned int exception_type, struct mw_event (*exception_func)(struct mw_chain*, unsigned int, unsigned int, struct mw_middata*)){$/;"	f	language:C
-mw_chain_handler	src/com/middleware.c	/^void mw_chain_handler(void *pvoid_chain){$/;"	f	language:C
-mw_chain_opt	inc/com/middleware.h	/^struct mw_chain_opt{$/;"	s	language:C++
-mw_chain_start	src/com/middleware.c	/^int mw_chain_start(struct mw_chain *pchain, struct mw_middata *pmdata){$/;"	f	language:C
-mw_copy_middata	src/com/middleware.c	/^struct mw_middata* mw_copy_middata(struct mw_chain *pchain, struct mw_middata *pmdata){$/;"	f	language:C
-mw_create_chain	src/com/middleware.c	/^struct mw_chain* mw_create_chain(struct mw_chain_opt *popt){$/;"	f	language:C
-mw_create_middata	src/com/middleware.c	/^struct mw_middata* mw_create_middata(struct mw_chain *pchain, unsigned int data_size){$/;"	f	language:C
-mw_destroy_chain	src/com/middleware.c	/^int mw_destroy_chain(struct mw_chain *pchain){$/;"	f	language:C
-mw_destroy_middata	src/com/middleware.c	/^int mw_destroy_middata(struct mw_chain *pchain, struct mw_middata *pmdata){$/;"	f	language:C
-mw_dispatcher_arg	inc/com/middleware.h	/^struct mw_dispatcher_arg{$/;"	s	language:C++
-mw_event	inc/com/middleware.h	/^struct mw_event{$/;"	s	language:C++
-mw_exception_dispatcher	src/com/middleware.c	/^struct mw_event mw_exception_dispatcher(struct mw_chain *pchain, struct mw_middata *pmdata){$/;"	f	language:C
-mw_exception_func_array	inc/com/middleware.h	/^    struct mw_event (*mw_exception_func_array[MIDDLEWARE_MAX_EXCEPTION_TYPE])(struct mw_chain *pchain, unsigned int, unsigned int, struct mw_middata*);  $/;"	m	language:C++	struct:mw_chain	typeref:struct:mw_chain::mw_exception_func_array
-mw_init_opt	inc/com/middleware.h	/^struct mw_init_opt{$/;"	s	language:C++
-mw_list	inc/com/middleware.h	/^    struct mw_list mw_list;  \/\/ 指向中间件链表$/;"	m	language:C++	struct:mw_chain	typeref:struct:mw_chain::mw_list
-mw_list	inc/com/middleware.h	/^struct mw_list{$/;"	s	language:C++
-mw_list_tail	inc/com/middleware.h	/^    struct middleware *mw_list_tail; \/\/ 指向链尾节点的指针$/;"	m	language:C++	struct:mw_list	typeref:struct:mw_list::middleware
-mw_middata	inc/com/middleware.h	/^struct mw_middata{$/;"	s	language:C++
 my_list_add	inc/com/list.h	/^static inline void my_list_add(struct list_head *new, struct list_head *head)   $/;"	f	language:C++
 next	inc/com/cJSON.h	/^    struct cJSON *next;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 next	inc/com/list.h	/^struct hlist_node *next, **pprev;   $/;"	m	language:C++	struct:hlist_node	typeref:struct:hlist_node::hlist_node
 next	inc/com/list.h	/^struct list_head *next, *prev;   $/;"	m	language:C++	struct:list_head	typeref:struct:list_head::list_head
-next	inc/com/middleware.h	/^    struct middleware *next;  \/\/ 下一个中间件$/;"	m	language:C++	struct:middleware	typeref:struct:middleware::middleware
 next	inc/com/mmpool.h	/^    struct mm_node *next;  \/\/下一个节点$/;"	m	language:C++	struct:mm_node	typeref:struct:mm_node::mm_node
 next	lib/cJSON/cJSON.h	/^    struct cJSON *next;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 nil	inc/com/rbtree.h	/^    struct rb_node nil;  \/\/哨兵指针$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
 noalloc	lib/cJSON/cJSON.c	/^    cJSON_bool noalloc;$/;"	m	language:C	struct:__anon4	file:
 noalloc	src/com/cJSON.c	/^    cJSON_bool noalloc;$/;"	m	language:C	struct:__anon7	file:
-objs	src/core/Makefile	/^objs = $(src_files:.c=.o)$/;"	m	language:Make
 offset	lib/cJSON/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon3	file:
 offset	lib/cJSON/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon4	file:
 offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon6	file:
 offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon7	file:
 offsetof	inc/com/list.h	5;"	d	language:C++
 offsetof	inc/com/rbtree.h	6;"	d	language:C++
-p_exception_mdata	inc/com/middleware.h	/^    struct mw_middata *p_exception_mdata;  \/\/ 传给异常中间件处理函数的参数$/;"	m	language:C++	struct:mw_dispatcher_arg	typeref:struct:mw_dispatcher_arg::mw_middata
-p_first_mdata	inc/com/middleware.h	/^    struct mw_middata *p_first_mdata;  \/\/ 首个middata, 作为第一个中间件执行函数的参数$/;"	m	language:C++	struct:mw_chain	typeref:struct:mw_chain::mw_middata
 p_hs_handle	inc/core/http-server.h	/^    struct hs_handle *p_hs_handle;  \/\/ 所属的http-server-handle$/;"	m	language:C++	struct:hs_channel	typeref:struct:hs_channel::hs_handle
-p_tdpl_s	inc/com/tdpool.h	/^    struct tdpl_s *p_tdpl_s; \/\/线程所属的线程池的结构体$/;"	m	language:C++	struct:tdpl_td_i	typeref:struct:tdpl_td_i::tdpl_s
+p_tdpl_s	inc/com/tdpool.h	/^    struct tdpl_s *p_tdpl_s; \/\/线程所属的线程池的结构体$/;"	m	language:C++	struct:tdpl_td_handle	typeref:struct:tdpl_td_handle::tdpl_s
 parent	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
 parse_array	lib/cJSON/cJSON.c	/^static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_array	src/com/cJSON.c	/^static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
@@ -588,7 +531,6 @@ parse_string	lib/cJSON/cJSON.c	/^static cJSON_bool parse_string(cJSON * const it
 parse_string	src/com/cJSON.c	/^static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_value	lib/cJSON/cJSON.c	/^static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_value	src/com/cJSON.c	/^static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
-pmdata	inc/com/middleware.h	/^    struct mw_middata *pmdata;$/;"	m	language:C++	struct:mw_event	typeref:struct:mw_event::mw_middata
 position	lib/cJSON/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon2	file:
 position	src/com/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon5	file:
 pprev	inc/com/list.h	/^struct hlist_node *next, **pprev;   $/;"	m	language:C++	struct:hlist_node	typeref:struct:hlist_node::
@@ -632,51 +574,41 @@ rb_transplant	src/com/rbtree.c	/^void rb_transplant(struct rb_tree *p_rb_t,struc
 rb_tree	inc/com/rbtree.h	/^struct rb_tree{$/;"	s	language:C++
 rb_tree_minimum	src/com/rbtree.c	/^struct rb_node* rb_tree_minimum(struct rb_tree *p_rb_t,struct rb_node *p_root){$/;"	f	language:C
 rchild	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
-read_cnt	inc/com/middleware.h	/^    unsigned int read_cnt;  \/\/ 读者写着问题所需要的阅读计数$/;"	m	language:C++	struct:mw_chain
 read_index	inc/core/http-server.h	/^    int read_index;  \/\/  读索引$/;"	m	language:C++	struct:hs_channel
-read_mutex	inc/com/middleware.h	/^    sem_t read_mutex;  \/\/ 读者锁$/;"	m	language:C++	struct:mw_chain
-ready_n	inc/com/tdpool.h	/^    sem_t ready_n;$/;"	m	language:C++	struct:tdpl_s
+ready_n	inc/com/tdpool.h	/^    sem_t ready_n; $/;"	m	language:C++	struct:tdpl_s
 reallocate	lib/cJSON/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 reallocate	src/com/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 replace_item_in_object	lib/cJSON/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
 replace_item_in_object	src/com/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
-req_list_h	inc/com/tdpool.h	/^    struct list_head req_list_h; \/\/请求链表头$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::list_head
-req_list_mutex	inc/com/tdpool.h	/^    sem_t req_list_mutex;   \/\/请求链表的互斥信号量$/;"	m	language:C++	struct:tdpl_s
-req_n	inc/com/tdpool.h	/^    sem_t req_n;   \/\/用信号量表示当前请求数$/;"	m	language:C++	struct:tdpl_s
-req_n_emty	inc/com/tdpool.h	/^    sem_t req_n_emty; \/\/还可以往请求队列插入请求的数量$/;"	m	language:C++	struct:tdpl_s
 root	inc/com/rbtree.h	/^    struct rb_node *root;  \/\/指向根节点$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
-run	inc/com/tdpool.h	/^    sem_t run;  \/\/用来告知线程开始调用函数$/;"	m	language:C++	struct:tdpl_td_i
+run	inc/com/tdpool.h	/^    sem_t run;  \/\/用来告知线程开始调用函数$/;"	m	language:C++	struct:tdpl_td_handle
 server_port	inc/core/http-server.h	/^    int server_port;  \/\/ 服务器端口$/;"	m	language:C++	struct:hs_bootstrap
 size	inc/com/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 size	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 socket	inc/core/http-server.h	/^    int socket;  \/\/ 套接字$/;"	m	language:C++	struct:hs_channel
 sockfd	inc/core/http-server.h	/^    int sockfd;$/;"	m	language:C++	struct:hs_handle
-src_files	src/core/Makefile	/^src_files = $(wildcard *.c)$/;"	m	language:Make
 string	inc/com/cJSON.h	/^    char *string;$/;"	m	language:C++	struct:cJSON
 string	lib/cJSON/cJSON.h	/^    char *string;$/;"	m	language:C++	struct:cJSON
-sub_type	inc/com/middleware.h	/^    unsigned int sub_type;  \/\/ 异常子号$/;"	m	language:C++	struct:mw_dispatcher_arg
 suffix_object	lib/cJSON/cJSON.c	/^static void suffix_object(cJSON *prev, cJSON *item)$/;"	f	language:C	file:
 suffix_object	src/com/cJSON.c	/^static void suffix_object(cJSON *prev, cJSON *item)$/;"	f	language:C	file:
-tdpl	inc/com/middleware.h	/^    tdpl tdpl;  \/\/ 线程池$/;"	m	language:C++	struct:mw_chain
+td_handle_array	inc/com/tdpool.h	/^    struct tdpl_td_handle *td_handle_array; \/\/ 已创建的线程handle结构体数组$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_td_handle
 tdpl	inc/com/tdpool.h	/^}*tdpl;$/;"	t	language:C++	typeref:struct:tdpl_s
-tdpl_call_func	src/com/tdpool.c	/^int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg),void *arg,int arg_size){$/;"	f	language:C
+tdpl_accept	inc/core/http-server.h	/^    tdpl tdpl_accept;  \/\/ 负责accept$/;"	m	language:C++	struct:hs_handle
+tdpl_call_func	src/com/tdpool.c	/^int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){$/;"	f	language:C
+tdpl_call_node	inc/com/tdpool.h	/^struct tdpl_call_node{$/;"	s	language:C++
 tdpl_create	src/com/tdpool.c	/^struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){$/;"	f	language:C
-tdpl_destroy	src/com/tdpool.c	/^int tdpl_destroy(struct tdpl_s *pts){$/;"	f	language:C
-tdpl_destroy_thread	src/com/tdpool.c	/^void *tdpl_destroy_thread(void *arg){$/;"	f	language:C
 tdpl_io	inc/core/http-server.h	/^    tdpl tdpl_io;  \/\/ IO线程池$/;"	m	language:C++	struct:hs_handle
 tdpl_master_thread	src/com/tdpool.c	/^void *tdpl_master_thread(void *arg){$/;"	f	language:C
 tdpl_mastertd_cleanup	src/com/tdpool.c	/^void tdpl_mastertd_cleanup(void *arg){$/;"	f	language:C
-tdpl_req_node	inc/com/tdpool.h	/^struct tdpl_req_node{$/;"	s	language:C++
 tdpl_s	inc/com/tdpool.h	/^typedef struct tdpl_s{$/;"	s	language:C++
-tdpl_td_i	inc/com/tdpool.h	/^struct tdpl_td_i{$/;"	s	language:C++
+tdpl_td_handle	inc/com/tdpool.h	/^struct tdpl_td_handle{$/;"	s	language:C++
 tdpl_wktd_cleanup	src/com/tdpool.c	/^void tdpl_wktd_cleanup(void *arg){$/;"	f	language:C
 tdpl_worker	inc/core/http-server.h	/^    tdpl tdpl_worker;  \/\/ 工作线程池$/;"	m	language:C++	struct:hs_handle
 tdpl_worker_thread	src/com/tdpool.c	/^void *tdpl_worker_thread(void *arg){$/;"	f	language:C
 thread_num	inc/com/tdpool.h	/^    int thread_num;  \/\/线程池拥有的线程数$/;"	m	language:C++	struct:tdpl_s
-tid	inc/com/tdpool.h	/^    unsigned long tid; \/\/线程id$/;"	m	language:C++	struct:tdpl_td_i
+tid	inc/com/tdpool.h	/^    unsigned long tid; \/\/线程id$/;"	m	language:C++	struct:tdpl_td_handle
 true	lib/cJSON/cJSON.c	46;"	d	language:C	file:
 true	src/com/cJSON.c	46;"	d	language:C	file:
-tti_array	inc/com/tdpool.h	/^    struct tdpl_td_i *tti_array; \/\/线程信息结构体数组$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_td_i
 type	inc/com/cJSON.h	/^    int type;$/;"	m	language:C++	struct:cJSON
 type	lib/cJSON/cJSON.h	/^    int type;$/;"	m	language:C++	struct:cJSON
 u8	inc/com/ipc-uds.h	/^    unsigned char u8[sizeof(struct uds_umsg_h)];$/;"	m	language:C++	union:__anon1
@@ -711,5 +643,4 @@ valuestring	inc/com/cJSON.h	/^    char *valuestring;$/;"	m	language:C++	struct:c
 valuestring	lib/cJSON/cJSON.h	/^    char *valuestring;$/;"	m	language:C++	struct:cJSON
 worker_thread_num	inc/core/http-server.h	/^    int worker_thread_num;  \/\/ 工作线程$/;"	m	language:C++	struct:hs_bootstrap
 write_index	inc/core/http-server.h	/^    int write_index;  \/\/ 写索引，io线程拷贝用$/;"	m	language:C++	struct:hs_channel
-write_mutex	inc/com/middleware.h	/^    sem_t write_mutex;  \/\/ 写者锁$/;"	m	language:C++	struct:mw_chain
 write_size	inc/core/http-server.h	/^    int write_size;  \/\/ 表示要写的字节数$/;"	m	language:C++	struct:hs_channel
