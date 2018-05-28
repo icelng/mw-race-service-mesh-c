@@ -3,6 +3,7 @@
 #include "semaphore.h"
 
 #define MAX_EPOLL_EVENTS 16
+#define MAX_IO_THREAD_NUM 64
 
 #define HTTP_SERVER_RESPONSE_OK "HTTP/1.1 200 OK\r\n"
 #define HTTP_SERVER_CONTENT_TYPE "Content-Type:text/html;charset=UTF-8\r\n"
@@ -20,7 +21,8 @@ struct hs_handle{
     int max_connection;
     int buffer_size;
     int sockfd;
-    int epoll_fd;  // epoll码，描述符
+    int epoll_fd[MAX_IO_THREAD_NUM];  // epoll描述符数组，描述符
+    int io_thread_num;
     void (*content_handler)(struct hs_channel *p_channel, int cotent_size, char *content);  // 对content的处理函数
 };
 
@@ -29,6 +31,7 @@ struct hs_handle{
 struct hs_channel{
     struct hs_handle *p_hs_handle;  // 所属的http-server-handle
     int socket;  // 套接字
+    int epoll_fd;  // 所属epoll_fd
 
     int is_processing;  // 表明是否在处理
     sem_t processing_mutex;  // 处理状态锁，同一个时间只能由一条线程处理

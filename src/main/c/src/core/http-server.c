@@ -27,11 +27,13 @@ int hs_close_channel(struct hs_channel *p_channel);
  */
 struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     struct hs_handle *p_new_hs_handle = NULL;
+    int i;
 
     p_new_hs_handle = malloc(sizeof(struct hs_handle));
     if (p_new_hs_handle == NULL) {
         goto err1_ret;
     }
+    p_new_hs_handle->io_thread_num = hs_bt->io_thread_num;
     p_new_hs_handle->max_connection = hs_bt->max_connection;
     p_new_hs_handle->buffer_size = hs_bt->buffer_size;
     p_new_hs_handle->content_handler = hs_bt->content_handler;
@@ -85,16 +87,20 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     /*创建epoll*/
     log_info("Creating epoll.");
-    if((p_new_hs_handle->epoll_fd = epoll_create(1)) == -1){
-        log_err("启动http-server时，创建epoll失败:%s",strerror(errno));
-        goto err2_ret;
+    for (i = 0;i < hs_bt->io_thread_num;i++){
+        if((p_new_hs_handle->epoll_fd[i] = epoll_create(1)) == -1){
+            log_err("启动http-server时，创建epoll失败:%s",strerror(errno));
+            goto err2_ret;
+        }
     }
 
     /*启动io线程*/
     log_info("Starting io thread.");
-    if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, p_new_hs_handle) < 0) {
-        log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
-        goto err2_ret;
+    for(i = 0;i < hs_bt->io_thread_num;i++) {
+        if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle->epoll_fd[i]) < 0) {
+            log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
+            goto err2_ret;
+        }
     }
 
     /*启动accept线程*/
@@ -119,6 +125,8 @@ err1_ret:
  * 返回值: 
  */
 int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
+    static unsigned long epoll_i = 0;
+
     log_debug("New connection");
     int ret_value;
 
@@ -130,6 +138,7 @@ int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
         goto err1_ret;
     }
     /*初始化channel*/
+    p_channel->epoll_fd = p_hs_handle->epoll_fd[(epoll_i++) % p_hs_handle->io_thread_num];
     p_channel->p_hs_handle = p_hs_handle;
     p_channel->socket = client_sockfd;
     p_channel->decode_index = 0;
@@ -154,7 +163,7 @@ int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
     struct epoll_event event;
     event.data.ptr = p_channel;  
     event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
-    if(epoll_ctl(p_hs_handle->epoll_fd,
+    if(epoll_ctl(p_channel->epoll_fd,
                 EPOLL_CTL_ADD,
                 client_sockfd,
                 &event) == -1){  //把客户端的socket加入epoll
@@ -216,10 +225,9 @@ void hs_accept_thread(void *arg){
 void hs_io_thread(void *arg){
     log_info("Start io thread successfully!");
 
-    struct hs_handle *p_hs_handle = (struct hs_handle*)arg;
     struct epoll_event events[MAX_EPOLL_EVENTS];
     struct hs_channel *p_channel;
-    int epoll_fd = p_hs_handle->epoll_fd;
+    int epoll_fd = *(int* )arg;
     int ready_num, i;
 
     while(1) {
@@ -243,7 +251,7 @@ void hs_io_thread(void *arg){
                 /*远端关闭事件,暂不多作处理，仅仅移出epoll*/
                 log_err("EPOLLRDHUP occured!");
                 p_channel = events[i].data.ptr;
-                epoll_ctl(p_channel->p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+                epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
                 continue;
             }
 
@@ -272,11 +280,10 @@ void hs_io_thread(void *arg){
  */
 int hs_io_do_write(struct hs_channel *p_channel){
     int hava_write_size;
-    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
 
     if (p_channel->write_index == p_channel->write_size) {
         /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
-        epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+        epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
         close(p_channel->socket);
         hs_close_channel(p_channel);
         return 1;
@@ -317,7 +324,7 @@ int hs_io_do_read(struct hs_channel *p_channel){
     if (p_channel->read_index >= p_channel->buffer_size) {
         log_err("Will no enought space to read bytes!!");
         /*从epoll中移除,将不再读取数据*/
-        epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+        epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
     }
     /*调用channel进行处理*/
     hs_call_channel(p_channel);
@@ -456,7 +463,7 @@ void hs_decoder(void *arg){
     struct epoll_event event;
     event.data.ptr = p_channel;  
     event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
-    if(epoll_ctl(p_hs_handle->epoll_fd,
+    if(epoll_ctl(p_channel->epoll_fd,
                 EPOLL_CTL_ADD,
                 p_channel->socket,
                 &event) == -1){  //把客户端的socket加入epoll
@@ -476,7 +483,6 @@ void hs_decoder(void *arg){
  * 返回值: 
  */
 int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_size){
-    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
     int write_index = 0;
     char head[32];  // 32字节的栈空间，不过分吧
     int head_length;
@@ -511,7 +517,7 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     /*往epoll添加可写事件监听*/
     event.data.ptr = p_channel;
     event.events = EPOLLOUT;  // 设置可写事件,水平触发模式
-    if (epoll_ctl(p_hs_handle->epoll_fd,
+    if (epoll_ctl(p_channel->epoll_fd,
                 EPOLL_CTL_ADD,
                 p_channel->socket,
                 &event) == -1) {
@@ -564,7 +570,7 @@ int hs_call_channel(struct hs_channel *p_channel){
         log_err("Failed to start worker thread for channel:%s", strerror(errno));
         return -1;
     }
-    epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
 
     return 1;
 }
