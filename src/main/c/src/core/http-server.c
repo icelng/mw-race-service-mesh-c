@@ -60,17 +60,10 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
         goto err2_ret;
     }
 
-    log_info("Creating accept thread poll");
-    p_new_hs_handle->tdpl_close = tdpl_create(3, 51200);  // 1个负责accept 1个负责new connection，51200个等待
-    if (p_new_hs_handle->tdpl_close == NULL) {
-        log_err("启动http-server时，线程池accept创建失败!%s", strerror(errno));
-        goto err2_ret;
-    }
-
     log_info("Creating channel memory pool.");
     struct mmpl_opt mmpl_opt;
     mmpl_opt.boundary = MMPL_BOUNDARY_1K;  // 1K对齐
-    mmpl_opt.max_free_index = 5120;  // 最大空闲
+    mmpl_opt.max_free_index = 51200;  // 最大空闲
     p_new_hs_handle->mmpl = mmpl_create(&mmpl_opt);
     if (p_new_hs_handle->mmpl == NULL) {
         log_err("启动http-server时，创建内存池失败!%s", strerror(errno));
