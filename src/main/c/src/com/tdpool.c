@@ -92,6 +92,7 @@ void tdpl_mastertd_cleanup(void *arg){
  * 返回值:
  */
 void *tdpl_worker_thread(void *arg){
+    struct tdpl_call_node *p_call_node;
     struct tdpl_td_handle *p_td_handle; // 线程handle
     struct tdpl_s *pts;  //指向线程所属线程池的结构体
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL); //设置线程可被取消
@@ -110,14 +111,24 @@ void *tdpl_worker_thread(void *arg){
          * 上取消线程。*/
         pthread_testcancel(); 
         p_td_handle->arg = NULL;
-        /*向可用线程队列入队，自旋锁*/
-        while(sem_trywait(&pts->avali_queue_write_mutex) < 0);
-        pts->avali_queue[(pts->avali_queue_tail++) % pts->avali_queue_period] = p_td_handle;
-        sem_post(&pts->avali_queue_write_mutex);
-        sem_post(&pts->avali_td_n);  //可利用线程数+1
+        /*查请求队列，看是否有调用请求，如果有，则继续运行*/
+        if (sem_trywait(&pts->call_wait_n) == 0) {
+            /*调用请求队列出队,自旋锁*/
+            while (sem_trywait(&pts->call_queue_read_mutex) < 0);
+            p_call_node = &pts->call_queue[(++pts->call_queue_head) % pts->call_queue_period];
+            sem_post(&pts->call_queue_read_mutex);
+            p_td_handle->call_func = p_call_node->call_func;
+            p_td_handle->arg = p_call_node->arg;
+            sem_post(&p_td_handle->run); //告知worker线程开始调用函数
+        } else {
+            /*向可用线程队列入队，自旋锁*/
+            while(sem_trywait(&pts->avali_queue_write_mutex) < 0);
+            pts->avali_queue[(pts->avali_queue_tail++) % pts->avali_queue_period] = p_td_handle;
+            sem_post(&pts->avali_queue_write_mutex);
+            sem_post(&pts->avali_td_n);  //可利用线程数+1
+        }
     }
     pthread_cleanup_pop(0);
-    
 }
 
 /* 函数名: void *tdpl_master_thread(void *arg)
@@ -135,14 +146,16 @@ void *tdpl_master_thread(void *arg){
     while(1){
         sem_wait(&pts->avali_td_n); // 等待至有可用线程
         sem_wait(&pts->call_wait_n);  // 等待有函数调用请求
-        pthread_testcancel();  //设置线程取消点，销毁线程时，该线程会在这被取消
+        pthread_testcancel();  // 设置线程取消点，销毁线程时，该线程会在这被取消
         /*从可用线程队列中取出一个线程handle*/
         p_td_handle = pts->avali_queue[(++pts->avali_queue_head) % pts->avali_queue_period];
-        /*从请求队列中取出一个请求*/
+        /*从请求队列中取出一个请求,读者锁为自旋锁*/
+        while(sem_trywait(&pts->call_queue_read_mutex) < 0);
         p_call_node = &pts->call_queue[(++pts->call_queue_head) % pts->call_queue_period];
+        sem_post(&pts->call_queue_read_mutex);
         p_td_handle->call_func = p_call_node->call_func;
         p_td_handle->arg = p_call_node->arg;
-        sem_post(&p_td_handle->run); //告知worker线程开始调用函数
+        sem_post(&p_td_handle->run); // 告知worker线程开始调用函数
     }
     pthread_cleanup_pop(0);
 }
@@ -181,6 +194,7 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     sem_init(&p_new_tdpl_s->call_wait_n, 0, 0);
     sem_init(&p_new_tdpl_s->call_queue_write_mutex, 0, 1);
     sem_init(&p_new_tdpl_s->avali_queue_write_mutex, 0, 1);
+    sem_init(&p_new_tdpl_s->call_queue_read_mutex, 0, 1);
 
     /*初始化队列*/
     p_new_tdpl_s->avali_queue_period = thread_num + 1;

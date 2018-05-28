@@ -33,6 +33,7 @@ typedef struct tdpl_s{
     //用信号量表示当前调用请求等待数, 因为该队列只有master线程读，所以不用加读锁
     sem_t call_wait_n;   
     sem_t call_queue_write_mutex;  // 调用队列写着锁
+    sem_t call_queue_read_mutex;  /// 调用队列读者锁
 }*tdpl;
 
 /*线程handle*/
