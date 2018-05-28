@@ -203,7 +203,9 @@ void* mmpl_getmem(struct mm_pool_s *mmpl,unsigned int size){
     if(index > MMPL_MAX_INDEX){  //如果超过MMPL_MAX_INDEX则向操作系统要
         index = 0;
     }
-    sem_wait(&mmpl->mutex);  //互斥操作内存池
+
+    while (sem_trywait(&mmpl->mutex) < 0);  // 使用自旋锁
+    //sem_wait(&mmpl->mutex);  //互斥操作内存池
     if(((p_mm_n = mmpl->free[index]) == NULL) || index == 0){  
         /*如果free数组中没有相应的内存节点，则向操作系统申请*/
         p_mm_n = (struct mm_node *)malloc(align_size + sizeof(struct mm_node));
@@ -229,6 +231,7 @@ void* mmpl_getmem(struct mm_pool_s *mmpl,unsigned int size){
     mmpl->get_cnt += 1;  // 申请次数加一
     mmpl->latest_get_cnt[index] = mmpl->get_cnt;  // 记录最近访问统计
     sem_post(&mmpl->mutex);
+
     return (void *)p_mm_n + sizeof(struct mm_node);
 }
 

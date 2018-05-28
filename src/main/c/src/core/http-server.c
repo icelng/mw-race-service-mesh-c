@@ -38,7 +38,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     /*创建线程池内存池*/
     log_info("Creating worker thread pool.");
-    p_new_hs_handle->tdpl_worker = tdpl_create(hs_bt->worker_thread_num, 512);  // n个线程，51200个等待
+    p_new_hs_handle->tdpl_worker = tdpl_create(hs_bt->worker_thread_num, 51200);  // n个线程，51200个等待
     if (p_new_hs_handle->tdpl_worker == NULL) {
         log_err("启动http-server时，worker线程池创建失败!%s", strerror(errno));
         goto err2_ret;
@@ -52,9 +52,16 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     }
 
     log_info("Creating close thread pool.");
-    p_new_hs_handle->tdpl_close = tdpl_create(8, 512);  // 8个线程负责关闭，51200个等待
+    p_new_hs_handle->tdpl_close = tdpl_create(8, 51200);  // 8个线程负责关闭，51200个等待
     if (p_new_hs_handle->tdpl_close == NULL) {
         log_err("启动http-server时，线程池close创建失败!%s", strerror(errno));
+        goto err2_ret;
+    }
+
+    log_info("Creating accept thread poll");
+    p_new_hs_handle->tdpl_close = tdpl_create(3, 51200);  // 1个负责accept 1个负责new connection，51200个等待
+    if (p_new_hs_handle->tdpl_close == NULL) {
+        log_err("启动http-server时，线程池accept创建失败!%s", strerror(errno));
         goto err2_ret;
     }
 
@@ -112,7 +119,7 @@ err1_ret:
  * 返回值: 
  */
 int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
-    log_debug("New connectiong");
+    log_debug("New connection");
     int ret_value;
 
     /*创建decode_handle*/
