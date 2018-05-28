@@ -63,7 +63,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
 
     log_info("Creating channel memory pool.");
     struct mmpl_opt mmpl_opt;
-    mmpl_opt.boundary = MMPL_BOUNDARY_1K;  // 1K对齐
+    mmpl_opt.boundary = MMPL_BOUNDARY_2K;  // 2K对齐
     mmpl_opt.max_free_index = 51200;  // 最大空闲
     p_new_hs_handle->mmpl = mmpl_create(&mmpl_opt);
     if (p_new_hs_handle->mmpl == NULL) {
@@ -279,8 +279,8 @@ int hs_io_do_write(struct hs_channel *p_channel){
         /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
         epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
         close(p_channel->socket);
-        //hs_close_channel(p_channel);
-        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        hs_close_channel(p_channel);
+        //mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
         return 1;
     }
 
