@@ -163,7 +163,7 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     int i;
 
     /*创建线程池结构体*/
-    p_new_tdpl_s = (struct tdpl_s *)malloc(sizeof(struct tdpl_s));
+    p_new_tdpl_s = malloc(sizeof(struct tdpl_s));
     if(p_new_tdpl_s == NULL){
         goto err1_ret;
     }
@@ -184,7 +184,7 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
 
     /*初始化队列*/
     p_new_tdpl_s->avali_queue_period = thread_num + 1;
-    p_new_tdpl_s->avali_queue = malloc((thread_num + 1) * sizeof(void *));
+    p_new_tdpl_s->avali_queue = malloc((thread_num + 1) * sizeof(struct tdpl_td_handle*));
     p_new_tdpl_s->avali_queue_head = 0;
     p_new_tdpl_s->avali_queue_tail = 1;
     p_new_tdpl_s->call_queue_period = max_wait_n + 1;
