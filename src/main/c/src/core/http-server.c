@@ -435,6 +435,7 @@ void hs_decoder(void *arg){
             p_channel->decode_index = p_channel->processing_index_now;
             if (p_channel->processing_index_now - p_channel->body_start + 1 == p_channel->body_size) {
                 /*表明body接受完毕*/
+                epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
                 p_channel->is_body = 0;
                 /*调用content处理函数*/
                 if (p_hs_handle->content_handler != NULL) {
@@ -444,31 +445,26 @@ void hs_decoder(void *arg){
                     log_warning("The content handler is not setted!");
                 }
                 /*直接返回，不然下来的代码会添加套接字到epoll*/
-                return;
+                //return;
             }
         }
     }
 
-    if (p_channel->read_index >= p_channel->buffer_size) {
-        /*如果buffer满了，直接退出*/
-        return;
-    }
-
-    /*向epoll注册读事件，表示要继续读取数据*/
-    struct epoll_event event;
-    event.data.ptr = p_channel;  
-    event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
-    if(epoll_ctl(p_channel->epoll_fd,
-                EPOLL_CTL_ADD,
-                p_channel->socket,
-                &event) == -1){  //把客户端的socket加入epoll
-        log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
-    }
+    ///*向epoll注册读事件，表示要继续读取数据*/
+    //struct epoll_event event;
+    //event.data.ptr = p_channel;  
+    //event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
+    //if(epoll_ctl(p_channel->epoll_fd,
+    //            EPOLL_CTL_ADD,
+    //            p_channel->socket,
+    //            &event) == -1){  //把客户端的socket加入epoll
+    //    log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
+    //}
 
     /* 到此，将会结束一次chennel的调用，然后尝试重新调用channel */
     /* 查看将要处理的processing_index是否大于正在处理的processing_index_now
      * 如果大于，直接在当前发起处理请求，把处理请求发送到Worker线程池队列*/
-    //hs_attempt_recall_channel(p_channel);
+    hs_attempt_recall_channel(p_channel);
 }
 
 /* 函数名: int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_size) 
@@ -533,7 +529,7 @@ int hs_attempt_recall_channel(struct hs_channel *p_channel){
 
     /* 跟IO线程抢锁(其会调用hs_attempt_call_channel)，IO线程可能会为此阻塞，如果
      * 测试性能不好，会优化*/
-    sem_wait(&p_channel->processing_mutex);
+    while(sem_wait(&p_channel->processing_mutex) < 0);
     if (p_channel->processing_index > p_channel->processing_index_now) {
         p_channel->processing_index_now = p_channel->processing_index;
         if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
@@ -559,13 +555,18 @@ int hs_attempt_recall_channel(struct hs_channel *p_channel){
 int hs_call_channel(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
 
+    while(sem_wait(&p_channel->processing_mutex) < 0);
     p_channel->processing_index = p_channel->read_index - 1;
     p_channel->processing_index_now = p_channel->processing_index;
-    if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
-        log_err("Failed to start worker thread for channel:%s", strerror(errno));
-        return -1;
+    if (p_channel->is_processing != 1) {
+        p_channel->is_processing = 1;
+        if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
+            log_err("Failed to start worker thread for channel:%s", strerror(errno));
+            sem_post(&p_channel->processing_mutex);
+            return -1;
+        }
     }
-    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+    sem_post(&p_channel->processing_mutex);
 
     return 1;
 }
