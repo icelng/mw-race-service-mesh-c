@@ -47,7 +47,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     }
 
     log_info("Creating io thread pool.");
-    p_new_hs_handle->tdpl_io = tdpl_create(hs_bt->io_thread_num + 3, 128);  // 3个IO线程，128个等待
+    p_new_hs_handle->tdpl_io = tdpl_create(hs_bt->io_thread_num + 1, 128);  // 多加一个accept线程，128个等待
     if (p_new_hs_handle->tdpl_io == NULL) {
         log_err("启动http-server时，IO线程池创建失败!%s", strerror(errno));
         goto err2_ret;
@@ -285,7 +285,8 @@ int hs_io_do_write(struct hs_channel *p_channel){
         /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
         epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
         close(p_channel->socket);
-        hs_close_channel(p_channel);
+        //hs_close_channel(p_channel);
+        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
         return 1;
     }
 
