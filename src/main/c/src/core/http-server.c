@@ -7,6 +7,7 @@
 #include "sys/epoll.h"
 #include "unistd.h"
 #include "netinet/in.h"
+#include "netinet/tcp.h"
 #include "errno.h"
 #include "ctype.h"
 
@@ -591,6 +592,13 @@ int hs_bind(int port){
                 &no, 
                 sizeof(no)) < 0){
         return -2;
+    }
+    if(setsockopt(server_sockfd, 
+                IPPROTO_TCP, 
+                TCP_NODELAY, 
+                &no, 
+                sizeof(no)) < 0){
+        return -3;
     }
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
     server_addr.sin_family = AF_INET;
