@@ -270,9 +270,8 @@ int hs_io_do_write(struct hs_channel *p_channel){
     if (p_channel->write_index == p_channel->write_size) {
         /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
         epoll_ctl(p_hs_handle->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
-        //hs_close_channel(p_channel);
         close(p_channel->socket);
-        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        hs_close_channel(p_channel);
         return 1;
     }
 
@@ -326,7 +325,6 @@ int hs_io_do_read(struct hs_channel *p_channel){
  */
 void hs_close_channel_thread(void *arg){
     struct hs_channel *p_channel = arg;
-    close(p_channel->socket);
     mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
 }
 
