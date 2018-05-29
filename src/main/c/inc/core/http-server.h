@@ -4,6 +4,7 @@
 
 #define MAX_EPOLL_EVENTS 16
 #define MAX_IO_THREAD_NUM 64
+#define MAX_EPOLL_EVENT_LOOP_NUM 64
 
 #define HTTP_SERVER_RESPONSE_OK "HTTP/1.1 200 OK\r\n"
 #define HTTP_SERVER_CONTENT_TYPE "Content-Type:text/html;charset=UTF-8\r\n"
@@ -21,8 +22,8 @@ struct hs_handle{
     int max_connection;
     int buffer_size;
     int sockfd;
-    int epoll_fd[MAX_IO_THREAD_NUM];  // epoll描述符数组，描述符
-    int io_thread_num;
+    int epoll_fd[MAX_EPOLL_EVENT_LOOP_NUM];  // epoll描述符数组，描述符
+    int event_loop_num;
     void (*content_handler)(struct hs_channel *p_channel, int cotent_size, char *content);  // 对content的处理函数
 };
 
@@ -40,6 +41,7 @@ struct hs_channel{
     int is_line;  // 请求行
     int is_head;  // 表明是否正在解码头部
     int is_body;  // 是否是content
+    int is_read_done;  // 是否完成了读操作
     int is_key;  // 解析头时，是否为key
     int is_content_length;
     int key_start;
@@ -61,7 +63,8 @@ struct hs_channel{
 
 struct hs_bootstrap{
     int server_port;  // 服务器端口
-    int io_thread_num;  // io处理线程, 暂时不支持配置
+    int io_thread_num;  // io处理线程
+    int event_loop_num;  // epoll事件循环线程数
     int worker_thread_num;  // 工作线程
     int max_connection;  // 最大连接数
     int buffer_size;

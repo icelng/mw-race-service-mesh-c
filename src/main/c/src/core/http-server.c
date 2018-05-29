@@ -13,13 +13,14 @@
 
 void hs_accept_thread(void *arg);
 int hs_bind(int port);
-void hs_io_thread(void *arg);
+void hs_event_loop(void *arg);
 int hs_call_channel(struct hs_channel *p_hs_channel);
 int hs_attempt_recall_channel(struct hs_channel *p_channel);
 int hs_io_do_read(struct hs_channel *p_channel);
 void hs_tolower(char *str);
 int hs_io_do_write(struct hs_channel *p_channel);
 int hs_close_channel(struct hs_channel *p_channel);
+void hs_decoder(struct hs_channel *p_channel);
 
 /* 函数名: struct hs_handle* hs_start(struct hs_bootstrap *hs_bt) 
  * 功能: 启动http服务器
@@ -34,12 +35,12 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     if (p_new_hs_handle == NULL) {
         goto err1_ret;
     }
-    p_new_hs_handle->io_thread_num = hs_bt->io_thread_num;
+    p_new_hs_handle->event_loop_num = hs_bt->event_loop_num;
     p_new_hs_handle->max_connection = hs_bt->max_connection;
     p_new_hs_handle->buffer_size = hs_bt->buffer_size;
     p_new_hs_handle->content_handler = hs_bt->content_handler;
 
-    /*创建线程池内存池*/
+    /*创建worker线程池*/
     log_info("Creating worker thread pool.");
     p_new_hs_handle->tdpl_worker = tdpl_create(hs_bt->worker_thread_num, 51200);  // n个线程，51200个等待
     if (p_new_hs_handle->tdpl_worker == NULL) {
@@ -47,8 +48,9 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
         goto err2_ret;
     }
 
+    /*创建io线程池，epoll事件循环线程也使用io线程池里的线程*/
     log_info("Creating io thread pool.");
-    p_new_hs_handle->tdpl_io = tdpl_create(hs_bt->io_thread_num + 1, 128);  // 多加一个accept线程，128个等待
+    p_new_hs_handle->tdpl_io = tdpl_create(hs_bt->io_thread_num + hs_bt->event_loop_num + 1, 51200);  // 多加一个accept线程
     if (p_new_hs_handle->tdpl_io == NULL) {
         log_err("启动http-server时，IO线程池创建失败!%s", strerror(errno));
         goto err2_ret;
@@ -57,7 +59,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     log_info("Creating close thread pool.");
     p_new_hs_handle->tdpl_close = tdpl_create(8, 51200);  // 8个线程负责关闭，51200个等待
     if (p_new_hs_handle->tdpl_close == NULL) {
-        log_err("启动http-server时，线程池close创建失败!%s", strerror(errno));
+        log_err("启动http-server时，close线程池创建失败!%s", strerror(errno));
         goto err2_ret;
     }
 
@@ -67,7 +69,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
     mmpl_opt.max_free_index = 51200;  // 最大空闲
     p_new_hs_handle->mmpl = mmpl_create(&mmpl_opt);
     if (p_new_hs_handle->mmpl == NULL) {
-        log_err("启动http-server时，创建内存池失败!%s", strerror(errno));
+        log_err("启动http-server时，channel内存池创建失败!%s", strerror(errno));
         goto err2_ret;
     }
 
@@ -79,20 +81,20 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
         goto err2_ret;
     }
 
-    /*创建epoll*/
+    /*创建epoll,epoll数量与event_loop_num对应*/
     log_info("Creating epoll.");
-    for (i = 0;i < hs_bt->io_thread_num;i++){
+    for (i = 0;i < hs_bt->event_loop_num;i++){
         if((p_new_hs_handle->epoll_fd[i] = epoll_create(1)) == -1){
             log_err("启动http-server时，创建epoll失败:%s",strerror(errno));
             goto err2_ret;
         }
     }
 
-    /*启动io线程*/
-    log_info("Starting io thread.");
-    for(i = 0;i < hs_bt->io_thread_num;i++) {
-        if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_io_thread, &p_new_hs_handle->epoll_fd[i]) < 0) {
-            log_err("启动http-server时，启动io-read线程失败:%s", strerror(errno));
+    /*启动event_loop线程*/
+    log_info("Starting event lopp thread.");
+    for(i = 0;i < hs_bt->event_loop_num;i++) {
+        if (tdpl_call_func(p_new_hs_handle->tdpl_io, hs_event_loop, &p_new_hs_handle->epoll_fd[i]) < 0) {
+            log_err("启动http-server时，启动event_loop线程失败:%s", strerror(errno));
             goto err2_ret;
         }
     }
@@ -131,14 +133,16 @@ int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
         ret_value = -1;
         goto err1_ret;
     }
+
     /*初始化channel*/
-    p_channel->epoll_fd = p_hs_handle->epoll_fd[(epoll_i++) % p_hs_handle->io_thread_num];
+    p_channel->epoll_fd = p_hs_handle->epoll_fd[(epoll_i++) % p_hs_handle->event_loop_num];
     p_channel->p_hs_handle = p_hs_handle;
     p_channel->socket = client_sockfd;
     p_channel->decode_index = 0;
     p_channel->is_line = 1;
     p_channel->is_head = 1;
     p_channel->is_body = 1;
+    p_channel->is_read_done = 0;
     p_channel->is_key = 1;
     p_channel->is_content_length = 0;
     p_channel->body_size = 0;
@@ -216,7 +220,7 @@ void hs_accept_thread(void *arg){
  * 参数: void *arg, hs_handle指针的指针
  * 返回值: 
  */
-void hs_io_thread(void *arg){
+void hs_event_loop(void *arg){
     log_info("Start io thread successfully!");
 
     struct epoll_event events[MAX_EPOLL_EVENTS];
@@ -260,8 +264,46 @@ void hs_io_thread(void *arg){
                 //log_err("EPOLLOUT occured!");
                 p_channel = events[i].data.ptr;
                 hs_io_do_write(p_channel);
-
             }
+        }
+    }
+}
+
+/* 函数名: void hs_io_write(void *arg) 
+ * 功能: 进行io写操作，由io线程池的线程调用
+ * 参数: void *arg,
+ * 返回值: 
+ */
+void hs_io_write(void *arg){
+    struct hs_channel *p_channel = arg;
+    struct epoll_event event;
+    int hava_write_size;
+
+    if ((hava_write_size = send(p_channel->socket,
+                    p_channel->buffer + p_channel->write_index,
+                    p_channel->write_size - p_channel->write_index,
+                    MSG_DONTWAIT)) == -1) {
+        log_err("Some error occured when write data to socket!%s", strerror(errno));
+        close(p_channel->socket);
+        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        return;
+    }
+    p_channel->write_index += hava_write_size;
+
+    if (p_channel->write_index == p_channel->write_size) {
+        /*写完毕,关闭链接，释放channel*/
+        close(p_channel->socket);
+        //hs_close_channel(p_channel);
+        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+    } else {
+        /*继续监听写事件*/
+        event.data.ptr = p_channel;
+        event.events = EPOLLOUT;  // 设置可写事件,水平触发模式
+        if (epoll_ctl(p_channel->epoll_fd,
+                    EPOLL_CTL_ADD,
+                    p_channel->socket,
+                    &event) == -1) {
+            log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
         }
     }
 }
@@ -273,35 +315,28 @@ void hs_io_thread(void *arg){
  * 返回值: 
  */
 int hs_io_do_write(struct hs_channel *p_channel){
-    int hava_write_size;
+    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
+    
 
-    if (p_channel->write_index == p_channel->write_size) {
-        /*写完毕,把套接字移出epoll,关闭链接，释放channel*/
-        epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
-        close(p_channel->socket);
-        hs_close_channel(p_channel);
-        //mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
-        return 1;
-    }
-
-    if ((hava_write_size = send(p_channel->socket,
-                    p_channel->buffer + p_channel->write_index,
-                    p_channel->write_size - p_channel->write_index,
-                    MSG_DONTWAIT)) == -1) {
-        log_err("Some error occured when write data to socket!%s", strerror(errno));
+    /*使用io线程池里的线程来进行写操作*/
+    if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
+        log_err("Failed to start worker thread for hs_io_write:%s", strerror(errno));
         return -1;
     }
-    p_channel->write_index += hava_write_size;
+
+    /*channel对应的io线程在进行写操作的时候，不监听写事件*/
+    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
     
     return 1;
 }
 
-/* 函数名: int hs_io_do_read(struct hs_channel *p_channel) 
- * 功能: 把tcp缓存的数据读取到channel里,并且使用一个Worker线程调用channel
- * 参数: struct hs_channel *p_channel,
+/* 函数名: void hs_io_read(void *arg) 
+ * 功能: 进行读操作
+ * 参数: void *arg, 为channel的指针
  * 返回值: 
  */
-int hs_io_do_read(struct hs_channel *p_channel){
+void hs_io_read(void *arg){
+    struct hs_channel *p_channel = arg;
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
     int read_size;
 
@@ -313,18 +348,51 @@ int hs_io_do_read(struct hs_channel *p_channel){
     if (read_size <= 0) {
         /*暂时不处理*/
         log_err("Some error occured when reading data from socket!%s", strerror(errno));
-        return -1;
+        return;
     }
     p_channel->read_index += read_size;
     if (p_channel->read_index >= p_channel->buffer_size) {
         log_err("Will no enought space to read bytes!!");
-        /*从epoll中移除,将不再读取数据*/
-        epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+        p_channel->is_read_done = 1;
     }
-    /*调用channel进行处理*/
-    hs_call_channel(p_channel);
-    
-    return read_size;
+
+    /*开始调用decoder*/
+    p_channel->processing_index = p_channel->read_index - 1;
+    p_channel->processing_index_now = p_channel->processing_index;
+    hs_decoder(p_channel);  // 调用decoder
+
+    /*进行解码之后，如果还有需要读的数据，则向epoll注册读事件，表示要继续读取数据*/
+    if (p_channel->is_read_done != 1) {
+        struct epoll_event event;
+        event.data.ptr = p_channel;  
+        event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
+        if(epoll_ctl(p_channel->epoll_fd,
+                    EPOLL_CTL_ADD,
+                    p_channel->socket,
+                    &event) == -1){  //把客户端的socket加入epoll
+            log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
+        }
+    }
+}
+
+/* 函数名: int hs_io_do_read(struct hs_channel *p_channel) 
+ * 功能: 把tcp缓存的数据读取到channel里,并且使用一个Worker线程调用channel
+ * 参数: struct hs_channel *p_channel,
+ * 返回值: 
+ */
+int hs_io_do_read(struct hs_channel *p_channel){
+    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
+
+    /*使用io线程池里的线程来进行读操作*/
+    if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_read, p_channel) < 0) {
+        log_err("Failed to start io thread for hs_io_read:%s", strerror(errno));
+        return -1;
+    }
+
+    /*chanell对应的io线程在进行读操作的时候，不监听读事件*/
+    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+
+    return 1;
 }
 
 /* 函数名: void hs_close_channel_thread(void *arg) 
@@ -353,14 +421,26 @@ int hs_close_channel(struct hs_channel *p_channel){
     return 1;
 }
 
+/* 函数名: void hs_content_handler_thread(void *arg) 
+ * 功能: 执行content_handler的线程
+ * 参数: void *arg, 对应hs_channel的指针
+ * 返回值: 
+ */
+void hs_content_handler_thread(void *arg){
+    struct hs_channel *p_channel = arg;
+    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
+
+    p_channel->buffer[p_channel->processing_index_now + 1] = 0;
+    p_hs_handle->content_handler(p_channel, p_channel->body_size, &p_channel->buffer[p_channel->body_start]);
+}
+
 
 /* 函数名: void hs_decoder(void *arg) 
  * 功能: 解码器(好长好臭)，channel责任链中第一个节点
  * 参数: void *arg, channel的指针
  * 返回值: 
  */
-void hs_decoder(void *arg){
-    struct hs_channel *p_channel = (struct hs_channel*)arg;
+void hs_decoder(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
     char *buffer = p_channel->buffer;
     char parse_char;
@@ -430,40 +510,29 @@ void hs_decoder(void *arg){
                 }
             }
         } else if (p_channel->is_body == 1) {
-            log_debug("Decode body!");
+            log_debug("Decoding body!");
             /*请求体处理，确保请求体接受完整，直接跳出循环*/
             p_channel->decode_index = p_channel->processing_index_now;
             if (p_channel->processing_index_now - p_channel->body_start + 1 == p_channel->body_size) {
                 /*表明body接受完毕*/
                 p_channel->is_body = 0;
-                /*调用content处理函数*/
-                if (p_hs_handle->content_handler != NULL) {
-                    buffer[p_channel->processing_index_now + 1] = 0;
-                    p_hs_handle->content_handler(p_channel, p_channel->body_size, &buffer[p_channel->body_start]);
-                } else {
-                    log_warning("The content handler is not setted!");
-                }
-                /*直接返回，不然下来的代码会添加套接字到epoll*/
-                return;
+                p_channel->is_read_done = 1;
             }
         }
     }
 
-    /*向epoll注册读事件，表示要继续读取数据*/
-    struct epoll_event event;
-    event.data.ptr = p_channel;  
-    event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
-    if(epoll_ctl(p_channel->epoll_fd,
-                EPOLL_CTL_ADD,
-                p_channel->socket,
-                &event) == -1){  //把客户端的socket加入epoll
-        log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
+    /*接受完毕之后，调用content_handler*/
+    if (p_channel->is_read_done == 1) {
+        /*调用使用woker线程池执行content处理函数*/
+        if (p_hs_handle->content_handler != NULL) {
+            if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_content_handler_thread, p_channel) < 0) {
+                log_err("Failed to start io thread for content handler:%s", strerror(errno));
+                return;
+            }
+        } else {
+            log_warning("The content handler is not setted!");
+        }
     }
-
-    /* 到此，将会结束一次chennel的调用，然后尝试重新调用channel */
-    /* 查看将要处理的processing_index是否大于正在处理的processing_index_now
-     * 如果大于，直接在当前发起处理请求，把处理请求发送到Worker线程池队列*/
-    //hs_attempt_recall_channel(p_channel);
 }
 
 /* 函数名: int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_size) 
@@ -515,54 +584,6 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
         return -2;
     }
     
-    return 1;
-}
-
-/* 函数名: int hs_attempt_recall_channel(struct hs_channel *p_channel) 
- * 功能: 尝试重新调用decoder
- * 参数: struct hs_channel *p_channel,
- * 返回值: 
- */
-int hs_attempt_recall_channel(struct hs_channel *p_channel){
-    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
-
-    /* 跟IO线程抢锁(其会调用hs_attempt_call_channel)，IO线程可能会为此阻塞，如果
-     * 测试性能不好，会优化*/
-    while(sem_wait(&p_channel->processing_mutex) < 0);
-    if (p_channel->processing_index > p_channel->processing_index_now) {
-        p_channel->processing_index_now = p_channel->processing_index;
-        if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
-            log_err("Failed to continue(restart) worker thread for channel:%s", strerror(errno));
-            sem_post(&p_channel->processing_mutex);
-            return -1;
-        }
-    } else {
-        p_channel->is_processing = 0;
-    }
-    sem_post(&p_channel->processing_mutex);
-    
-    return 1;
-}
-
-
-/* 函数名: int hs_attempt_call_channel(struct hs_handle *p_hs_handle, struct hs_channel *p_hs_channel) 
- * 功能: 尝试调用decoder，如果channel已经配有线程正在处理，则放弃再次启动
- * 参数: struct hs_handle *p_hs_handle,
-         struct hs_channel *p_hs_channel,
- * 返回值: 
- */
-int hs_call_channel(struct hs_channel *p_channel){
-    struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
-
-    p_channel->processing_index = p_channel->read_index - 1;
-    p_channel->processing_index_now = p_channel->processing_index;
-    if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_decoder, p_channel) < 0) {
-        log_err("Failed to start worker thread for channel:%s", strerror(errno));
-        sem_post(&p_channel->processing_mutex);
-        return -1;
-    }
-    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
-
     return 1;
 }
 
