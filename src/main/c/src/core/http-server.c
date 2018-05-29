@@ -600,7 +600,7 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
                 EPOLL_CTL_ADD,
                 p_channel->socket,
                 &event) == -1) {
-        log_err("Failed to add sockfd to epoll for EPOLLOUT:%s",strerror(errno));
+        log_err("Failed to add sockfd to epoll for EPOLLOUT when callinng response_ok:%s",strerror(errno));
         return -2;
     }
     

@@ -114,7 +114,8 @@ void *tdpl_worker_thread(void *arg){
         /*查请求队列，看是否有调用请求，如果有，则继续运行*/
         if (sem_trywait(&pts->call_wait_n) == 0) {
             /*调用请求队列出队,自旋锁*/
-            while (sem_trywait(&pts->call_queue_read_mutex) < 0);
+            //while (sem_trywait(&pts->call_queue_read_mutex) < 0);
+            sem_wait(&pts->call_queue_read_mutex);
             p_call_node = &pts->call_queue[(++pts->call_queue_head) % pts->call_queue_period];
             sem_post(&pts->call_queue_read_mutex);
             p_td_handle->call_func = p_call_node->call_func;
@@ -122,7 +123,8 @@ void *tdpl_worker_thread(void *arg){
             sem_post(&p_td_handle->run); //告知worker线程开始调用函数
         } else {
             /*向可用线程队列入队，自旋锁*/
-            while(sem_trywait(&pts->avali_queue_write_mutex) < 0);
+            //while(sem_trywait(&pts->avali_queue_write_mutex) < 0);
+            sem_wait(&pts->avali_queue_write_mutex);
             pts->avali_queue[(pts->avali_queue_tail++) % pts->avali_queue_period] = p_td_handle;
             sem_post(&pts->avali_queue_write_mutex);
             sem_post(&pts->avali_td_n);  //可利用线程数+1
