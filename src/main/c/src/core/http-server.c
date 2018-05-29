@@ -317,15 +317,14 @@ void hs_io_write(void *arg){
 int hs_io_do_write(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
     
+    /*channel对应的io线程在进行写操作的时候，不监听写事件*/
+    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
 
     /*使用io线程池里的线程来进行写操作*/
     if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
         log_err("Failed to start worker thread for hs_io_write:%s", strerror(errno));
         return -1;
     }
-
-    /*channel对应的io线程在进行写操作的时候，不监听写事件*/
-    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
     
     return 1;
 }
@@ -383,14 +382,14 @@ void hs_io_read(void *arg){
 int hs_io_do_read(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
 
+    /*chanell对应的io线程在进行读操作的时候，不监听读事件*/
+    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
+
     /*使用io线程池里的线程来进行读操作*/
     if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_read, p_channel) < 0) {
         log_err("Failed to start io thread for hs_io_read:%s", strerror(errno));
         return -1;
     }
-
-    /*chanell对应的io线程在进行读操作的时候，不监听读事件*/
-    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
 
     return 1;
 }
