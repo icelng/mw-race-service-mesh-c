@@ -279,6 +279,12 @@ void hs_io_write(void *arg){
     struct epoll_event event;
     int hava_write_size;
 
+    if (p_channel->write_index >= p_channel->write_size) {
+        /*写完毕,关闭链接，释放channel*/
+        close(p_channel->socket);
+        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+    }
+
     if ((hava_write_size = send(p_channel->socket,
                     p_channel->buffer + p_channel->write_index,
                     p_channel->write_size - p_channel->write_index,
@@ -290,7 +296,7 @@ void hs_io_write(void *arg){
     }
     p_channel->write_index += hava_write_size;
 
-    if (p_channel->write_index == p_channel->write_size) {
+    if (p_channel->write_index >= p_channel->write_size) {
         /*写完毕,关闭链接，释放channel*/
         close(p_channel->socket);
         //hs_close_channel(p_channel);
@@ -298,12 +304,14 @@ void hs_io_write(void *arg){
     } else {
         /*继续监听写事件*/
         event.data.ptr = p_channel;
-        event.events = EPOLLOUT;  // 设置可写事件,水平触发模式
+        event.events = EPOLLOUT | EPOLLRDHUP;  // 设置可写事件,水平触发模式
         if (epoll_ctl(p_channel->epoll_fd,
                     EPOLL_CTL_ADD,
                     p_channel->socket,
                     &event) == -1) {
             log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
+            close(p_channel->socket);
+            mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
         }
     }
 }
@@ -337,6 +345,7 @@ int hs_io_do_write(struct hs_channel *p_channel){
 void hs_io_read(void *arg){
     struct hs_channel *p_channel = arg;
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
+    struct epoll_event event;
     int read_size;
 
     /*开始把TCP读缓存上的数据拷贝到自己指定的buffer里*/
@@ -344,9 +353,21 @@ void hs_io_read(void *arg){
             p_channel->buffer + p_channel->read_index, 
             p_hs_handle->buffer_size - p_channel->read_index, 
             MSG_DONTWAIT);
-    if (read_size <= 0) {
-        /*暂时不处理*/
+    if (read_size < 0) {
+        /*关闭连接*/
         log_err("Some error occured when reading data from socket!%s", strerror(errno));
+        p_channel->write_index = 0;
+        p_channel->write_size = 0;
+        event.data.ptr = p_channel;
+        event.events = EPOLLOUT | EPOLLRDHUP;  // 设置可写事件,水平触发模式
+        if (epoll_ctl(p_channel->epoll_fd,
+                    EPOLL_CTL_ADD,
+                    p_channel->socket,
+                    &event) == -1) {
+            log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
+            close(p_channel->socket);
+            mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        }
         return;
     }
     p_channel->read_index += read_size;
