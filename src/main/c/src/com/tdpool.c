@@ -270,9 +270,9 @@ int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){
     /*请求队列节点入队,自旋锁*/
     while(sem_trywait(&pts->call_queue_write_mutex) < 0);
     p_call_node = &pts->call_queue[(pts->call_queue_tail++)%pts->call_queue_period];
-    sem_post(&pts->call_queue_write_mutex);
     p_call_node->call_func = call_func;
     p_call_node->arg = arg;
+    sem_post(&pts->call_queue_write_mutex);
     sem_post(&pts->call_wait_n);  // 告知有调用请求
 
     return 1;

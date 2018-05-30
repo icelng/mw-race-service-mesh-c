@@ -4,6 +4,8 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ACM_MAX_EPOLL_EVENTS	inc/core/agent-client-manager.h	7;"	d	language:C++
+ACM_MSG_HEAD_SIZE	inc/core/agent-client-manager.h	6;"	d	language:C++
 BIN_DIR	Makefile	/^BIN_DIR = .\/bin$/;"	m	language:Make
 CJSON_EXPORT_SYMBOLS	inc/com/cJSON.h	108;"	d	language:C++
 CJSON_EXPORT_SYMBOLS	lib/cJSON/cJSON.h	108;"	d	language:C++
@@ -59,9 +61,9 @@ FlagsForFile	.ycm_extra_conf.py	/^def FlagsForFile( filename, **kwargs ):$/;"	f	
 GetCompilationInfoForFile	.ycm_extra_conf.py	/^def GetCompilationInfoForFile( filename ):$/;"	f	language:Python
 HLIST_HEAD	inc/com/list.h	208;"	d	language:C++
 HLIST_HEAD_INIT	inc/com/list.h	207;"	d	language:C++
-HTTP_SERVER_CONTENT_TYPE	inc/core/http-server.h	8;"	d	language:C++
-HTTP_SERVER_RESPONSE_OK	inc/core/http-server.h	7;"	d	language:C++
-HTTP_URL_DECODE_BUFSIZE	inc/core/http-server.h	10;"	d	language:C++
+HTTP_SERVER_CONTENT_TYPE	inc/core/http-server.h	10;"	d	language:C++
+HTTP_SERVER_RESPONSE_OK	inc/core/http-server.h	9;"	d	language:C++
+HTTP_URL_DECODE_BUFSIZE	inc/core/http-server.h	12;"	d	language:C++
 INIT_HLIST_HEAD	inc/com/list.h	209;"	d	language:C++
 INIT_HLIST_NODE	inc/com/list.h	210;"	d	language:C++
 INIT_LIST_HEAD	inc/com/list.h	26;"	d	language:C++
@@ -72,18 +74,21 @@ LIST_HEAD_INIT	inc/com/list.h	21;"	d	language:C++
 LIST_POISON1	inc/com/list.h	14;"	d	language:C++
 LIST_POISON2	inc/com/list.h	15;"	d	language:C++
 MAX_EPOLL_EVENTS	inc/core/http-server.h	5;"	d	language:C++
-MMPL_ALIGN	inc/com/mmpool.h	22;"	d	language:C++
-MMPL_ALIGN_DEFAULT	inc/com/mmpool.h	24;"	d	language:C++
-MMPL_BOUNDARY_16K	inc/com/mmpool.h	16;"	d	language:C++
-MMPL_BOUNDARY_1K	inc/com/mmpool.h	12;"	d	language:C++
-MMPL_BOUNDARY_2K	inc/com/mmpool.h	13;"	d	language:C++
-MMPL_BOUNDARY_32K	inc/com/mmpool.h	17;"	d	language:C++
-MMPL_BOUNDARY_4K	inc/com/mmpool.h	14;"	d	language:C++
-MMPL_BOUNDARY_8K	inc/com/mmpool.h	15;"	d	language:C++
-MMPL_BOUNDARY_DEFAULT	inc/com/mmpool.h	18;"	d	language:C++
-MMPL_MAX_FREE_INDEX_DEFAULT	inc/com/mmpool.h	11;"	d	language:C++
-MMPL_MAX_INDEX	inc/com/mmpool.h	9;"	d	language:C++
-MMPL_OLDEST_RANGE	inc/com/mmpool.h	20;"	d	language:C++
+MAX_EPOLL_EVENT_LOOP_NUM	inc/core/http-server.h	7;"	d	language:C++
+MAX_IO_THREAD_NUM	inc/core/http-server.h	6;"	d	language:C++
+MMPL	inc/com/mmpool.h	9;"	d	language:C++
+MMPL_ALIGN	inc/com/mmpool.h	24;"	d	language:C++
+MMPL_ALIGN_DEFAULT	inc/com/mmpool.h	26;"	d	language:C++
+MMPL_BOUNDARY_16K	inc/com/mmpool.h	18;"	d	language:C++
+MMPL_BOUNDARY_1K	inc/com/mmpool.h	14;"	d	language:C++
+MMPL_BOUNDARY_2K	inc/com/mmpool.h	15;"	d	language:C++
+MMPL_BOUNDARY_32K	inc/com/mmpool.h	19;"	d	language:C++
+MMPL_BOUNDARY_4K	inc/com/mmpool.h	16;"	d	language:C++
+MMPL_BOUNDARY_8K	inc/com/mmpool.h	17;"	d	language:C++
+MMPL_BOUNDARY_DEFAULT	inc/com/mmpool.h	20;"	d	language:C++
+MMPL_MAX_FREE_INDEX_DEFAULT	inc/com/mmpool.h	13;"	d	language:C++
+MMPL_MAX_INDEX	inc/com/mmpool.h	11;"	d	language:C++
+MMPL_OLDEST_RANGE	inc/com/mmpool.h	22;"	d	language:C++
 MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	f	language:Python
 OBJS	Makefile	/^OBJS = $(patsubst %.c, %.o, $(SRC_COM_FILES) $(SRC_CORE_FILES))$/;"	m	language:Make
 RB_BLACK	inc/com/rbtree.h	4;"	d	language:C++
@@ -93,6 +98,7 @@ SRC_COM_FILES	Makefile	/^SRC_COM_FILES = $(wildcard $(SRC_DIR)\/com\/*.c)$/;"	m	
 SRC_CORE_FILES	Makefile	/^SRC_CORE_FILES = $(wildcard $(SRC_DIR)\/core\/*.c)$/;"	m	language:Make
 SRC_DIR	Makefile	/^SRC_DIR = .\/src$/;"	m	language:Make
 TARGET	Makefile	/^TARGET = consumer-agent$/;"	m	language:Make
+TDPL	inc/com/tdpool.h	4;"	d	language:C++
 UMSG_TYPE_FD	inc/com/ipc-uds.h	4;"	d	language:C++
 _LINUX_LIST_H	inc/com/list.h	3;"	d	language:C++
 __WINDOWS__	inc/com/cJSON.h	84;"	d	language:C++
@@ -103,16 +109,37 @@ __list_del	inc/com/list.h	/^static inline void __list_del(struct list_head * pre
 __list_for_each	inc/com/list.h	163;"	d	language:C++
 __list_splice	inc/com/list.h	/^static inline void __list_splice(struct list_head *list,   $/;"	f	language:C++
 _uds_sendfd	src/com/ipc-uds.c	/^int _uds_sendfd(int usockfd, int fd){$/;"	f	language:C
+acm_channel	inc/core/agent-client-manager.h	/^struct acm_channel {$/;"	s	language:C++
+acm_connect	src/core/agent-client-manager.c	/^struct acm_channel* acm_connect($/;"	f	language:C
+acm_epoll_mod	src/core/agent-client-manager.c	/^int acm_epoll_mod(struct acm_channel *p_channel, unsigned int events){$/;"	f	language:C
+acm_event_loop	src/core/agent-client-manager.c	/^void* acm_event_loop(void *arg){$/;"	f	language:C
+acm_handle	inc/core/agent-client-manager.h	/^struct acm_handle {$/;"	s	language:C++
+acm_hold_request	src/core/agent-client-manager.c	/^int acm_hold_request(struct acm_channel *p_channel, $/;"	f	language:C
+acm_io_do_read	src/core/agent-client-manager.c	/^int acm_io_do_read(struct acm_channel *p_channel){$/;"	f	language:C
+acm_io_do_write	src/core/agent-client-manager.c	/^int acm_io_do_write(struct acm_channel *p_channel){$/;"	f	language:C
+acm_io_read_thread	src/core/agent-client-manager.c	/^void acm_io_read_thread(void *arg){$/;"	f	language:C
+acm_io_write_thread	src/core/agent-client-manager.c	/^void acm_io_write_thread(void *arg){$/;"	f	language:C
+acm_listening	src/core/consumer-agent.c	/^void acm_listening(void *arg, char *data, int data_size){$/;"	f	language:C
+acm_msg	inc/core/agent-client-manager.h	/^struct acm_msg {$/;"	s	language:C++
+acm_msg_head	inc/core/agent-client-manager.h	/^struct acm_msg_head {$/;"	s	language:C++
+acm_opt	inc/core/agent-client-manager.h	/^struct acm_opt {$/;"	s	language:C++
+acm_request	src/core/agent-client-manager.c	/^int acm_request($/;"	f	language:C
+acm_request_map_entry	inc/core/agent-client-manager.h	/^struct acm_request_map_entry{$/;"	s	language:C++
+acm_response	src/core/agent-client-manager.c	/^void acm_response(void *arg){$/;"	f	language:C
+acm_start	src/core/agent-client-manager.c	/^struct acm_handle* acm_start(struct acm_opt* p_opt){$/;"	f	language:C
+acm_write_task	inc/core/agent-client-manager.h	/^struct acm_write_task{$/;"	s	language:C++
 allocate	lib/cJSON/cJSON.c	/^    void *(*allocate)(size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 allocate	src/com/cJSON.c	/^    void *(*allocate)(size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 arg	inc/com/tdpool.h	/^    void *arg;  \/\/线程调用函数的参数$/;"	m	language:C++	struct:tdpl_td_handle
 arg	inc/com/tdpool.h	/^    void *arg;$/;"	m	language:C++	struct:tdpl_call_node
+arg	inc/core/agent-client-manager.h	/^    void *arg;$/;"	m	language:C++	struct:acm_request_map_entry
 array	inc/com/cJSON.h	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array);$/;"	v	language:C++
 array	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array);$/;"	v	language:C++
 avali_queue	inc/com/tdpool.h	/^    struct tdpl_td_handle **avali_queue;  \/\/ 可用线程队列$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_td_handle
 avali_queue_head	inc/com/tdpool.h	/^    unsigned long avali_queue_head;  \/\/ 可用队列头索引$/;"	m	language:C++	struct:tdpl_s
 avali_queue_period	inc/com/tdpool.h	/^    int avali_queue_period;$/;"	m	language:C++	struct:tdpl_s
 avali_queue_tail	inc/com/tdpool.h	/^    unsigned long avali_queue_tail;  \/\/ 可用队列尾索引$/;"	m	language:C++	struct:tdpl_s
+avali_queue_write_mutex	inc/com/tdpool.h	/^    sem_t avali_queue_write_mutex;$/;"	m	language:C++	struct:tdpl_s
 avali_td_n	inc/com/tdpool.h	/^    sem_t avali_td_n;   \/\/用信号量表示可用线程数$/;"	m	language:C++	struct:tdpl_s
 body_size	inc/core/http-server.h	/^    int body_size;  \/\/ content 大小$/;"	m	language:C++	struct:hs_channel
 body_start	inc/core/http-server.h	/^    int body_start;  \/\/ body起始指针$/;"	m	language:C++	struct:hs_channel
@@ -290,8 +317,10 @@ call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用�
 call_queue	inc/com/tdpool.h	/^    struct tdpl_call_node *call_queue; \/\/ 调用队列$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_call_node
 call_queue_head	inc/com/tdpool.h	/^    unsigned long call_queue_head;  \/\/ 调用队列头索引$/;"	m	language:C++	struct:tdpl_s
 call_queue_period	inc/com/tdpool.h	/^    int call_queue_period;$/;"	m	language:C++	struct:tdpl_s
+call_queue_read_mutex	inc/com/tdpool.h	/^    sem_t call_queue_read_mutex;  \/\/\/ 调用队列读者锁$/;"	m	language:C++	struct:tdpl_s
 call_queue_tail	inc/com/tdpool.h	/^    unsigned long call_queue_tail;  \/\/ 调用队列尾索引$/;"	m	language:C++	struct:tdpl_s
-call_wait_n	inc/com/tdpool.h	/^    sem_t call_wait_n;   \/\/用信号量表示当前调用请求等待数$/;"	m	language:C++	struct:tdpl_s
+call_queue_write_mutex	inc/com/tdpool.h	/^    sem_t call_queue_write_mutex;  \/\/ 调用队列写着锁$/;"	m	language:C++	struct:tdpl_s
+call_wait_n	inc/com/tdpool.h	/^    sem_t call_wait_n;   $/;"	m	language:C++	struct:tdpl_s
 can_access_at_index	lib/cJSON/cJSON.c	213;"	d	language:C	file:
 can_access_at_index	src/com/cJSON.c	213;"	d	language:C	file:
 can_read	lib/cJSON/cJSON.c	210;"	d	language:C	file:
@@ -319,8 +348,12 @@ create_reference	lib/cJSON/cJSON.c	/^static cJSON *create_reference(const cJSON 
 create_reference	src/com/cJSON.c	/^static cJSON *create_reference(const cJSON *item, const internal_hooks * const hooks)$/;"	f	language:C	file:
 current_free_index	inc/com/mmpool.h	/^    unsigned int current_free_index;   \/\/当前内存池空闲的内存$/;"	m	language:C++	struct:mm_pool_s
 data	inc/com/ipc-uds.h	/^    void *data;  \/\/ 数据$/;"	m	language:C++	struct:uds_umsg
+data	inc/core/agent-client-manager.h	/^    char *data;$/;"	m	language:C++	struct:acm_msg
+data	inc/core/agent-client-manager.h	/^    char *data;$/;"	m	language:C++	struct:acm_write_task
+data_read_index	inc/core/agent-client-manager.h	/^    int data_read_index;$/;"	m	language:C++	struct:acm_channel
 data_size	inc/com/ipc-uds.h	/^    unsigned int data_size;  \/\/ data大小$/;"	m	language:C++	struct:uds_umsg
 data_size	inc/com/ipc-uds.h	/^    unsigned int data_size;$/;"	m	language:C++	struct:uds_umsg_h
+data_size	inc/core/agent-client-manager.h	/^    int data_size;$/;"	m	language:C++	struct:acm_msg_head
 data_type	inc/com/ipc-uds.h	/^    int data_type;  \/\/ 数据类型$/;"	m	language:C++	struct:uds_umsg
 data_type	inc/com/ipc-uds.h	/^    int data_type;$/;"	m	language:C++	struct:uds_umsg_h
 database	.ycm_extra_conf.py	/^  database = None$/;"	v	language:Python
@@ -334,9 +367,14 @@ depth	src/com/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/obje
 depth	src/com/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon7	file:
 ensure	lib/cJSON/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, size_t needed)$/;"	f	language:C	file:
 ensure	src/com/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, size_t needed)$/;"	f	language:C	file:
-epoll_fd	inc/core/http-server.h	/^    int epoll_fd;  \/\/ epoll码，描述符$/;"	m	language:C++	struct:hs_handle
+epoll_fd	inc/core/agent-client-manager.h	/^    int epoll_fd;$/;"	m	language:C++	struct:acm_handle
+epoll_fd	inc/core/http-server.h	/^    int epoll_fd;  \/\/ 所属epoll_fd$/;"	m	language:C++	struct:hs_channel
+epoll_fd	inc/core/http-server.h	/^    int epoll_fd[MAX_EPOLL_EVENT_LOOP_NUM];  \/\/ epoll描述符数组，描述符$/;"	m	language:C++	struct:hs_handle
 error	lib/cJSON/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon2	file:
 error	src/com/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon5	file:
+event_loop_num	inc/core/http-server.h	/^    int event_loop_num;  \/\/ epoll事件循环线程数$/;"	m	language:C++	struct:hs_bootstrap
+event_loop_num	inc/core/http-server.h	/^    int event_loop_num;$/;"	m	language:C++	struct:hs_handle
+events	inc/core/agent-client-manager.h	/^    unsigned int events;  \/\/ channel现在所注册的事件$/;"	m	language:C++	struct:acm_channel
 false	lib/cJSON/cJSON.c	47;"	d	language:C	file:
 false	src/com/cJSON.c	47;"	d	language:C	file:
 first	inc/com/list.h	/^struct hlist_node *first;   $/;"	m	language:C++	struct:hlist_head	typeref:struct:hlist_head::hlist_node
@@ -361,7 +399,12 @@ global_error	lib/cJSON/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	
 global_error	src/com/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	language:C	file:
 global_hooks	lib/cJSON/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
 global_hooks	src/com/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
+gp_acm_channel	src/core/consumer-agent.c	/^struct acm_channel *gp_acm_channel;$/;"	v	language:C	typeref:struct:acm_channel
 hash_code	src/core/consumer-agent.c	/^int hash_code(char *str){$/;"	f	language:C
+head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_msg_head
+head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_msg	typeref:struct:acm_msg::acm_msg_head
+head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_write_task	typeref:struct:acm_write_task::acm_msg_head
+head_read_index	inc/core/agent-client-manager.h	/^    int head_read_index;$/;"	m	language:C++	struct:acm_channel
 hex2dec	src/core/http-server.c	/^int hex2dec(char c){$/;"	f	language:C
 hlist_add_after	inc/com/list.h	/^static inline void hlist_add_after(struct hlist_node *n,   $/;"	f	language:C++
 hlist_add_before	inc/com/list.h	/^static inline void hlist_add_before(struct hlist_node *n,   $/;"	f	language:C++
@@ -386,16 +429,19 @@ hooks	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks* hooks)
 hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon6	file:
 hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon7	file:
 hs_accept_thread	src/core/http-server.c	/^void hs_accept_thread(void *arg){$/;"	f	language:C
-hs_attempt_recall_channel	src/core/http-server.c	/^int hs_attempt_recall_channel(struct hs_channel *p_channel){$/;"	f	language:C
 hs_bind	src/core/http-server.c	/^int hs_bind(int port){$/;"	f	language:C
 hs_bootstrap	inc/core/http-server.h	/^struct hs_bootstrap{$/;"	s	language:C++
-hs_call_channel	src/core/http-server.c	/^int hs_call_channel(struct hs_channel *p_channel){$/;"	f	language:C
 hs_channel	inc/core/http-server.h	/^struct hs_channel{$/;"	s	language:C++
-hs_decoder	src/core/http-server.c	/^void hs_decoder(void *arg){$/;"	f	language:C
+hs_close_channel	src/core/http-server.c	/^int hs_close_channel(struct hs_channel *p_channel){$/;"	f	language:C
+hs_close_channel_thread	src/core/http-server.c	/^void hs_close_channel_thread(void *arg){$/;"	f	language:C
+hs_content_handler_thread	src/core/http-server.c	/^void hs_content_handler_thread(void *arg){$/;"	f	language:C
+hs_decoder	src/core/http-server.c	/^void hs_decoder(struct hs_channel *p_channel){$/;"	f	language:C
+hs_event_loop	src/core/http-server.c	/^void hs_event_loop(void *arg){$/;"	f	language:C
 hs_handle	inc/core/http-server.h	/^struct hs_handle{$/;"	s	language:C++
 hs_io_do_read	src/core/http-server.c	/^int hs_io_do_read(struct hs_channel *p_channel){$/;"	f	language:C
 hs_io_do_write	src/core/http-server.c	/^int hs_io_do_write(struct hs_channel *p_channel){$/;"	f	language:C
-hs_io_thread	src/core/http-server.c	/^void hs_io_thread(void *arg){$/;"	f	language:C
+hs_io_read	src/core/http-server.c	/^void hs_io_read(void *arg){$/;"	f	language:C
+hs_io_write	src/core/http-server.c	/^void hs_io_write(void *arg){$/;"	f	language:C
 hs_new_connection	src/core/http-server.c	/^int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){$/;"	f	language:C
 hs_response_ok	src/core/http-server.c	/^int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_size){$/;"	f	language:C
 hs_start	src/core/http-server.c	/^struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){$/;"	f	language:C
@@ -406,13 +452,17 @@ internal_hooks	lib/cJSON/cJSON.c	/^typedef struct internal_hooks$/;"	s	language:
 internal_hooks	lib/cJSON/cJSON.c	/^} internal_hooks;$/;"	t	language:C	typeref:struct:internal_hooks	file:
 internal_hooks	src/com/cJSON.c	/^typedef struct internal_hooks$/;"	s	language:C	file:
 internal_hooks	src/com/cJSON.c	/^} internal_hooks;$/;"	t	language:C	typeref:struct:internal_hooks	file:
-io_thread_num	inc/core/http-server.h	/^    int io_thread_num;  \/\/ io处理线程, 暂时不支持配置$/;"	m	language:C++	struct:hs_bootstrap
+io_thread_num	inc/core/agent-client-manager.h	/^    int io_thread_num;$/;"	m	language:C++	struct:acm_opt
+io_thread_num	inc/core/http-server.h	/^    int io_thread_num;  \/\/ io处理线程$/;"	m	language:C++	struct:hs_bootstrap
 is_body	inc/core/http-server.h	/^    int is_body;  \/\/ 是否是content$/;"	m	language:C++	struct:hs_channel
 is_content_length	inc/core/http-server.h	/^    int is_content_length;$/;"	m	language:C++	struct:hs_channel
+is_doing_read	inc/core/agent-client-manager.h	/^    int is_doing_read;$/;"	m	language:C++	struct:acm_channel
+is_head	inc/core/agent-client-manager.h	/^    int is_head;$/;"	m	language:C++	struct:acm_channel
 is_head	inc/core/http-server.h	/^    int is_head;  \/\/ 表明是否正在解码头部$/;"	m	language:C++	struct:hs_channel
 is_key	inc/core/http-server.h	/^    int is_key;  \/\/ 解析头时，是否为key$/;"	m	language:C++	struct:hs_channel
 is_line	inc/core/http-server.h	/^    int is_line;  \/\/ 请求行$/;"	m	language:C++	struct:hs_channel
 is_processing	inc/core/http-server.h	/^    int is_processing;  \/\/ 表明是否在处理$/;"	m	language:C++	struct:hs_channel
+is_read_done	inc/core/http-server.h	/^    int is_read_done;  \/\/ 是否完成了读操作$/;"	m	language:C++	struct:hs_channel
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsArray(const cJSON * const item);$/;"	v	language:C++
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsBool(const cJSON * const item);$/;"	v	language:C++
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsFalse(const cJSON * const item);$/;"	v	language:C++
@@ -466,6 +516,7 @@ list_move_tail	inc/com/list.h	/^static inline void list_move_tail(struct list_he
 list_prepare_entry	inc/com/list.h	184;"	d	language:C++
 list_splice	inc/com/list.h	/^static inline void list_splice(struct list_head *list, struct list_head *head)   $/;"	f	language:C++
 list_splice_init	inc/com/list.h	/^static inline void list_splice_init(struct list_head *list,   $/;"	f	language:C++
+listening	inc/core/agent-client-manager.h	/^    void (*listening)(void *arg, char *resp_data, int data_size);$/;"	m	language:C++	struct:acm_request_map_entry
 log_alert	inc/com/log.h	12;"	d	language:C++
 log_debug	inc/com/log.h	47;"	d	language:C++
 log_emerg	inc/com/log.h	5;"	d	language:C++
@@ -485,10 +536,15 @@ max_connection	inc/core/http-server.h	/^    int max_connection;  \/\/ 最大连�
 max_connection	inc/core/http-server.h	/^    int max_connection;$/;"	m	language:C++	struct:hs_handle
 max_free_index	inc/com/mmpool.h	/^    unsigned int max_free_index; \/\/最大空闲内存$/;"	m	language:C++	struct:mm_pool_s
 max_free_index	inc/com/mmpool.h	/^    unsigned int max_free_index; \/\/最大空闲内存$/;"	m	language:C++	struct:mmpl_opt
+max_hold_req_num	inc/core/agent-client-manager.h	/^    int max_hold_req_num;  \/\/ 最大挂起请求数$/;"	m	language:C++	struct:acm_opt
+max_hold_req_num	inc/core/agent-client-manager.h	/^    int max_hold_req_num;$/;"	m	language:C++	struct:acm_handle
 max_wait_n	inc/com/tdpool.h	/^    int max_wait_n;  \/\/最大等待数,或者说是请求队列最大长度$/;"	m	language:C++	struct:tdpl_s
+max_write_queue_len	inc/core/agent-client-manager.h	/^    int max_write_queue_len;  \/\/ 最大写请求队列$/;"	m	language:C++	struct:acm_opt
+max_write_queue_len	inc/core/agent-client-manager.h	/^    int max_write_queue_len;$/;"	m	language:C++	struct:acm_handle
 mm_node	inc/com/mmpool.h	/^struct mm_node{$/;"	s	language:C++
 mm_pool_s	inc/com/mmpool.h	/^typedef struct mm_pool_s{$/;"	s	language:C++
 mmpl	inc/com/mmpool.h	/^}*mmpl;$/;"	t	language:C++	typeref:struct:mm_pool_s
+mmpl	inc/core/agent-client-manager.h	/^    mmpl mmpl;  \/\/ 内存池$/;"	m	language:C++	struct:acm_handle
 mmpl	inc/core/http-server.h	/^    mmpl mmpl;  \/\/ 内存池$/;"	m	language:C++	struct:hs_handle
 mmpl_create	src/com/mmpool.c	/^mmpl mmpl_create(struct mmpl_opt *popt){$/;"	f	language:C
 mmpl_destroy	src/com/mmpool.c	/^int mmpl_destroy(struct mm_pool_s *mmpl){$/;"	f	language:C
@@ -514,6 +570,8 @@ offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon6	file
 offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon7	file:
 offsetof	inc/com/list.h	5;"	d	language:C++
 offsetof	inc/com/rbtree.h	6;"	d	language:C++
+p_channel	inc/core/agent-client-manager.h	/^    struct acm_channel *p_channel;  \/\/ 所属channel$/;"	m	language:C++	struct:acm_msg	typeref:struct:acm_msg::acm_channel
+p_handle	inc/core/agent-client-manager.h	/^    struct acm_handle* p_handle;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_handle
 p_hs_handle	inc/core/http-server.h	/^    struct hs_handle *p_hs_handle;  \/\/ 所属的http-server-handle$/;"	m	language:C++	struct:hs_channel	typeref:struct:hs_channel::hs_handle
 p_tdpl_s	inc/com/tdpool.h	/^    struct tdpl_s *p_tdpl_s; \/\/线程所属的线程池的结构体$/;"	m	language:C++	struct:tdpl_td_handle	typeref:struct:tdpl_td_handle::tdpl_s
 parent	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
@@ -575,17 +633,23 @@ rb_tree	inc/com/rbtree.h	/^struct rb_tree{$/;"	s	language:C++
 rb_tree_minimum	src/com/rbtree.c	/^struct rb_node* rb_tree_minimum(struct rb_tree *p_rb_t,struct rb_node *p_root){$/;"	f	language:C
 rchild	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
 read_index	inc/core/http-server.h	/^    int read_index;  \/\/  读索引$/;"	m	language:C++	struct:hs_channel
-ready_n	inc/com/tdpool.h	/^    sem_t ready_n; $/;"	m	language:C++	struct:tdpl_s
+ready_n	inc/com/tdpool.h	/^    sem_t ready_n;  \/\/ 初始化时用$/;"	m	language:C++	struct:tdpl_s
 reallocate	lib/cJSON/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 reallocate	src/com/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
+recv_msg	inc/core/agent-client-manager.h	/^    struct acm_msg* recv_msg;  \/\/ 接收到的报文$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_msg
 replace_item_in_object	lib/cJSON/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
 replace_item_in_object	src/com/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
+req_id	inc/core/agent-client-manager.h	/^    long req_id;$/;"	m	language:C++	struct:acm_msg_head
+req_id	inc/core/agent-client-manager.h	/^    unsigned long req_id;$/;"	m	language:C++	struct:acm_request_map_entry
+reqeust_map	inc/core/agent-client-manager.h	/^    struct acm_request_map_entry* reqeust_map;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_request_map_entry
+request_id	inc/core/agent-client-manager.h	/^    long request_id;$/;"	m	language:C++	struct:acm_channel
 root	inc/com/rbtree.h	/^    struct rb_node *root;  \/\/指向根节点$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
 run	inc/com/tdpool.h	/^    sem_t run;  \/\/用来告知线程开始调用函数$/;"	m	language:C++	struct:tdpl_td_handle
 server_port	inc/core/http-server.h	/^    int server_port;  \/\/ 服务器端口$/;"	m	language:C++	struct:hs_bootstrap
 size	inc/com/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 size	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 socket	inc/core/http-server.h	/^    int socket;  \/\/ 套接字$/;"	m	language:C++	struct:hs_channel
+socket_fd	inc/core/agent-client-manager.h	/^    int socket_fd;  \/\/ 客户端套接字描述符$/;"	m	language:C++	struct:acm_channel
 sockfd	inc/core/http-server.h	/^    int sockfd;$/;"	m	language:C++	struct:hs_handle
 string	inc/com/cJSON.h	/^    char *string;$/;"	m	language:C++	struct:cJSON
 string	lib/cJSON/cJSON.h	/^    char *string;$/;"	m	language:C++	struct:cJSON
@@ -596,13 +660,16 @@ tdpl	inc/com/tdpool.h	/^}*tdpl;$/;"	t	language:C++	typeref:struct:tdpl_s
 tdpl_accept	inc/core/http-server.h	/^    tdpl tdpl_accept;  \/\/ 负责accept$/;"	m	language:C++	struct:hs_handle
 tdpl_call_func	src/com/tdpool.c	/^int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){$/;"	f	language:C
 tdpl_call_node	inc/com/tdpool.h	/^struct tdpl_call_node{$/;"	s	language:C++
+tdpl_close	inc/core/http-server.h	/^    tdpl tdpl_close;  \/\/ 负责关闭链接$/;"	m	language:C++	struct:hs_handle
 tdpl_create	src/com/tdpool.c	/^struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){$/;"	f	language:C
+tdpl_io	inc/core/agent-client-manager.h	/^    tdpl tdpl_io;  \/\/ io线程池$/;"	m	language:C++	struct:acm_handle
 tdpl_io	inc/core/http-server.h	/^    tdpl tdpl_io;  \/\/ IO线程池$/;"	m	language:C++	struct:hs_handle
 tdpl_master_thread	src/com/tdpool.c	/^void *tdpl_master_thread(void *arg){$/;"	f	language:C
 tdpl_mastertd_cleanup	src/com/tdpool.c	/^void tdpl_mastertd_cleanup(void *arg){$/;"	f	language:C
 tdpl_s	inc/com/tdpool.h	/^typedef struct tdpl_s{$/;"	s	language:C++
 tdpl_td_handle	inc/com/tdpool.h	/^struct tdpl_td_handle{$/;"	s	language:C++
 tdpl_wktd_cleanup	src/com/tdpool.c	/^void tdpl_wktd_cleanup(void *arg){$/;"	f	language:C
+tdpl_worker	inc/core/agent-client-manager.h	/^    tdpl tdpl_worker;  \/\/ worker线程池$/;"	m	language:C++	struct:acm_handle
 tdpl_worker	inc/core/http-server.h	/^    tdpl tdpl_worker;  \/\/ 工作线程池$/;"	m	language:C++	struct:hs_handle
 tdpl_worker_thread	src/com/tdpool.c	/^void *tdpl_worker_thread(void *arg){$/;"	f	language:C
 thread_num	inc/com/tdpool.h	/^    int thread_num;  \/\/线程池拥有的线程数$/;"	m	language:C++	struct:tdpl_s
@@ -641,6 +708,12 @@ valueint	inc/com/cJSON.h	/^    int valueint;$/;"	m	language:C++	struct:cJSON
 valueint	lib/cJSON/cJSON.h	/^    int valueint;$/;"	m	language:C++	struct:cJSON
 valuestring	inc/com/cJSON.h	/^    char *valuestring;$/;"	m	language:C++	struct:cJSON
 valuestring	lib/cJSON/cJSON.h	/^    char *valuestring;$/;"	m	language:C++	struct:cJSON
+worker_thread_num	inc/core/agent-client-manager.h	/^    int worker_thread_num;$/;"	m	language:C++	struct:acm_opt
 worker_thread_num	inc/core/http-server.h	/^    int worker_thread_num;  \/\/ 工作线程$/;"	m	language:C++	struct:hs_bootstrap
+write_index	inc/core/agent-client-manager.h	/^    int write_index;$/;"	m	language:C++	struct:acm_write_task
 write_index	inc/core/http-server.h	/^    int write_index;  \/\/ 写索引，io线程拷贝用$/;"	m	language:C++	struct:hs_channel
+write_queue	inc/core/agent-client-manager.h	/^    struct acm_write_task* write_queue;  \/\/ 写请求队列$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_write_task
+write_queue_head	inc/core/agent-client-manager.h	/^    unsigned long write_queue_head;$/;"	m	language:C++	struct:acm_channel
+write_queue_mutex	inc/core/agent-client-manager.h	/^    sem_t write_queue_mutex;$/;"	m	language:C++	struct:acm_channel
+write_queue_tail	inc/core/agent-client-manager.h	/^    unsigned long write_queue_tail;$/;"	m	language:C++	struct:acm_channel
 write_size	inc/core/http-server.h	/^    int write_size;  \/\/ 表示要写的字节数$/;"	m	language:C++	struct:hs_channel

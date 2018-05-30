@@ -5,6 +5,8 @@
 
 #include "semaphore.h"   //没有移植的打算
 
+#ifndef MMPL
+#define MMPL
 
 #define MMPL_MAX_INDEX 10
 /*下面是内存池的默认配置,内存池最大内存空间是200*MMPL_BOUNDARY*/
@@ -51,6 +53,8 @@ struct mmpl_opt{
     unsigned int boundary;  // 对齐,也表示index对应内存大小，也表示最小内存节点大小
     unsigned int max_free_index; //最大空闲内存
 };
+
+#endif
 
 mmpl mmpl_create(struct mmpl_opt *popt);
 int mmpl_destroy(mmpl);

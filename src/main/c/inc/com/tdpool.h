@@ -1,5 +1,7 @@
 #include "semaphore.h"
 
+#ifndef TDPL
+#define TDPL
 
 struct tdpl_td_handle;
 
@@ -44,6 +46,9 @@ struct tdpl_td_handle{
     void *arg;  //线程调用函数的参数
     sem_t run;  //用来告知线程开始调用函数
 };
+
+#endif
+
 /*创建线程池*/
 tdpl tdpl_create(int thread_num,int max_wait_n);
 /*使用线程池中的一个线程来调用指定的函数*/

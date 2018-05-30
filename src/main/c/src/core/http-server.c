@@ -221,7 +221,7 @@ void hs_accept_thread(void *arg){
  * 返回值: 
  */
 void hs_event_loop(void *arg){
-    log_info("Start io thread successfully!");
+    log_info("Start event-loop thread successfully!");
 
     struct epoll_event events[MAX_EPOLL_EVENTS];
     struct hs_channel *p_channel;
@@ -330,7 +330,7 @@ int hs_io_do_write(struct hs_channel *p_channel){
 
     /*使用io线程池里的线程来进行写操作*/
     if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
-        log_err("Failed to start worker thread for hs_io_write:%s", strerror(errno));
+        log_err("Failed to start o thread for hs_io_write:%s", strerror(errno));
         return -1;
     }
     
@@ -545,10 +545,11 @@ void hs_decoder(struct hs_channel *p_channel){
     if (p_channel->is_read_done == 1) {
         /*调用使用woker线程池执行content处理函数*/
         if (p_hs_handle->content_handler != NULL) {
-            if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_content_handler_thread, p_channel) < 0) {
-                log_err("Failed to start io thread for content handler:%s", strerror(errno));
-                return;
-            }
+            //if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_content_handler_thread, p_channel) < 0) {
+            //    log_err("Failed to start io thread for content handler:%s", strerror(errno));
+            //    return;
+            //}
+            hs_content_handler_thread(p_channel);  // 直接调用
         } else {
             log_warning("The content handler is not setted!");
         }
