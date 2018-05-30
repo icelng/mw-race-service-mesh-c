@@ -6,6 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
     private AgentServiceRequest agentServiceRequest;
 
     private int dataLength;
+    private byte[] header = new byte[HEADER_LENGTH];
 
 
 
@@ -32,12 +34,18 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
             if (in.readableBytes() < HEADER_LENGTH){
                 return;
             } else {
+                in.readBytes(header, 0, HEADER_LENGTH);
                 /*解析头部*/
                 agentServiceRequest = AgentServiceRequest.get();
                 /*获取requestId*/
-                agentServiceRequest.setRequestId(in.readLong());
+                agentServiceRequest.setRequestId(Bytes.bytes2long(header, 0));
                 /*获取数据长度*/
-                dataLength = in.readInt();
+                dataLength = Bytes.bytes2int(header, 8);
+                for (int i = 0;i < HEADER_LENGTH;i++) {
+                    System.out.print(header[i] + " ");
+                }
+                System.out.print("\n");
+                logger.info("requestId:{}, dataLength:{}", agentServiceRequest.getRequestId(), dataLength);
                 isHeader = false;
             }
         }
@@ -46,9 +54,10 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
         if (in.readableBytes() < dataLength) {
             return;
         }
-        in.readBytes(agentServiceRequest.getData());
+        in.readBytes(agentServiceRequest.getData(), dataLength);
 
         out.add(agentServiceRequest);
+        logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
 
         /*去掉引用*/
         agentServiceRequest = null;

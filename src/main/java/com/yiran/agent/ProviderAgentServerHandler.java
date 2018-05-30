@@ -7,6 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 
 
 /**
@@ -20,5 +21,6 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
 
         /*协议转换*/
         ServiceSwitcher.switchToDubbo(agentServiceRequest, ctx.channel());
+        //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
     }
 }

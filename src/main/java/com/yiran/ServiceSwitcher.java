@@ -65,7 +65,7 @@ public class ServiceSwitcher {
         }
 
         long requestId = agentServiceRequest.getRequestId();
-//        logger.info("Switch service for requestId:{}", requestId, agentServiceRequest.getParameters().get(0).length);
+        logger.info("Switch service for requestId:{}", requestId);
         FormDataParser formDataParser = FormDataParser.get();
         Map<String, String> argumentsMap = formDataParser.parse(agentServiceRequest.getData());
         formDataParser.release();
@@ -109,7 +109,7 @@ public class ServiceSwitcher {
             logger.warn("No rpcResponse for requestId:{}", rpcResponse.getRequestId());
             return;
         }
-//        logger.info("Receive response(id:{}) from provider:{}", rpcResponse.getRequestId(), new String(rpcResponse.getBytes()));
+        logger.info("Receive response(id:{}) from provider:{}", rpcResponse.getRequestId(), new String(rpcResponse.getBytes()));
         processingRequest.remove(String.valueOf(rpcResponse.getRequestId()));
 
         /*获取得到consumer-agent 与 provider-agent之间的Channel*/
@@ -121,11 +121,11 @@ public class ServiceSwitcher {
         agentServiceRequest.release();
 
         /*设置返回值为整形，hashcode*/
-        String returnStr = new String(rpcResponse.getBytes(), "utf-8");
-        String intStr = returnStr.substring(2, returnStr.length() - 1);
-        byte[] intBytes = new byte[4];
-        Bytes.int2bytes(Integer.valueOf(intStr), intBytes, 0);
-        agentServiceResponse.setReturnValue(intBytes);
+        //String returnStr = new String(rpcResponse.getBytes(), "utf-8");
+        //String intStr = returnStr.substring(2, returnStr.length() - 1);
+        //byte[] intBytes = new byte[4];
+        //Bytes.int2bytes(Integer.valueOf(intStr), intBytes, 0);
+        agentServiceResponse.setReturnValue(rpcResponse.getBytes());
 
         /*向客户端发送响应*/
         agentChannel.writeAndFlush(agentServiceResponse);

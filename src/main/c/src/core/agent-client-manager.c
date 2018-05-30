@@ -104,7 +104,7 @@ struct acm_channel* acm_connect(
 
     /*先进行套接字连接*/
     log_info("ACM:Creating socket for agent-client.");
-    if ((socket_fd = socket(AF_INET,SOCK_STREAM,0)) == -1) {
+    if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         log_err("ACM:Failed to create socket when connecting.");
     }
     memset(&servaddr, 0, sizeof(struct sockaddr_in));
@@ -114,16 +114,26 @@ struct acm_channel* acm_connect(
     log_info("ACM:Connecting to agent-server..");
     if (connect(socket_fd, (struct sockaddr*)&servaddr, sizeof(struct sockaddr_in)) == -1) {
         log_err("ACM:Failed to connect server(ip:%s)!!%s", ip, strerror(errno));
-        close(p_channel->socket_fd);
+        close(socket_fd);
         goto err1_ret;
     }
 
     /*接着进行channel初始化*/
     log_info("ACM:Creating new channel...");
     p_channel = mmpl_getmem(p_acm_handle->mmpl, sizeof(struct acm_channel));
+    p_channel->p_handle = p_acm_handle;
     p_channel->socket_fd = socket_fd;
-    p_channel = mmpl_getmem(p_acm_handle->mmpl, sizeof(struct acm_channel));
     p_channel->write_queue = mmpl_getmem(p_acm_handle->mmpl, p_acm_handle->max_write_queue_len * sizeof(struct acm_write_task));
+    if (p_channel->write_queue == NULL) {
+        log_err("ACM:Failed to get memeory from mmpl for write_queue!");
+        goto err2_ret;
+    }
+    p_channel->request_map = mmpl_getmem(p_acm_handle->mmpl, p_acm_handle->max_hold_req_num * sizeof(struct acm_request_map_entry));
+    if (p_channel->request_map == NULL) {
+        log_err("ACM:Failed to get memeory from mmpl for request_map!");
+        goto err3_ret;
+
+    }
     p_channel->write_queue_head = 0;
     p_channel->write_queue_tail = 1;
     p_channel->request_id = 0;
@@ -138,15 +148,20 @@ struct acm_channel* acm_connect(
     event.data.ptr = p_channel;
     event.events = p_channel->events;
     if (epoll_ctl(p_acm_handle->epoll_fd,
-                EPOLL_CTL_MOD,
+                EPOLL_CTL_ADD,
                 p_channel->socket_fd,
                 &event) == -1) {
         log_err("ACM:Failed to ADD sockfd to epoll when connecting:%s",strerror(errno));
-        goto err2_ret;
+        goto err4_ret;
     }
 
     return p_channel;
 
+
+err4_ret:
+    mmpl_rlsmem(p_acm_handle->mmpl, p_channel->request_map);
+err3_ret:
+    mmpl_rlsmem(p_acm_handle->mmpl, p_channel->write_queue);
 err2_ret:
     sem_destroy(&p_channel->write_queue_mutex);
     mmpl_rlsmem(p_acm_handle->mmpl, p_channel);
@@ -205,6 +220,7 @@ int acm_request(
     /*由原子增操作获得唯一的request_id*/
     request_id = __sync_add_and_fetch(&p_channel->request_id, 1);
     /*hold住请求，等待响应*/
+    log_debug("ACM:Hold reqeuest for id:%d", request_id);
     acm_hold_request(p_channel, request_id, listening, arg);  
 
     /*入write-task队列，跟io线程和其它执行到这里的线程抢锁*/
@@ -226,6 +242,7 @@ int acm_request(
      * channel进行写操作，则向epoll注册可写事件，由epoll产生的可写事件触发
      * io-write线程来消费队列*/
     if (is_queue_empty == 1) {
+        log_debug("ACM:Register EPOLLOUT to epoll when adding write-task to empty queue!");
         // 添加可写事件,水平触发模式
         if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLOUT)) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when requesting:%s",strerror(errno));
@@ -244,52 +261,61 @@ int acm_request(
 void acm_io_read_thread(void *arg){
     struct acm_channel *p_channel = arg;
     struct acm_handle *p_handle = p_channel->p_handle;
+    int data_size;
     int read_size;
-    char* c_head = (char *)&p_channel->head;
 
     /*接收头*/
     while (1) {
         if (p_channel->is_head == 1) {
             read_size = recv(p_channel->socket_fd, 
-                    c_head + p_channel->head_read_index, 
+                    p_channel->head + p_channel->head_read_index, 
                     ACM_MSG_HEAD_SIZE - p_channel->head_read_index, 
                     MSG_DONTWAIT);
 
             if (read_size < 0) {
+                if (errno == EAGAIN) {
+                    break;
+                }
                 log_err("ACM:Some error occured when reading data from socket!%s", strerror(errno));
                 break;
             }
 
             p_channel->head_read_index += read_size;
 
-            if (errno == EAGAIN) {
+            if (p_channel->head_read_index < ACM_MSG_HEAD_SIZE) {
                 /*如果头没有接收完整*/
                 break;
             } else {
+                data_size = acm_bytes2int(p_channel->head, 8);
                 p_channel->is_head = 0;
-                p_channel->recv_msg = mmpl_getmem(p_handle->mmpl, sizeof(struct acm_msg) + p_channel->head.data_size);
+                p_channel->recv_msg = mmpl_getmem(p_handle->mmpl, sizeof(struct acm_msg) + data_size);
                 p_channel->recv_msg->data = (void *)p_channel->recv_msg + sizeof(struct acm_msg);
-                p_channel->recv_msg->head.data_size = p_channel->head.data_size;
-                p_channel->recv_msg->head.req_id = p_channel->head.req_id;
+                p_channel->recv_msg->head.req_id = acm_bytes2long(p_channel->head, 0);
+                p_channel->recv_msg->head.data_size = data_size;
                 p_channel->recv_msg->p_channel = p_channel;
                 p_channel->data_read_index = 0;
             }
         }
 
+        log_debug("ACM:Recv head, req_id:%ld, data_size:%d", p_channel->recv_msg->head.req_id, p_channel->recv_msg->head.data_size);
+
         /*接收data*/
         read_size = recv(p_channel->socket_fd, 
                 p_channel->recv_msg->data + p_channel->data_read_index, 
-                p_channel->head.data_size - p_channel->data_read_index, 
+                p_channel->recv_msg->head.data_size - p_channel->data_read_index, 
                 MSG_DONTWAIT);
 
         if (read_size < 0) {
+            if (errno == EAGAIN) {
+                break;
+            }
             log_err("ACM:Some error occured when reading data from socket!%s", strerror(errno));
             break;
         }
 
         p_channel->data_read_index += read_size;
 
-        if (errno == EAGAIN) {
+        if (p_channel->data_read_index < p_channel->recv_msg->head.data_size) {
             break;
         } else {
             /*表示一次报文接收完毕*/
@@ -301,6 +327,7 @@ void acm_io_read_thread(void *arg){
             }
 
             p_channel->is_head = 1;
+            p_channel->head_read_index = 0;
         }
     }
 
@@ -315,13 +342,15 @@ void acm_io_read_thread(void *arg){
  * 返回值: 
  */
 void acm_io_write_thread(void *arg){
+    //log_debug("ACM:Stated io-write thread!");
+
     struct acm_channel *p_channel = arg;
     struct acm_handle *p_handle = p_channel->p_handle;
     struct acm_write_task *p_task;
     struct acm_write_task *write_task_queue = p_channel->write_queue;
     int hava_write_size;
     int is_queue_empty = 0;
-    char *head;
+    char head[ACM_MSG_HEAD_SIZE];
 
     /* 根据当前的结构设计，既然产生了可写事件，并且调用了写处理线程，则说明写队列
      * 一定是非空的！如果是空的，则说明某个地方出现了问题*/
@@ -337,7 +366,9 @@ void acm_io_write_thread(void *arg){
 
         /*写头*/
         if (p_task->write_index < ACM_MSG_HEAD_SIZE) {
-            head = (char *)(&p_task->head);
+            log_debug("ACM:Writing head..req_id:%ld", p_task->head.req_id);
+            acm_long2bytes(p_task->head.req_id, head, 0);
+            acm_int2bytes(p_task->head.data_size, head, 8);
             if ((hava_write_size = send(p_channel->socket_fd,
                             head + p_task->write_index,
                             ACM_MSG_HEAD_SIZE - p_task->write_index,
@@ -347,14 +378,16 @@ void acm_io_write_thread(void *arg){
                     return;
                 }
             }
+            log_debug("ACM:Have write head size:%d", hava_write_size);
             p_task->write_index += hava_write_size;
-            if (errno == EAGAIN) {
+            if (ACM_MSG_HEAD_SIZE - p_task->write_index > 0) {
                 /*如果没有读取完整，则注册可写事件，并且退出处理线程*/
-                if (acm_epoll_mod(p_channel, EPOLLIN | EPOLLOUT | EPOLLRDHUP) < 0) {
+                if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLOUT)) < 0) {
                     log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
                 }
                 return;
             }
+            log_debug("ACM:Writing data, req_id:%ld, data_size:%d",p_task->head.req_id,  p_task->head.data_size);
         }
 
         /*写data*/
@@ -368,13 +401,15 @@ void acm_io_write_thread(void *arg){
             }
         }
         p_task->write_index += hava_write_size;
-        if (errno == EAGAIN) {
-            /*如果没有读取完整，则注册可写事件，并且退出处理线程*/
-            if (acm_epoll_mod(p_channel, EPOLLIN | EPOLLOUT | EPOLLRDHUP) < 0) {
+        if (p_task->write_index - ACM_MSG_HEAD_SIZE - p_task->head.data_size > 0) {
+            //log_debug("ACM:Write again!");
+            /*如果没有写完整，则注册可写事件，并且退出处理线程*/
+            if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLOUT)) < 0) {
                 log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
             }
             return;
         }
+        log_debug("ACM:hava write size:%d", hava_write_size);
 
         /*写完毕，把写队列的头节点去掉，并判断队列是否为空*/
         while(sem_trywait(&p_channel->write_queue_mutex) < 0);
@@ -510,15 +545,20 @@ int acm_hold_request(struct acm_channel *p_channel,
         void (*listening)(void* arg, char *resp_data, int data_size), 
         void* arg){
 
+    if (p_channel == NULL) {
+        return -1;
+    }
+
     struct acm_handle *p_handle = p_channel->p_handle;
     struct acm_request_map_entry *p_entry;
 
-    p_entry = &p_channel->reqeust_map[req_id%p_handle->max_hold_req_num];
+    p_entry = &p_channel->request_map[req_id%p_handle->max_hold_req_num];
+    log_debug("ACM:Get a request-map entry.");
     if (p_entry->req_id != 0) {
         /*如果map的entry并不是空的，说明map长度不够长，map长度应大于预估的最大请求量*/
         /*如果想要灵活的hold request，则应该使用红黑树*/
         log_err("ACM:The request map is full now!!!!");
-        return -1;
+        return -2;
     }
     p_entry->req_id = req_id;
     p_entry->listening = listening;
@@ -539,7 +579,7 @@ void acm_response(void *arg){
     struct acm_request_map_entry *p_entry;
     unsigned long req_id = p_msg->head.req_id;
 
-    p_entry = &p_channel->reqeust_map[req_id%p_handle->max_hold_req_num];
+    p_entry = &p_channel->request_map[req_id%p_handle->max_hold_req_num];
     p_entry->req_id = 0;
     if (p_entry->listening == NULL) {
         log_warning("ACM:listening is not setted!");
@@ -553,3 +593,41 @@ void acm_response(void *arg){
 
     return;
 }
+
+void acm_int2bytes(unsigned int value, char* buf, int offset){
+    buf[offset + 3] = (unsigned char)value;
+    buf[offset + 2] = (unsigned char)(value >> 8);
+    buf[offset + 1] = (unsigned char)(value >> 16);
+    buf[offset + 0] = (unsigned char)(value >> 24);
+}
+
+unsigned int acm_bytes2int(char* buf, int offset){
+    return ((unsigned int)buf[offset + 3]) |
+        ((unsigned int)buf[offset + 2] << 8) |
+        ((unsigned int)buf[offset + 1] << 16) |
+        ((unsigned int)buf[offset + 0] << 24);
+}
+
+void acm_long2bytes(unsigned long value, char* buf, int offset){
+    buf[offset + 7] = (unsigned char)value;
+    buf[offset + 6] = (unsigned char)(value >> 8);
+    buf[offset + 5] = (unsigned char)(value >> 16);
+    buf[offset + 4] = (unsigned char)(value >> 24);
+    buf[offset + 3] = (unsigned char)(value >> 32);
+    buf[offset + 2] = (unsigned char)(value >> 40);
+    buf[offset + 1] = (unsigned char)(value >> 48);
+    buf[offset + 0] = (unsigned char)(value >> 56);
+}
+
+unsigned long acm_bytes2long(char* buf, int offset) {
+    return ((unsigned long)buf[offset + 7]) |
+        ((unsigned long)buf[offset + 6] << 8) |
+        ((unsigned long)buf[offset + 5] << 16) |
+        ((unsigned long)buf[offset + 4] << 24) |
+        ((unsigned long)buf[offset + 3] << 32) |
+        ((unsigned long)buf[offset + 2] << 40) |
+        ((unsigned long)buf[offset + 1] << 48) |
+        ((unsigned long)buf[offset + 0] << 56);
+           
+}
+

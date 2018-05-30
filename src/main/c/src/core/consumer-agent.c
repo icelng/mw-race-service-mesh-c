@@ -14,9 +14,12 @@ struct acm_channel *gp_acm_channel;
 void acm_listening(void *arg, char *data, int data_size){
     struct hs_channel *p_channel = arg;
     char response_body[64];
+    //int ret_value = acm_bytes2int(data, 0);
+    data[data_size] = 0;
 
-    log_debug("Recv msg:%d from agent-server, data_size:%d", *(int *)data, data_size);
-    sprintf(response_body, "%d", *(int *)data);
+    log_debug("Recv msg:%s from agent-server, data_size:%d", data, data_size);
+    data[data_size - 1] = 0;
+    sprintf(response_body, "%s", data + 2);
 
     hs_response_ok(p_channel, response_body, strlen(response_body));
 }
@@ -50,7 +53,7 @@ void cagent_start(int argc, char *argv[]){
     /*启动agent-client-manager*/
     p_acm_handle = acm_start(&acm_opt);
     /*连接agent-server*/
-    gp_acm_channel = acm_connect(p_acm_handle, "127.0.0.1", 3000);
+    gp_acm_channel = acm_connect(p_acm_handle, "127.0.0.1", 1090);
     if (gp_acm_channel == NULL) {
         log_err("Failed to connect agent-server!");
     }
