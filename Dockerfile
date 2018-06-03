@@ -27,6 +27,7 @@ COPY start-agent.sh /usr/local/bin
 
 RUN set -ex && apt-get update
 RUN set -ex && apt-get install libcurl4-openssl-dev -y
+RUN set -ex && apt-get install curl -y
 
 RUN set -ex && mkdir -p /root/logs
 RUN set -ex && chmod 777 /root/dists/consumer-agent
