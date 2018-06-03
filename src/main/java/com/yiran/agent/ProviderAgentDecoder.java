@@ -45,7 +45,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                     System.out.print(header[i] + " ");
                 }
                 System.out.print("\n");
-                logger.info("requestId:{}, dataLength:{}", agentServiceRequest.getRequestId(), dataLength);
+//                logger.info("requestId:{}, dataLength:{}", agentServiceRequest.getRequestId(), dataLength);
                 isHeader = false;
             }
         }
@@ -57,7 +57,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
         in.readBytes(agentServiceRequest.getData(), dataLength);
 
         out.add(agentServiceRequest);
-        logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
+//        logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
 
         /*去掉引用*/
         agentServiceRequest = null;
