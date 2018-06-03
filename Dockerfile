@@ -9,6 +9,7 @@ RUN set -ex && mkdir bin
 RUN set -ex && apt-get update
 RUN set -ex && apt-get install make -y
 RUN set -ex && apt-get install gcc -y
+RUN set -ex && apt-get install libcurl4-openssl-dev -y
 RUN set -ex && make clean
 RUN set -ex && make
 
