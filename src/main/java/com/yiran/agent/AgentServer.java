@@ -54,6 +54,9 @@ public class AgentServer {
         logger.info("Register service!");
         registry = new EtcdSecondRegistry(System.getProperty("etcd.url"));
         int loadLevel = Integer.valueOf(System.getProperty("load.level"));
+        if (loadLevel != 3) {
+            return;  // 只启动large
+        }
         try {
             registry.register("com.alibaba.dubbo.performance.demo.provider.IHelloService", this.port, loadLevel);
         } catch (Exception e) {
