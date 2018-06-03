@@ -115,6 +115,7 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
     unsigned int hash_code = sd_hash_code(service_name);
     struct sd_service_node *p = NULL;
 
+    sem_wait(&p_handle->write_mutex);
     sem_wait(&p_handle->read_cnt_mutex);
     if (p_handle->read_cnt == 0) {
         /*需要抢写者锁*/
@@ -123,6 +124,7 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
     }
     p_handle->read_cnt++;
     sem_post(&p_handle->read_cnt_mutex);
+    sem_post(&p_handle->write_mutex);
 
     int tb_entry_index = hash_code % p_handle->service_tb_size;
     p = p_handle->service_tb[tb_entry_index];
@@ -168,7 +170,8 @@ struct sd_handle* sd_init(struct acm_handle *p_acm_handle, const char* etcd_url)
     /*初始化服务表*/
     p_new_handle->service_tb_size = SERVICE_DISCOVERY_MAX_SERVICE_NUM;
     sem_init(&p_new_handle->service_tb_mutex, 0, 1);  // 初始化服务表锁
-    sem_init(&p_new_handle->read_cnt_mutex, 0, 1);  // 初始化服务表锁
+    sem_init(&p_new_handle->read_cnt_mutex, 0, 1);  
+    sem_init(&p_new_handle->write_mutex, 0, 1);  
     p_new_handle->read_cnt = 0;
     for (i = 0;i < p_new_handle->service_tb_size;i++) {
         p_new_handle->service_tb[i] = NULL;
@@ -339,7 +342,9 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
     struct sd_service_node *p_service_node = sd_get_service_node(p_handle, service_name);
     if (p_service_node == NULL) {
         /*进行服务发现*/
+        sem_wait(&p_handle->write_mutex);  // 抢写者锁
         sem_wait(&p_handle->service_tb_mutex);
+        sem_post(&p_handle->write_mutex);
         p_service_node = sd_get_service_node(p_handle, service_name);
         if (p_service_node == NULL) {
             log_info("SERVICE FIND:Find the service:%s", service_name);

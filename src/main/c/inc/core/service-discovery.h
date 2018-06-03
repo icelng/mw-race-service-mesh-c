@@ -40,6 +40,7 @@ struct sd_handle {
     struct sd_service_node *service_tb[SERVICE_DISCOVERY_MAX_SERVICE_NUM];  // 服务表,静态
     int service_tb_size;  // 服务表长度
     sem_t service_tb_mutex;  // 服务表锁
+    sem_t write_mutex;
     int read_cnt;  // 读者数
     sem_t read_cnt_mutex;
 };
