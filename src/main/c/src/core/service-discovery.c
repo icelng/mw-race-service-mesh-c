@@ -115,17 +115,6 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
     unsigned int hash_code = sd_hash_code(service_name);
     struct sd_service_node *p = NULL;
 
-    sem_wait(&p_handle->write_mutex);
-    sem_wait(&p_handle->read_cnt_mutex);
-    if (p_handle->read_cnt == 0) {
-        /*需要抢写者锁*/
-        sem_wait(&p_handle->service_tb_mutex);
-
-    }
-    p_handle->read_cnt++;
-    sem_post(&p_handle->read_cnt_mutex);
-    sem_post(&p_handle->write_mutex);
-
     int tb_entry_index = hash_code % p_handle->service_tb_size;
     p = p_handle->service_tb[tb_entry_index];
     if (p == NULL) {
@@ -138,12 +127,6 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
         }
         p = p->next;
     }
-
-    sem_wait(&p_handle->read_cnt_mutex);
-    if (--p_handle->read_cnt == 0) {
-        sem_post(&p_handle->service_tb_mutex);
-    }
-    sem_post(&p_handle->read_cnt_mutex);
     
     return p;
 }
@@ -339,12 +322,10 @@ err1_ret:
  * 返回值: 
  */
 struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *service_name){
+    sem_wait(&p_handle->service_tb_mutex);
     struct sd_service_node *p_service_node = sd_get_service_node(p_handle, service_name);
     if (p_service_node == NULL) {
         /*进行服务发现*/
-        sem_wait(&p_handle->write_mutex);  // 抢写者锁
-        sem_wait(&p_handle->service_tb_mutex);
-        sem_post(&p_handle->write_mutex);
         p_service_node = sd_get_service_node(p_handle, service_name);
         if (p_service_node == NULL) {
             log_info("SERVICE FIND:Find the service:%s", service_name);
@@ -355,8 +336,8 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
             }
             p_service_node = sd_get_service_node(p_handle, service_name);
         }
-        sem_post(&p_handle->service_tb_mutex);
     }
+    sem_post(&p_handle->service_tb_mutex);
 
     sem_wait(&p_service_node->endpoint_link_mutex);
     struct sd_endpoint *p_endpoint = p_service_node->p_next_req_endpoint;
