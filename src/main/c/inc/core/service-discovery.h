@@ -40,6 +40,8 @@ struct sd_handle {
     struct sd_service_node *service_tb[SERVICE_DISCOVERY_MAX_SERVICE_NUM];  // 服务表,静态
     int service_tb_size;  // 服务表长度
     sem_t service_tb_mutex;  // 服务表锁
+    int read_cnt;  // 读者数
+    sem_t read_cnt_mutex;
 };
 
 struct sd_handle* sd_init(struct acm_handle *p_acm_handle, const char* etcd_url);

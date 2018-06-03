@@ -115,6 +115,15 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
     unsigned int hash_code = sd_hash_code(service_name);
     struct sd_service_node *p = NULL;
 
+    sem_wait(&p_handle->read_cnt_mutex);
+    if (p_handle->read_cnt == 0) {
+        /*需要抢写者锁*/
+        sem_wait(&p_handle->service_tb_mutex);
+
+    }
+    p_handle->read_cnt++;
+    sem_post(&p_handle->read_cnt_mutex);
+
     int tb_entry_index = hash_code % p_handle->service_tb_size;
     p = p_handle->service_tb[tb_entry_index];
     if (p == NULL) {
@@ -127,6 +136,12 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
         }
         p = p->next;
     }
+
+    sem_wait(&p_handle->read_cnt_mutex);
+    if (--p_handle->read_cnt == 0) {
+        sem_post(&p_handle->service_tb_mutex);
+    }
+    sem_post(&p_handle->read_cnt_mutex);
     
     return p;
 }
@@ -153,6 +168,8 @@ struct sd_handle* sd_init(struct acm_handle *p_acm_handle, const char* etcd_url)
     /*初始化服务表*/
     p_new_handle->service_tb_size = SERVICE_DISCOVERY_MAX_SERVICE_NUM;
     sem_init(&p_new_handle->service_tb_mutex, 0, 1);  // 初始化服务表锁
+    sem_init(&p_new_handle->read_cnt_mutex, 0, 1);  // 初始化服务表锁
+    p_new_handle->read_cnt = 0;
     for (i = 0;i < p_new_handle->service_tb_size;i++) {
         p_new_handle->service_tb[i] = NULL;
     }
