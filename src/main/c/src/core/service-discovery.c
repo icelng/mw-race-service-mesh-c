@@ -256,8 +256,8 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
     sem_post(&p_service_node->endpoint_link_mutex);
 
     /*etcd*/
-    log_info("SERVICE FIND:Geting service node from etcd....");
     sprintf(etcd_key, "/%s/%s", g_root_path, service_name);
+    log_info("SERVICE FIND:Geting service node from etcd....");
     cJSON *etcd_json = etcd_get(p_handle->etcd_handle, etcd_key);
     /*解析json*/
     if (etcd_json == NULL) {
