@@ -5,11 +5,14 @@
 #include "string.h"
 #include "stdio.h"
 #include "unistd.h"
+#include "service-discovery.h"
 
 int get_parameter_start_index(char *str);
 int hash_code(char *str);
+void get_service_name(char *src, char *dst_buf);
 
 struct acm_channel *gp_acm_channel;
+struct sd_handle *gp_sd_handle;
 
 void acm_listening(void *arg, char *data, int data_size){
     struct hs_channel *p_channel = arg;
@@ -26,8 +29,12 @@ void acm_listening(void *arg, char *data, int data_size){
 
 
 void content_handler(struct hs_channel *p_channel, int content_size, char *content){
+    struct acm_channel *p_optimal_agent_channel;
+    char service_name[128];
 
-    if (acm_request(gp_acm_channel, content, content_size, acm_listening, p_channel) < 0) {
+    get_service_name(content, service_name);
+    p_optimal_agent_channel = sd_get_optimal_endpoint(gp_sd_handle, service_name); 
+    if (acm_request(p_optimal_agent_channel, content, content_size, acm_listening, p_channel) < 0) {
         log_err("Failed to call acm_request!");
     }
 
@@ -45,6 +52,7 @@ void cagent_start(int argc, char *argv[]){
     struct hs_handle *p_hs_handle;
     struct acm_handle *p_acm_handle;
 
+
     acm_opt.io_thread_num = 8;
     acm_opt.worker_thread_num = 8;
     acm_opt.max_hold_req_num = 51200;
@@ -52,11 +60,11 @@ void cagent_start(int argc, char *argv[]){
 
     /*启动agent-client-manager*/
     p_acm_handle = acm_start(&acm_opt);
-    /*连接agent-server*/
-    gp_acm_channel = acm_connect(p_acm_handle, "127.0.0.1", 1090);
-    if (gp_acm_channel == NULL) {
-        log_err("Failed to connect agent-server!");
-    }
+
+    /*服务发现初始化*/
+    log_info("Init service-discovery...");
+    //gp_sd_handle = sd_init(p_acm_handle, "http://1g.aliyun:2379");
+    gp_sd_handle = sd_init(p_acm_handle, argv[1]);
 
 
     /*先初始化内存池*/
@@ -113,4 +121,56 @@ int hash_code(char *str){
     }
 
     return h;
+}
+
+int hex2dec(char c){
+    if ('0' <= c && c <= '9') {  
+        return c - '0';  
+    } else if ('a' <= c && c <= 'f') {  
+        return c - 'a' + 10;  
+    } else if ('A' <= c && c <= 'F') {  
+        return c - 'A' + 10;  
+    } else {  
+        return -1;  
+    }  
+}
+
+/* 函数名: void get_service_name(char *src, char *dst_buf) 
+ * 功能: 从表单里获得服务名,服务名参数必须在首位(有一定的局限性)，顺便进行url解码
+ *       必须是表单字符串,不然会出现一些莫名其妙的错误
+ * 参数: char *src,
+         char *dst_buf,
+ * 返回值: 
+ */
+void get_service_name(char *src, char *dst_buf){
+    int i = 0;
+    int is_param_start = 0;
+    int dst_index = 0;
+
+    for(;;i++) {
+        char c = src[i];
+
+        if (c == 0 || c == '&') {
+            break;
+        }
+
+        if (c == '=') {
+            is_param_start = 1;
+            continue;
+        }
+        if (is_param_start == 0) {
+            continue;
+        }
+
+        if (c != '%') {  
+            dst_buf[dst_index++] = c;
+        } else {  
+            char c1 = src[++i];  
+            char c0 = src[++i];  
+            int num = 0;  
+            num = hex2dec(c1) * 16 + hex2dec(c0);  
+            dst_buf[dst_index++] = num;  
+        }  
+    }
+    dst_buf[dst_index] = 0;
 }

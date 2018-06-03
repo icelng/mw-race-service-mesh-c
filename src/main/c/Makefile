@@ -10,7 +10,7 @@ INC_DIR += -I ./inc/core
 INC_DIR += -I ./inc/com
 
 CFLAGS +=  $(INC_DIR)
-LINKS = -pthread -lrt
+LINKS = -pthread -lrt -lcurl
 
 TARGET = consumer-agent
 

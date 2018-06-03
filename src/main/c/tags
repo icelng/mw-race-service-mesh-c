@@ -4,8 +4,10 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ACM_MAX_EPOLL_EVENTS	inc/core/agent-client-manager.h	7;"	d	language:C++
-ACM_MSG_HEAD_SIZE	inc/core/agent-client-manager.h	6;"	d	language:C++
+ACM_MAX_CHANNEL_NUM	inc/core/agent-client-manager.h	10;"	d	language:C++
+ACM_MAX_EPOLL_EVENTS	inc/core/agent-client-manager.h	9;"	d	language:C++
+ACM_MSG_HEAD_SIZE	inc/core/agent-client-manager.h	8;"	d	language:C++
+AGENT_CLIENT_MANAGER	inc/core/agent-client-manager.h	2;"	d	language:C++
 BIN_DIR	Makefile	/^BIN_DIR = .\/bin$/;"	m	language:Make
 CJSON_EXPORT_SYMBOLS	inc/com/cJSON.h	108;"	d	language:C++
 CJSON_EXPORT_SYMBOLS	lib/cJSON/cJSON.h	108;"	d	language:C++
@@ -57,6 +59,7 @@ CJSON_VERSION_PATCH	inc/com/cJSON.h	34;"	d	language:C++
 CJSON_VERSION_PATCH	lib/cJSON/cJSON.h	34;"	d	language:C++
 DEPENDECE	Makefile	/^DEPENDECE = $(SRC_COM_FILES:.c=.d)$/;"	m	language:Make
 DirectoryOfThisScript	.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	f	language:Python
+ETCD_MAX_CURL_URL_LEN	inc/core/etcdctl.h	4;"	d	language:C++
 FlagsForFile	.ycm_extra_conf.py	/^def FlagsForFile( filename, **kwargs ):$/;"	f	language:Python
 GetCompilationInfoForFile	.ycm_extra_conf.py	/^def GetCompilationInfoForFile( filename ):$/;"	f	language:Python
 HLIST_HEAD	inc/com/list.h	208;"	d	language:C++
@@ -68,7 +71,7 @@ INIT_HLIST_HEAD	inc/com/list.h	209;"	d	language:C++
 INIT_HLIST_NODE	inc/com/list.h	210;"	d	language:C++
 INIT_LIST_HEAD	inc/com/list.h	26;"	d	language:C++
 IsHeaderFile	.ycm_extra_conf.py	/^def IsHeaderFile( filename ):$/;"	f	language:Python
-LINKS	Makefile	/^LINKS = -pthread -lrt$/;"	m	language:Make
+LINKS	Makefile	/^LINKS = -pthread -lrt -lcurl$/;"	m	language:Make
 LIST_HEAD	inc/com/list.h	23;"	d	language:C++
 LIST_HEAD_INIT	inc/com/list.h	21;"	d	language:C++
 LIST_POISON1	inc/com/list.h	14;"	d	language:C++
@@ -93,6 +96,7 @@ MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFla
 OBJS	Makefile	/^OBJS = $(patsubst %.c, %.o, $(SRC_COM_FILES) $(SRC_CORE_FILES))$/;"	m	language:Make
 RB_BLACK	inc/com/rbtree.h	4;"	d	language:C++
 RB_RED	inc/com/rbtree.h	3;"	d	language:C++
+SERVICE_DISCOVERY_MAX_SERVICE_NUM	inc/core/service-discovery.h	5;"	d	language:C++
 SOURCE_EXTENSIONS	.ycm_extra_conf.py	/^SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]$/;"	v	language:Python
 SRC_COM_FILES	Makefile	/^SRC_COM_FILES = $(wildcard $(SRC_DIR)\/com\/*.c)$/;"	m	language:Make
 SRC_CORE_FILES	Makefile	/^SRC_CORE_FILES = $(wildcard $(SRC_DIR)\/core\/*.c)$/;"	m	language:Make
@@ -109,17 +113,21 @@ __list_del	inc/com/list.h	/^static inline void __list_del(struct list_head * pre
 __list_for_each	inc/com/list.h	163;"	d	language:C++
 __list_splice	inc/com/list.h	/^static inline void __list_splice(struct list_head *list,   $/;"	f	language:C++
 _uds_sendfd	src/com/ipc-uds.c	/^int _uds_sendfd(int usockfd, int fd){$/;"	f	language:C
+acm_bytes2int	src/core/agent-client-manager.c	/^unsigned int acm_bytes2int(char* buf, int offset){$/;"	f	language:C
+acm_bytes2long	src/core/agent-client-manager.c	/^unsigned long acm_bytes2long(char* buf, int offset) {$/;"	f	language:C
 acm_channel	inc/core/agent-client-manager.h	/^struct acm_channel {$/;"	s	language:C++
 acm_connect	src/core/agent-client-manager.c	/^struct acm_channel* acm_connect($/;"	f	language:C
 acm_epoll_mod	src/core/agent-client-manager.c	/^int acm_epoll_mod(struct acm_channel *p_channel, unsigned int events){$/;"	f	language:C
 acm_event_loop	src/core/agent-client-manager.c	/^void* acm_event_loop(void *arg){$/;"	f	language:C
 acm_handle	inc/core/agent-client-manager.h	/^struct acm_handle {$/;"	s	language:C++
 acm_hold_request	src/core/agent-client-manager.c	/^int acm_hold_request(struct acm_channel *p_channel, $/;"	f	language:C
+acm_int2bytes	src/core/agent-client-manager.c	/^void acm_int2bytes(unsigned int value, char* buf, int offset){$/;"	f	language:C
 acm_io_do_read	src/core/agent-client-manager.c	/^int acm_io_do_read(struct acm_channel *p_channel){$/;"	f	language:C
 acm_io_do_write	src/core/agent-client-manager.c	/^int acm_io_do_write(struct acm_channel *p_channel){$/;"	f	language:C
 acm_io_read_thread	src/core/agent-client-manager.c	/^void acm_io_read_thread(void *arg){$/;"	f	language:C
 acm_io_write_thread	src/core/agent-client-manager.c	/^void acm_io_write_thread(void *arg){$/;"	f	language:C
 acm_listening	src/core/consumer-agent.c	/^void acm_listening(void *arg, char *data, int data_size){$/;"	f	language:C
+acm_long2bytes	src/core/agent-client-manager.c	/^void acm_long2bytes(unsigned long value, char* buf, int offset){$/;"	f	language:C
 acm_msg	inc/core/agent-client-manager.h	/^struct acm_msg {$/;"	s	language:C++
 acm_msg_head	inc/core/agent-client-manager.h	/^struct acm_msg_head {$/;"	s	language:C++
 acm_opt	inc/core/agent-client-manager.h	/^struct acm_opt {$/;"	s	language:C++
@@ -337,6 +345,7 @@ cjson_min	lib/cJSON/cJSON.c	1022;"	d	language:C	file:
 cjson_min	src/com/cJSON.c	1022;"	d	language:C	file:
 color	inc/com/rbtree.h	/^    unsigned char color; \/\/颜色$/;"	m	language:C++	struct:rb_node
 compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v	language:Python
+comsuming_list	inc/core/service-discovery.h	/^    struct sd_endpoint *comsuming_list;  \/\/ 正在消费的列表$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
 container_of	inc/com/list.h	7;"	d	language:C++
 container_of	inc/com/rbtree.h	8;"	d	language:C++
 content	lib/cJSON/cJSON.c	/^    const unsigned char *content;$/;"	m	language:C	struct:__anon3	file:
@@ -365,6 +374,10 @@ depth	lib/cJSON/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/ob
 depth	lib/cJSON/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon4	file:
 depth	src/com/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/objects) is the input at the current offset. *\/$/;"	m	language:C	struct:__anon6	file:
 depth	src/com/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon7	file:
+endpoint_link_mutex	inc/core/service-discovery.h	/^    sem_t endpoint_link_mutex;$/;"	m	language:C++	struct:sd_service_node
+endpoint_list1_head	inc/core/service-discovery.h	/^    struct sd_endpoint endpoint_list1_head, endpoint_list2_head;$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
+endpoint_list2_head	inc/core/service-discovery.h	/^    struct sd_endpoint endpoint_list1_head, endpoint_list2_head;$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::
+endpoints_num	inc/core/service-discovery.h	/^    int endpoints_num;  \/\/ 节点数$/;"	m	language:C++	struct:sd_service_node
 ensure	lib/cJSON/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, size_t needed)$/;"	f	language:C	file:
 ensure	src/com/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, size_t needed)$/;"	f	language:C	file:
 epoll_fd	inc/core/agent-client-manager.h	/^    int epoll_fd;$/;"	m	language:C++	struct:acm_handle
@@ -372,6 +385,13 @@ epoll_fd	inc/core/http-server.h	/^    int epoll_fd;  \/\/ 所属epoll_fd$/;"	m	l
 epoll_fd	inc/core/http-server.h	/^    int epoll_fd[MAX_EPOLL_EVENT_LOOP_NUM];  \/\/ epoll描述符数组，描述符$/;"	m	language:C++	struct:hs_handle
 error	lib/cJSON/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon2	file:
 error	src/com/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon5	file:
+etcd_get	src/core/etcdctl.c	/^cJSON* etcd_get(struct etcdctl_handle *p_handle, const char* key_or_dir){$/;"	f	language:C
+etcd_handle	inc/core/service-discovery.h	/^    struct etcdctl_handle *etcd_handle;$/;"	m	language:C++	struct:sd_handle	typeref:struct:sd_handle::etcdctl_handle
+etcd_init	src/core/etcdctl.c	/^struct etcdctl_handle* etcd_init(const char* etcd_url, int port){$/;"	f	language:C
+etcd_process_get_data	src/core/etcdctl.c	/^size_t etcd_process_get_data(void *buffer, size_t size, size_t nmemb, void *user_p) {$/;"	f	language:C
+etcd_url	inc/core/etcdctl.h	/^    char *etcd_url;$/;"	m	language:C++	struct:etcdctl_handle
+etcdctl_handle	inc/core/etcdctl.h	/^struct etcdctl_handle {$/;"	s	language:C++
+etcdctl_opt	inc/core/etcdctl.h	/^struct etcdctl_opt {$/;"	s	language:C++
 event_loop_num	inc/core/http-server.h	/^    int event_loop_num;  \/\/ epoll事件循环线程数$/;"	m	language:C++	struct:hs_bootstrap
 event_loop_num	inc/core/http-server.h	/^    int event_loop_num;$/;"	m	language:C++	struct:hs_handle
 events	inc/core/agent-client-manager.h	/^    unsigned int events;  \/\/ channel现在所注册的事件$/;"	m	language:C++	struct:acm_channel
@@ -386,6 +406,7 @@ free_fn	inc/com/cJSON.h	/^      void (*free_fn)(void *ptr);$/;"	m	language:C++	s
 free_fn	lib/cJSON/cJSON.h	/^      void (*free_fn)(void *ptr);$/;"	m	language:C++	struct:cJSON_Hooks
 free_size	inc/com/mmpool.h	/^    unsigned int free_size[MMPL_MAX_INDEX + 1];  \/\/ 记录free数组对应index含有index(空闲内存)大小$/;"	m	language:C++	struct:mm_pool_s
 g_log_level	src/com/log.c	/^static int g_log_level = 0;$/;"	v	language:C	file:
+g_root_path	src/core/service-discovery.c	/^char* g_root_path = "dubbomesh";$/;"	v	language:C
 g_uds_mmpl	src/com/ipc-uds.c	/^static mmpl g_uds_mmpl;  \/\/ 使用到的内存池$/;"	v	language:C	file:
 get_array_item	lib/cJSON/cJSON.c	/^static cJSON* get_array_item(const cJSON *array, size_t index)$/;"	f	language:C	file:
 get_array_item	src/com/cJSON.c	/^static cJSON* get_array_item(const cJSON *array, size_t index)$/;"	f	language:C	file:
@@ -400,8 +421,9 @@ global_error	src/com/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	la
 global_hooks	lib/cJSON/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
 global_hooks	src/com/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
 gp_acm_channel	src/core/consumer-agent.c	/^struct acm_channel *gp_acm_channel;$/;"	v	language:C	typeref:struct:acm_channel
+hash_code	inc/core/service-discovery.h	/^    unsigned int hash_code;  \/\/ 服务名的hash，用来索引表$/;"	m	language:C++	struct:sd_service_node
 hash_code	src/core/consumer-agent.c	/^int hash_code(char *str){$/;"	f	language:C
-head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_msg_head
+head	inc/core/agent-client-manager.h	/^    char head[ACM_MSG_HEAD_SIZE];$/;"	m	language:C++	struct:acm_channel
 head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_msg	typeref:struct:acm_msg::acm_msg_head
 head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_write_task	typeref:struct:acm_write_task::acm_msg_head
 head_read_index	inc/core/agent-client-manager.h	/^    int head_read_index;$/;"	m	language:C++	struct:acm_channel
@@ -517,6 +539,7 @@ list_prepare_entry	inc/com/list.h	184;"	d	language:C++
 list_splice	inc/com/list.h	/^static inline void list_splice(struct list_head *list, struct list_head *head)   $/;"	f	language:C++
 list_splice_init	inc/com/list.h	/^static inline void list_splice_init(struct list_head *list,   $/;"	f	language:C++
 listening	inc/core/agent-client-manager.h	/^    void (*listening)(void *arg, char *resp_data, int data_size);$/;"	m	language:C++	struct:acm_request_map_entry
+load_level	inc/core/service-discovery.h	/^    int load_level;$/;"	m	language:C++	struct:sd_endpoint
 log_alert	inc/com/log.h	12;"	d	language:C++
 log_debug	inc/com/log.h	47;"	d	language:C++
 log_emerg	inc/com/log.h	5;"	d	language:C++
@@ -560,6 +583,8 @@ next	inc/com/cJSON.h	/^    struct cJSON *next;$/;"	m	language:C++	struct:cJSON	t
 next	inc/com/list.h	/^struct hlist_node *next, **pprev;   $/;"	m	language:C++	struct:hlist_node	typeref:struct:hlist_node::hlist_node
 next	inc/com/list.h	/^struct list_head *next, *prev;   $/;"	m	language:C++	struct:list_head	typeref:struct:list_head::list_head
 next	inc/com/mmpool.h	/^    struct mm_node *next;  \/\/下一个节点$/;"	m	language:C++	struct:mm_node	typeref:struct:mm_node::mm_node
+next	inc/core/service-discovery.h	/^    struct sd_endpoint *next;$/;"	m	language:C++	struct:sd_endpoint	typeref:struct:sd_endpoint::sd_endpoint
+next	inc/core/service-discovery.h	/^    struct sd_service_node *next;$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_service_node
 next	lib/cJSON/cJSON.h	/^    struct cJSON *next;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 nil	inc/com/rbtree.h	/^    struct rb_node nil;  \/\/哨兵指针$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
 noalloc	lib/cJSON/cJSON.c	/^    cJSON_bool noalloc;$/;"	m	language:C	struct:__anon4	file:
@@ -570,9 +595,12 @@ offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon6	file
 offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon7	file:
 offsetof	inc/com/list.h	5;"	d	language:C++
 offsetof	inc/com/rbtree.h	6;"	d	language:C++
+p_acm_handle	inc/core/service-discovery.h	/^    struct acm_handle *p_acm_handle;$/;"	m	language:C++	struct:sd_handle	typeref:struct:sd_handle::acm_handle
+p_agent_channel	inc/core/service-discovery.h	/^    void* p_agent_channel;  \/\/ 索引到对应的通道$/;"	m	language:C++	struct:sd_endpoint
 p_channel	inc/core/agent-client-manager.h	/^    struct acm_channel *p_channel;  \/\/ 所属channel$/;"	m	language:C++	struct:acm_msg	typeref:struct:acm_msg::acm_channel
 p_handle	inc/core/agent-client-manager.h	/^    struct acm_handle* p_handle;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_handle
 p_hs_handle	inc/core/http-server.h	/^    struct hs_handle *p_hs_handle;  \/\/ 所属的http-server-handle$/;"	m	language:C++	struct:hs_channel	typeref:struct:hs_channel::hs_handle
+p_next_req_endpoint	inc/core/service-discovery.h	/^    struct sd_endpoint  *p_next_req_endpoint;  \/\/ 下一次请求该选用的endpoint$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
 p_tdpl_s	inc/com/tdpool.h	/^    struct tdpl_s *p_tdpl_s; \/\/线程所属的线程池的结构体$/;"	m	language:C++	struct:tdpl_td_handle	typeref:struct:tdpl_td_handle::tdpl_s
 parent	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
 parse_array	lib/cJSON/cJSON.c	/^static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
@@ -589,6 +617,7 @@ parse_string	lib/cJSON/cJSON.c	/^static cJSON_bool parse_string(cJSON * const it
 parse_string	src/com/cJSON.c	/^static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_value	lib/cJSON/cJSON.c	/^static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_value	src/com/cJSON.c	/^static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
+port	inc/core/etcdctl.h	/^    int port;$/;"	m	language:C++	struct:etcdctl_handle
 position	lib/cJSON/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon2	file:
 position	src/com/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon5	file:
 pprev	inc/com/list.h	/^struct hlist_node *next, **pprev;   $/;"	m	language:C++	struct:hlist_node	typeref:struct:hlist_node::
@@ -597,6 +626,7 @@ prefetch	inc/com/list.h	/^static inline void prefetch(const void *x) {;}   $/;"	
 prefetchw	inc/com/list.h	/^static inline void prefetchw(const void *x) {;}   $/;"	f	language:C++
 prev	inc/com/cJSON.h	/^    struct cJSON *prev;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 prev	inc/com/list.h	/^struct list_head *next, *prev;   $/;"	m	language:C++	struct:list_head	typeref:struct:list_head::
+prev	inc/core/service-discovery.h	/^    struct sd_endpoint *prev;$/;"	m	language:C++	struct:sd_endpoint	typeref:struct:sd_endpoint::sd_endpoint
 prev	lib/cJSON/cJSON.h	/^    struct cJSON *prev;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 print	lib/cJSON/cJSON.c	/^static unsigned char *print(const cJSON * const item, cJSON_bool format, const internal_hooks * const hooks)$/;"	f	language:C	file:
 print	src/com/cJSON.c	/^static unsigned char *print(const cJSON * const item, cJSON_bool format, const internal_hooks * const hooks)$/;"	f	language:C	file:
@@ -637,15 +667,33 @@ ready_n	inc/com/tdpool.h	/^    sem_t ready_n;  \/\/ 初始化时用$/;"	m	langua
 reallocate	lib/cJSON/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 reallocate	src/com/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 recv_msg	inc/core/agent-client-manager.h	/^    struct acm_msg* recv_msg;  \/\/ 接收到的报文$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_msg
+remain	inc/core/service-discovery.h	/^    unsigned long remain;  \/\/ 剩余请求数$/;"	m	language:C++	struct:sd_endpoint
 replace_item_in_object	lib/cJSON/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
 replace_item_in_object	src/com/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
 req_id	inc/core/agent-client-manager.h	/^    long req_id;$/;"	m	language:C++	struct:acm_msg_head
 req_id	inc/core/agent-client-manager.h	/^    unsigned long req_id;$/;"	m	language:C++	struct:acm_request_map_entry
-reqeust_map	inc/core/agent-client-manager.h	/^    struct acm_request_map_entry* reqeust_map;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_request_map_entry
 request_id	inc/core/agent-client-manager.h	/^    long request_id;$/;"	m	language:C++	struct:acm_channel
+request_map	inc/core/agent-client-manager.h	/^    struct acm_request_map_entry* request_map;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_request_map_entry
 root	inc/com/rbtree.h	/^    struct rb_node *root;  \/\/指向根节点$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
 run	inc/com/tdpool.h	/^    sem_t run;  \/\/用来告知线程开始调用函数$/;"	m	language:C++	struct:tdpl_td_handle
+saturated_list	inc/core/service-discovery.h	/^    struct sd_endpoint *saturated_list;  \/\/ 饱和的列表$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
+sd_endpoint	inc/core/service-discovery.h	/^struct sd_endpoint {$/;"	s	language:C++
+sd_get_optimal_endpoint	src/core/service-discovery.c	/^struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *service_name){$/;"	f	language:C
+sd_get_or_add_service	src/core/service-discovery.c	/^struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* service_name){$/;"	f	language:C
+sd_get_service_node	src/core/service-discovery.c	/^struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* service_name){$/;"	f	language:C
+sd_handle	inc/core/service-discovery.h	/^struct sd_handle {$/;"	s	language:C++
+sd_hash_code	src/core/service-discovery.c	/^unsigned int sd_hash_code(char *str){$/;"	f	language:C
+sd_init	src/core/service-discovery.c	/^struct sd_handle* sd_init(const char* etcd_url){$/;"	f	language:C
+sd_insert_endpoint	src/core/service-discovery.c	/^int sd_insert_endpoint(struct sd_endpoint *p_head, struct sd_endpoint *p_will_add){$/;"	f	language:C
+sd_parse_ip_and_port	src/core/service-discovery.c	/^int sd_parse_ip_and_port(char *src, char *ip_buf, int *port){$/;"	f	language:C
+sd_rls_endpoints	src/core/service-discovery.c	/^int sd_rls_endpoints(struct sd_service_node *p_service_node){$/;"	f	language:C
+sd_service_find	src/core/service-discovery.c	/^int sd_service_find(struct sd_handle *p_handle, char* service_name){$/;"	f	language:C
+sd_service_node	inc/core/service-discovery.h	/^struct sd_service_node {$/;"	s	language:C++
 server_port	inc/core/http-server.h	/^    int server_port;  \/\/ 服务器端口$/;"	m	language:C++	struct:hs_bootstrap
+service_name	inc/core/service-discovery.h	/^    char* service_name;  \/\/ 如果为null表明该节点是空的$/;"	m	language:C++	struct:sd_service_node
+service_tb	inc/core/service-discovery.h	/^    struct sd_service_node *service_tb[SERVICE_DISCOVERY_MAX_SERVICE_NUM];  \/\/ 服务表,静态$/;"	m	language:C++	struct:sd_handle	typeref:struct:sd_handle::sd_service_node
+service_tb_mutex	inc/core/service-discovery.h	/^    sem_t service_tb_mutex;  \/\/ 服务表锁$/;"	m	language:C++	struct:sd_handle
+service_tb_size	inc/core/service-discovery.h	/^    int service_tb_size;  \/\/ 服务表长度$/;"	m	language:C++	struct:sd_handle
 size	inc/com/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 size	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 socket	inc/core/http-server.h	/^    int socket;  \/\/ 套接字$/;"	m	language:C++	struct:hs_channel

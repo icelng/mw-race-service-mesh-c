@@ -41,46 +41,34 @@ public class AgentApp {
         //    logger.info("----------------->Ctxt per second:{}", performanceMonitor.getCtxtPerSecond());
 //      //      logger.info("----------------->gc:\n{}", performanceMonitor.jstatGc());
         //}, 0, 2, TimeUnit.SECONDS);
+        /*provider-agent不需要启动web服务器*/
+        //new ProviderAgentBootstrap().boot();
 
-//        if ("consumer".equals(type)) {
-////        if (true) {
-//            /*consumer-agent需要受理consumer发来的请求*/
-////            SpringApplication.run(AgentApp.class,args);
-//            HttpServer httpServer = new HttpServer(Integer.valueOf(System.getProperty("server.port")));
-//            httpServer.run();
-//        } else if("provider".equals(type)) {
-        if (true) {
-            /*provider-agent不需要启动web服务器*/
-            //new ProviderAgentBootstrap().boot();
-
-            /*先与Dubbo进行连接*/
-            DubboConnectManager dubboConnectManager = new DubboConnectManager();
-            Channel dubboChannel = null;
-            while(dubboChannel == null) {
-                logger.info("Connecting to Dubbo..");
-                try{
-                    dubboChannel = dubboConnectManager.getChannel();
-                } catch (Exception e){
-                    logger.error(e.getMessage());
-                    Thread.sleep(500);
-                }
+        /*先与Dubbo进行连接*/
+        DubboConnectManager dubboConnectManager = new DubboConnectManager();
+        Channel dubboChannel = null;
+        while (dubboChannel == null) {
+            logger.info("Connecting to Dubbo..");
+            try {
+                dubboChannel = dubboConnectManager.getChannel();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                Thread.sleep(500);
             }
-            /*往服务交换机注册支持的通道*/
-            ServiceSwitcher.setRpcClientChannel(dubboConnectManager.getChannel());
-
-            /*启动Agent服务*/
-            for (int i = 0;i < 1;i++){
-                try {
-                    int port = 1090;
-//                    int port = Integer.valueOf(System.getProperty("server.port" + i));
-                    new AgentServer(port).run();
-                } catch (Exception e) {
-                    logger.error(e.getLocalizedMessage(), e);
-                }
-            }
-        } else {
-            logger.error("Environment variable type is needed to set to provider or consumer.");
         }
+        /*往服务交换机注册支持的通道*/
+        ServiceSwitcher.setRpcClientChannel(dubboConnectManager.getChannel());
 
+        /*启动Agent服务*/
+        for (int i = 0; i < 1; i++) {
+            try {
+                //int port = 1090;
+                int port = Integer.valueOf(System.getProperty("server.port" + i));
+                new AgentServer(port).run();
+            } catch (Exception e) {
+                logger.error(e.getLocalizedMessage(), e);
+            }
+        }
     }
+
 }

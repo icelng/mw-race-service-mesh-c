@@ -665,7 +665,7 @@ void hs_tolower(char *str){
  * 参数: char c,
  * 返回值: 
  */
-int hex2dec(char c){
+int hs_hex2dec(char c){
     if ('0' <= c && c <= '9') {  
         return c - '0';  
     } else if ('a' <= c && c <= 'f') {  
@@ -696,7 +696,7 @@ void hs_url_decode(char *url){
             char c1 = url[++i];  
             char c0 = url[++i];  
             int num = 0;  
-            num = hex2dec(c1) * 16 + hex2dec(c0);  
+            num = hs_hex2dec(c1) * 16 + hs_hex2dec(c0);  
             res[res_len++] = num;  
         }  
     }  

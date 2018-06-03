@@ -24,6 +24,8 @@ COPY --from=builder /root/workspace/agent/src/main/c/bin/consumer-agent /root/di
 COPY --from=builder /usr/local/bin/docker-entrypoint.sh /usr/local/bin
 COPY start-agent.sh /usr/local/bin
 
+RUN set -ex && apt-get update
+
 RUN set -ex && mkdir -p /root/logs
 RUN set -ex && chmod 777 /root/dists/consumer-agent
 RUN set -ex && chmod 777 /usr/local/bin/docker-entrypoint.sh

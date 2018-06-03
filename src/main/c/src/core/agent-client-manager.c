@@ -32,6 +32,7 @@ struct acm_handle* acm_start(struct acm_opt* p_opt){
     p_new_handle->max_write_queue_len = p_opt->max_write_queue_len;
     p_new_handle->max_hold_req_num = p_opt->max_hold_req_num;
 
+
     if (p_new_handle == NULL) {
         log_err("Failed to malloc memory for new acm_handle.");
         goto err1_ret;
@@ -119,7 +120,7 @@ struct acm_channel* acm_connect(
     }
 
     /*接着进行channel初始化*/
-    log_info("ACM:Creating new channel...");
+    log_info("ACM:Connected successfully!Creating new channel...");
     p_channel = mmpl_getmem(p_acm_handle->mmpl, sizeof(struct acm_channel));
     p_channel->p_handle = p_acm_handle;
     p_channel->socket_fd = socket_fd;

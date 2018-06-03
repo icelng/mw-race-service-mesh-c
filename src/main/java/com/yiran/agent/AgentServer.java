@@ -3,6 +3,7 @@ package com.yiran.agent;
 import com.yiran.ServiceSwitcher;
 import com.yiran.dubbo.DubboConnectManager;
 import com.yiran.registry.EtcdRegistry;
+import com.yiran.registry.EtcdSecondRegistry;
 import com.yiran.registry.IRegistry;
 import com.yiran.registry.ServiceInfo;
 import io.netty.bootstrap.ServerBootstrap;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class AgentServer {
     private static Logger logger = LoggerFactory.getLogger(AgentServer.class);
-    private IRegistry registry;
+    private EtcdSecondRegistry registry;
 
     private int port;
 
@@ -50,22 +51,16 @@ public class AgentServer {
         b.bind(port).sync();
 
         /*向etcd注册服务*/
-        //logger.info("Register service!");
-        //registry = new EtcdRegistry(System.getProperty("etcd.url"));
-        //ServiceInfo serviceInfo = new ServiceInfo();
-        //serviceInfo.setServiceName("com.alibaba.dubbo.performance.demo.provider.IHelloService");
-        //serviceInfo.setServiceId(1);
-        //serviceInfo.setParameterType(2, "Ljava/lang/String;");
-        //serviceInfo.setMethod(3, "hash");
-        //int loadLevel = Integer.valueOf(System.getProperty("load.level"));
-        //try {
-        //    registry.register(serviceInfo, this.port, loadLevel);
-        //} catch (Exception e) {
-        //    logger.error("Failed to register service!:{}", e);
-        //    return;
-        //}
-        //logger.info("Register success!");
-        //ServiceSwitcher.addSupportedService(serviceInfo);
+        logger.info("Register service!");
+        registry = new EtcdSecondRegistry(System.getProperty("etcd.url"));
+        int loadLevel = Integer.valueOf(System.getProperty("load.level"));
+        try {
+            registry.register("com.alibaba.dubbo.performance.demo.provider.IHelloService", this.port, loadLevel);
+        } catch (Exception e) {
+            logger.error("Failed to register service!:{}", e);
+            return;
+        }
+        logger.info("Register success!");
 
     }
 

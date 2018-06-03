@@ -1,3 +1,5 @@
+#ifndef AGENT_CLIENT_MANAGER
+#define AGENT_CLIENT_MANAGER
 #include "mmpool.h"
 #include "tdpool.h"
 #include "semaphore.h"
@@ -5,6 +7,7 @@
 
 #define ACM_MSG_HEAD_SIZE 12
 #define ACM_MAX_EPOLL_EVENTS 16
+#define ACM_MAX_CHANNEL_NUM 2048
 
 
 struct acm_handle {
@@ -81,3 +84,5 @@ unsigned long acm_bytes2long(char* buf, int offset);
 void acm_int2bytes(unsigned int value, char* buf, int offset);
 void acm_long2bytes(unsigned long value, char* buf, int offset);
 unsigned int acm_bytes2int(char* buf, int offset);
+
+#endif
