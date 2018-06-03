@@ -583,7 +583,7 @@ void acm_response(void *arg){
     p_entry = &p_channel->request_map[req_id%p_handle->max_hold_req_num];
     p_entry->req_id = 0;
     if (p_entry->listening == NULL) {
-        log_warning("ACM:listening is not setted!");
+        log_warning("ACM:listening is not setted for req_id:%ld!", req_id);
         return;
     }
     p_entry->listening(p_entry->arg, p_msg->data, p_msg->head.data_size);
@@ -603,10 +603,10 @@ void acm_int2bytes(unsigned int value, char* buf, int offset){
 }
 
 unsigned int acm_bytes2int(char* buf, int offset){
-    return ((unsigned int)buf[offset + 3]) |
-        ((unsigned int)buf[offset + 2] << 8) |
-        ((unsigned int)buf[offset + 1] << 16) |
-        ((unsigned int)buf[offset + 0] << 24);
+    return ((unsigned int)buf[offset + 3] & 0xFF) |
+        (((unsigned int)buf[offset + 2] & 0xFF) << 8) |
+        (((unsigned int)buf[offset + 1] & 0xFF) << 16) |
+        (((unsigned int)buf[offset + 0] & 0xFF) << 24);
 }
 
 void acm_long2bytes(unsigned long value, char* buf, int offset){
@@ -621,14 +621,14 @@ void acm_long2bytes(unsigned long value, char* buf, int offset){
 }
 
 unsigned long acm_bytes2long(char* buf, int offset) {
-    return ((unsigned long)buf[offset + 7]) |
-        ((unsigned long)buf[offset + 6] << 8) |
-        ((unsigned long)buf[offset + 5] << 16) |
-        ((unsigned long)buf[offset + 4] << 24) |
-        ((unsigned long)buf[offset + 3] << 32) |
-        ((unsigned long)buf[offset + 2] << 40) |
-        ((unsigned long)buf[offset + 1] << 48) |
-        ((unsigned long)buf[offset + 0] << 56);
+    return (((unsigned long)buf[offset + 7]) & 0xFFL) |
+        (((unsigned long)buf[offset + 6] & 0xFFL) << 8) |
+        (((unsigned long)buf[offset + 5] & 0xFFL) << 16) |
+        (((unsigned long)buf[offset + 4] & 0xFFL) << 24) |
+        (((unsigned long)buf[offset + 3] & 0xFFL) << 32) |
+        (((unsigned long)buf[offset + 2] & 0xFFL) << 40) |
+        (((unsigned long)buf[offset + 1] & 0xFFL) << 48) |
+        (((unsigned long)buf[offset + 0] & 0xFFL) << 56);
            
 }
 
