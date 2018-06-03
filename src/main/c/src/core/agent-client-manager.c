@@ -406,7 +406,8 @@ void acm_io_write_thread(void *arg){
             }
         }
         p_task->write_index += hava_write_size;
-        if (p_task->write_index - ACM_MSG_HEAD_SIZE - p_task->head.data_size > 0) {
+        log_debug("ACM:hava write size:%d for req_id:%ld", hava_write_size, p_task->head.req_id);
+        if (p_task->head.data_size - (p_task->write_index - ACM_MSG_HEAD_SIZE)  > 0) {
             //log_debug("ACM:Write again!");
             /*如果没有写完整，则注册可写事件，并且退出处理线程*/
             if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLOUT)) < 0) {
@@ -414,7 +415,6 @@ void acm_io_write_thread(void *arg){
             }
             return;
         }
-        log_debug("ACM:hava write size:%d", hava_write_size);
 
         /*写完毕，把写队列的头节点去掉，并判断队列是否为空*/
         while(sem_trywait(&p_channel->write_queue_mutex) < 0);
