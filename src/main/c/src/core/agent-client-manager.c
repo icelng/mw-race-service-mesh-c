@@ -378,6 +378,10 @@ void acm_io_write_thread(void *arg){
                     log_err("ACM:Some error occured when write data to socket!%s", strerror(errno));
                     return;
                 }
+                if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLOUT)) < 0) {
+                    log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
+                }
+                return;
             }
             log_debug("ACM:Have write head size:%d", hava_write_size);
             p_task->write_index += hava_write_size;
