@@ -433,10 +433,10 @@ void acm_io_write_thread(void *arg){
 
     if (is_queue_empty != 1) {
         /*非处理完毕的退出*/
+        pthread_spin_unlock(&p_channel->writing_spinlock);
         if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
         }
-        pthread_spin_unlock(&p_channel->writing_spinlock);
     }
 
     return;
@@ -531,7 +531,7 @@ void* acm_event_loop(void *arg){
                 p_channel = events[i].data.ptr;
 
                 /*首先注销读事件*/
-                acm_epoll_mod(p_channel, events[i].events & (~EPOLLIN));
+                acm_epoll_mod(p_channel, events[i].events &= ~EPOLLIN);
 
                 if (pthread_spin_trylock(&p_channel->reading_spinlock) == 0) {
                     acm_io_do_read(p_channel);
@@ -543,7 +543,7 @@ void* acm_event_loop(void *arg){
                 p_channel = events[i].data.ptr;
 
                 /*首先注销可写事件*/
-                acm_epoll_mod(p_channel, events[i].events & (~EPOLLOUT));
+                acm_epoll_mod(p_channel, events[i].events &= ~EPOLLOUT);
 
                 if (pthread_spin_trylock(&p_channel->write_queue_empty_spinlock) == 0) {
                     /*队列是空的，则肯定不能执行写线程*/
