@@ -57,7 +57,6 @@ struct acm_channel {
     struct acm_request_map_entry* request_map;
     unsigned long write_queue_head;
     unsigned long write_queue_tail;
-    int is_doing_read;
 
     /*解码相关*/
     struct acm_msg* recv_msg;  // 接收到的报文
@@ -69,6 +68,9 @@ struct acm_channel {
     /*锁或信号量*/
     //sem_t write_queue_mutex;
     pthread_spinlock_t write_queue_spinlock;
+    pthread_spinlock_t write_queue_empty_spinlock;
+    pthread_spinlock_t reading_spinlock;
+    pthread_spinlock_t writing_spinlock;
     
 
 };
