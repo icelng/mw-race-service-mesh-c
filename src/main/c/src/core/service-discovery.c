@@ -106,7 +106,7 @@ struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* 
         p_service_node->next = p_handle->service_tb[tb_entry_index];
     }
     p_handle->service_tb[tb_entry_index] = p_service_node;
-    pthread_rwlock_wrlock(&p_handle->service_tb_rwlock);
+    pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
     
     return p_service_node;
 }
@@ -319,7 +319,9 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
         p_new_endpoint->load_level = atoi(value->valuestring);
         p_new_endpoint->p_agent_channel = p_new_channel;
         p_new_endpoint->remain = p_new_endpoint->load_level;
+        pthread_spin_lock(&p_service_node->ep_link_spinlock);
         sd_insert_endpoint(p_service_node->comsuming_list, p_new_endpoint);
+        pthread_spin_unlock(&p_service_node->ep_link_spinlock);
     }
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list->next;
     log_info("SERVICE_DISCOVERY:Service found complete.");
