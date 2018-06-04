@@ -142,10 +142,14 @@ struct acm_channel* acm_connect(
     p_channel->head_read_index = 0;
     p_channel->events = EPOLLIN | EPOLLRDHUP;  // 初始化为读
     pthread_spin_init(&p_channel->write_queue_spinlock, PTHREAD_PROCESS_PRIVATE);
-    pthread_spin_init(&p_channel->write_queue_empty_spinlock, PTHREAD_PROCESS_PRIVATE);
-    pthread_spin_init(&p_channel->reading_spinlock, PTHREAD_PROCESS_PRIVATE);
-    pthread_spin_init(&p_channel->writing_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //pthread_spin_init(&p_channel->write_queue_empty_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //pthread_spin_init(&p_channel->reading_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //pthread_spin_init(&p_channel->writing_spinlock, PTHREAD_PROCESS_PRIVATE);
+    p_channel->is_reding = 0;
+    p_channel->is_writing = 0;
+    p_channel->is_write_queue_empty = 0;
     //sem_init(&p_channel->write_queue_mutex, 0, 1);
+    
 
     /*注册事件*/
     log_info("ACM:Add event to epoll for new channel.");
@@ -251,7 +255,8 @@ int acm_request(
     if (is_queue_empty == 1) {
         log_debug("ACM:Register EPOLLOUT to epoll when adding write-task to empty queue!");
         /*拿到空锁，说明队列非空*/
-        pthread_spin_lock(&p_channel->write_queue_empty_spinlock);
+        //pthread_spin_lock(&p_channel->write_queue_empty_spinlock);
+        __sync_add_and_fetch(&p_channel->is_write_queue_empty, 1);
         // 添加可读(保证不出错)可写事件,水平触发模式
         if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when requesting:%s",strerror(errno));
@@ -341,7 +346,8 @@ void acm_io_read_thread(void *arg){
     }
 
     /*读处理完毕之后，原子操作告知处理完毕，并且注册可读写事件*/
-    pthread_spin_unlock(&p_channel->reading_spinlock);
+    //pthread_spin_unlock(&p_channel->reading_spinlock);
+    __sync_fetch_and_sub(&p_channel->is_reding, 1);
     if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
         log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing read:%s",strerror(errno));
     }
@@ -424,8 +430,10 @@ void acm_io_write_thread(void *arg){
         if (p_channel->write_queue_head + 1 == p_channel->write_queue_tail) {
             is_queue_empty = 1;
             /*队列已空，并且此次写过程完毕*/
-            pthread_spin_unlock(&p_channel->writing_spinlock);
-            pthread_spin_unlock(&p_channel->write_queue_empty_spinlock);
+            //pthread_spin_unlock(&p_channel->writing_spinlock);
+            //pthread_spin_unlock(&p_channel->write_queue_empty_spinlock);
+            __sync_fetch_and_sub(&p_channel->is_writing, 1);
+            __sync_fetch_and_sub(&p_channel->is_write_queue_empty, 1);
         }
         //sem_post(&p_channel->write_queue_mutex);
         pthread_spin_unlock(&p_channel->write_queue_spinlock);
@@ -433,7 +441,8 @@ void acm_io_write_thread(void *arg){
 
     if (is_queue_empty != 1) {
         /*非处理完毕的退出*/
-        pthread_spin_unlock(&p_channel->writing_spinlock);
+        __sync_fetch_and_sub(&p_channel->is_writing, 1);
+        //pthread_spin_unlock(&p_channel->writing_spinlock);
         if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
         }
@@ -442,7 +451,8 @@ void acm_io_write_thread(void *arg){
     return;
 
 err_ret:
-    pthread_spin_unlock(&p_channel->writing_spinlock);
+    __sync_fetch_and_sub(&p_channel->is_writing, 1);
+    //pthread_spin_unlock(&p_channel->writing_spinlock);
     return;
 }
 
@@ -533,9 +543,15 @@ void* acm_event_loop(void *arg){
                 /*首先注销读事件*/
                 acm_epoll_mod(p_channel, events[i].events &= ~EPOLLIN);
 
-                if (pthread_spin_trylock(&p_channel->reading_spinlock) == 0) {
+                if (__sync_fetch_and_add(&p_channel->is_reding, 1) == 0) {
                     acm_io_do_read(p_channel);
+                } else {
+                    __sync_fetch_and_sub(&p_channel->is_reding, 1);
                 }
+
+                //if (pthread_spin_trylock(&p_channel->reading_spinlock) == 0) {
+                //    acm_io_do_read(p_channel);
+                //}
             }
 
             if (events[i].events & EPOLLOUT) {
@@ -545,16 +561,29 @@ void* acm_event_loop(void *arg){
                 /*首先注销可写事件*/
                 acm_epoll_mod(p_channel, events[i].events &= ~EPOLLOUT);
 
-                if (pthread_spin_trylock(&p_channel->write_queue_empty_spinlock) == 0) {
+                if (__sync_fetch_and_add(&p_channel->is_write_queue_empty, 1) == 0) {
                     /*队列是空的，则肯定不能执行写线程*/
-                    pthread_spin_unlock(&p_channel->write_queue_empty_spinlock);
+                    __sync_fetch_and_sub(&p_channel->is_write_queue_empty, 1);
                     continue;
                 }
 
-                if (pthread_spin_trylock(&p_channel->writing_spinlock) == 0) {
+                if (__sync_fetch_and_add(&p_channel->is_writing, 1) == 0) {
                     /*保证只能运行一个写操作过程*/
                     acm_io_do_write(p_channel);
+                } else {
+                    __sync_fetch_and_sub(&p_channel->is_writing, 1);
                 }
+
+                //if (pthread_spin_trylock(&p_channel->write_queue_empty_spinlock) == 0) {
+                //    /*队列是空的，则肯定不能执行写线程*/
+                //    pthread_spin_unlock(&p_channel->write_queue_empty_spinlock);
+                //    continue;
+                //}
+
+                //if (pthread_spin_trylock(&p_channel->writing_spinlock) == 0) {
+                //    /*保证只能运行一个写操作过程*/
+                //    acm_io_do_write(p_channel);
+                //}
             }
         }
     }
