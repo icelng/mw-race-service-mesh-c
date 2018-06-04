@@ -99,6 +99,7 @@ struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* 
     pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
 
     /*链入链表，需抢写者锁*/
+    log_info("SERVICD_FIND:Write lock before");
     pthread_rwlock_wrlock(&p_handle->service_tb_rwlock);
     if (p_handle->service_tb[tb_entry_index] == NULL) {
         p_service_node->next = NULL;
@@ -107,6 +108,7 @@ struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* 
     }
     p_handle->service_tb[tb_entry_index] = p_service_node;
     pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
+    log_info("SERVICD_FIND:Write lock after");
     
     return p_service_node;
 }
