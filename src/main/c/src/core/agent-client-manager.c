@@ -142,7 +142,8 @@ struct acm_channel* acm_connect(
     p_channel->is_head = 1;  // 从“头”开始
     p_channel->head_read_index = 0;
     p_channel->events = EPOLLIN | EPOLLRDHUP;  // 初始化为读
-    sem_init(&p_channel->write_queue_mutex, 0, 1);
+    pthread_spin_init(&p_channel->write_queue_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //sem_init(&p_channel->write_queue_mutex, 0, 1);
 
     /*注册事件*/
     log_info("ACM:Add event to epoll for new channel.");
@@ -164,7 +165,8 @@ err4_ret:
 err3_ret:
     mmpl_rlsmem(p_acm_handle->mmpl, p_channel->write_queue);
 err2_ret:
-    sem_destroy(&p_channel->write_queue_mutex);
+    pthread_spin_destroy(&p_channel->write_queue_spinlock);
+    //sem_destroy(&p_channel->write_queue_mutex);
     mmpl_rlsmem(p_acm_handle->mmpl, p_channel);
 err1_ret:
     return NULL;
@@ -227,7 +229,8 @@ int acm_request(
     /*入write-task队列，跟io线程和其它执行到这里的线程抢锁*/
     /*不知道抢锁会不会很激烈，这里是需要考虑优化的地方*/
     //while(sem_trywait(&p_channel->write_queue_mutex) < 0);
-    sem_wait(&p_channel->write_queue_mutex);
+    //sem_wait(&p_channel->write_queue_mutex);
+    pthread_spin_lock(&p_channel->write_queue_spinlock);
     if (p_channel->write_queue_head + 1 == p_channel->write_queue_tail) {
         is_queue_empty = 1;
     }
@@ -236,7 +239,8 @@ int acm_request(
     p_write_task->head.data_size = buf_size;
     p_write_task->head.req_id = request_id;
     p_write_task->write_index = 0;
-    sem_post(&p_channel->write_queue_mutex);
+    pthread_spin_unlock(&p_channel->write_queue_spinlock);
+    //sem_post(&p_channel->write_queue_mutex);
 
 
     /* 如果本身队列是空的，则说明现在的epoll没有注册可写事件,并且没有线程对该
@@ -244,8 +248,8 @@ int acm_request(
      * io-write线程来消费队列*/
     if (is_queue_empty == 1) {
         log_debug("ACM:Register EPOLLOUT to epoll when adding write-task to empty queue!");
-        // 添加可写事件,水平触发模式
-        if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLOUT)) < 0) {
+        // 添加可读(保证不出错)可写事件,水平触发模式
+        if (acm_epoll_mod(p_channel, __sync_or_and_fetch(&p_channel->events, EPOLLIN | EPOLLOUT | EPOLLRDHUP)) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when requesting:%s",strerror(errno));
             return -2;
         }
@@ -417,12 +421,14 @@ void acm_io_write_thread(void *arg){
         }
 
         /*写完毕，把写队列的头节点去掉，并判断队列是否为空*/
-        while(sem_trywait(&p_channel->write_queue_mutex) < 0);
+        pthread_spin_lock(&p_channel->write_queue_spinlock);
+        //while(sem_trywait(&p_channel->write_queue_mutex) < 0);
         p_channel->write_queue_head++;
         if (p_channel->write_queue_head + 1 == p_channel->write_queue_tail) {
             is_queue_empty = 1;
         }
-        sem_post(&p_channel->write_queue_mutex);
+        //sem_post(&p_channel->write_queue_mutex);
+        pthread_spin_unlock(&p_channel->write_queue_spinlock);
     }
 
 }

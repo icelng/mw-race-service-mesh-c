@@ -3,6 +3,7 @@
 #include "mmpool.h"
 #include "tdpool.h"
 #include "semaphore.h"
+#include "pthread.h"
 
 
 #define ACM_MSG_HEAD_SIZE 12
@@ -66,7 +67,9 @@ struct acm_channel {
     int data_read_index;
 
     /*锁或信号量*/
-    sem_t write_queue_mutex;
+    //sem_t write_queue_mutex;
+    pthread_spinlock_t write_queue_spinlock;
+    
 
 };
 
