@@ -5,6 +5,8 @@
 #include "log.h"
 
 char* g_root_path = "dubbomesh";
+struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* service_name);
+int sd_rls_endpoints(struct sd_service_node *p_service_node);
 
 /* 函数名: int sd_insert_endpoint(struct sd_endpoint *p_head, struct sd_endpoint *p_endpoint) 
  * 功能: 给指定的服务插入节点
@@ -58,28 +60,24 @@ unsigned int sd_hash_code(char *str){
     return h;
 }
 
-/* 函数名: int sd_get_or_add_service(struct sd_handle *p_handle, const char* service_name) 
+/* 函数名: int sd_add_service(struct sd_handle *p_handle, const char* service_name) 
  * 功能: 添加服务
  * 参数: const char* service_name,
  * 返回值: 
  */
-struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* service_name){
+struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char* service_name){
     unsigned int hash_code = sd_hash_code(service_name);
-    struct sd_service_node *p_service_node = NULL, *p = NULL;
+    struct sd_service_node *p_service_node = NULL;
 
     int tb_entry_index = hash_code % p_handle->service_tb_size;
 
     /*检查是否存在*/
-    pthread_rwlock_rdlock(&p_handle->service_tb_rwlock);
-    p = p_handle->service_tb[tb_entry_index];
-    while (p != NULL) {
-        if (!strcmp(p->service_name, service_name)) {
-            /*存在*/
-            return p;
-        }
-        p = p->next;
+    p_service_node = sd_get_service_node(p_handle, service_name);
+    if (p_service_node != NULL) {
+        log_info("SERVICE FIND:Service(%s) is exists, release old endpoints.", service_name);
+        sd_rls_endpoints(p_service_node);
+        return p_service_node;
     }
-    pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
 
     /*服务初始化*/
     p_service_node = malloc(sizeof(struct sd_service_node));
@@ -130,6 +128,7 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
     int tb_entry_index = hash_code % p_handle->service_tb_size;
     p = p_handle->service_tb[tb_entry_index];
     if (p == NULL) {
+        pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
         return NULL;
     }
 
@@ -203,6 +202,7 @@ err1_ret:
 int sd_rls_endpoints(struct sd_service_node *p_service_node){
     struct sd_endpoint *p_ep, *q;
 
+    pthread_spin_lock(&p_service_node->ep_link_spinlock);
     p_ep = p_service_node->comsuming_list->next;
     while(p_ep->next != p_ep) {
         /*非头结点*/
@@ -223,6 +223,7 @@ int sd_rls_endpoints(struct sd_service_node *p_service_node){
 
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list;
     p_service_node->endpoints_num = 0;
+    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
     
     return 1;
 }
@@ -264,16 +265,11 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
     int ret_value = 1;
     char etcd_key[SERVICE_DISCOVERY_MAX_KEY_LEN];
 
-    struct sd_service_node *p_service_node = sd_get_or_add_service(p_handle, service_name);
+    struct sd_service_node *p_service_node = sd_add_and_init_service(p_handle, service_name);
     if (p_service_node == NULL) {
         ret_value = -4;
         goto err1_ret;
     }
-    /*每次服务发现都释放节点*/
-    log_info("SERVICE FIND:Release old endpoints.");
-    pthread_spin_lock(&p_service_node->ep_link_spinlock);
-    sd_rls_endpoints(p_service_node);
-    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
 
     /*etcd*/
     sprintf(etcd_key, "/%s/%s", g_root_path, service_name);
