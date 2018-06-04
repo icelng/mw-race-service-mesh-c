@@ -595,9 +595,18 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     p_channel->write_size = write_index + body_size;
 
     /*使用io线程池里的线程来进行写操作*/
-    if (tdpl_call_func(p_channel->p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
-        log_err("Failed to start io thread for hs_io_write when calling response_ok:%s", strerror(errno));
-        return -2;
+    //if (tdpl_call_func(p_channel->p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
+    //    log_err("Failed to start io thread for hs_io_write when calling response_ok:%s", strerror(errno));
+    //    return -2;
+    //}
+    /*不跟event-lopp抢线程锁,IO线程皆由event-loop调用*/
+    event.data.ptr = p_channel;
+    event.events = EPOLLOUT | EPOLLRDHUP;  // 设置可写事件,水平触发模式
+    if (epoll_ctl(p_channel->epoll_fd,
+                EPOLL_CTL_ADD,
+                p_channel->socket,
+                &event) == -1) {
+        log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
     }
     
     return 1;

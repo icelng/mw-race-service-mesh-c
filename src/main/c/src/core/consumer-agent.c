@@ -34,8 +34,13 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
 
     get_service_name(content, service_name);
     p_optimal_agent_channel = sd_get_optimal_endpoint(gp_sd_handle, service_name); 
+    if (p_optimal_agent_channel == NULL) {
+        log_err("Failed to get optimal provider-agent!");
+        hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
+    }
     if (acm_request(p_optimal_agent_channel, content, content_size, acm_listening, p_channel) < 0) {
         log_err("Failed to call acm_request!");
+        hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
     }
 
     //hs_url_decode(content);

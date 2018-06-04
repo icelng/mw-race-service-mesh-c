@@ -1,6 +1,7 @@
 #include "etcdctl.h"
 #include "agent-client-manager.h"
 #include "semaphore.h"
+#include "pthread.h"
 
 #define SERVICE_DISCOVERY_MAX_SERVICE_NUM 1024
 #define SERVICE_DISCOVERY_MAX_KEY_LEN 1024
@@ -27,7 +28,8 @@ struct sd_service_node {
 
     /*节点单项链表，按load_level大到小排序*/
     struct sd_endpoint endpoint_list1_head, endpoint_list2_head;
-    sem_t endpoint_link_mutex;
+    pthread_spinlock_t ep_link_spinlock;  // 节点链表自旋锁
+    //sem_t endpoint_link_mutex;
 
     /*哈希链表链接*/
     struct sd_service_node *next;
@@ -39,10 +41,8 @@ struct sd_handle {
 
     struct sd_service_node *service_tb[SERVICE_DISCOVERY_MAX_SERVICE_NUM];  // 服务表,静态
     int service_tb_size;  // 服务表长度
-    sem_t service_tb_mutex;  // 服务表锁
-    sem_t write_mutex;
-    int read_cnt;  // 读者数
-    sem_t read_cnt_mutex;
+    pthread_rwlock_t service_tb_rwlock;  // 服务表读写锁
+    pthread_mutex_t find_mutex;  // 服务发现锁
 };
 
 struct sd_handle* sd_init(struct acm_handle *p_acm_handle, const char* etcd_url);

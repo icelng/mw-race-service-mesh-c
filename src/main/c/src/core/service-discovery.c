@@ -23,7 +23,7 @@ int sd_insert_endpoint(struct sd_endpoint *p_head, struct sd_endpoint *p_will_ad
     pre = p_head;
     now = pre->next;
     while (now != p_head) {
-        if (p_will_add->load_level > now->load_level) {
+        if (p_will_add->load_level >= now->load_level) {
             break;
         }
         pre = now;
@@ -70,6 +70,7 @@ struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* 
     int tb_entry_index = hash_code % p_handle->service_tb_size;
 
     /*检查是否存在*/
+    pthread_rwlock_rdlock(&p_handle->service_tb_rwlock);
     p = p_handle->service_tb[tb_entry_index];
     while (p != NULL) {
         if (!strcmp(p->service_name, service_name)) {
@@ -78,6 +79,7 @@ struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* 
         }
         p = p->next;
     }
+    pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
 
     /*服务初始化*/
     p_service_node = malloc(sizeof(struct sd_service_node));
@@ -86,21 +88,25 @@ struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* 
     p_service_node->hash_code = hash_code;
     p_service_node->endpoints_num = 0;
     p_service_node->comsuming_list = &p_service_node->endpoint_list1_head;
+    p_service_node->endpoint_list1_head.p_agent_channel = NULL;
     p_service_node->endpoint_list1_head.next = &p_service_node->endpoint_list1_head;
     p_service_node->endpoint_list1_head.prev = &p_service_node->endpoint_list1_head;
     p_service_node->saturated_list = &p_service_node->endpoint_list2_head;
+    p_service_node->endpoint_list2_head.p_agent_channel = NULL;
     p_service_node->endpoint_list2_head.next = &p_service_node->endpoint_list2_head;
     p_service_node->endpoint_list2_head.prev = &p_service_node->endpoint_list2_head;
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list;
-    sem_init(&p_service_node->endpoint_link_mutex, 0, 1);
+    pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
 
-    /*链入链表*/
+    /*链入链表，需抢写者锁*/
+    pthread_rwlock_wrlock(&p_handle->service_tb_rwlock);
     if (p_handle->service_tb[tb_entry_index] == NULL) {
         p_service_node->next = NULL;
     } else {
         p_service_node->next = p_handle->service_tb[tb_entry_index];
     }
     p_handle->service_tb[tb_entry_index] = p_service_node;
+    pthread_rwlock_wrlock(&p_handle->service_tb_rwlock);
     
     return p_service_node;
 }
@@ -115,6 +121,10 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
     unsigned int hash_code = sd_hash_code(service_name);
     struct sd_service_node *p = NULL;
 
+
+    /*抢读者锁*/
+    pthread_rwlock_rdlock(&p_handle->service_tb_rwlock);
+
     int tb_entry_index = hash_code % p_handle->service_tb_size;
     p = p_handle->service_tb[tb_entry_index];
     if (p == NULL) {
@@ -127,6 +137,9 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
         }
         p = p->next;
     }
+
+    /*释放读者锁*/
+    pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
     
     return p;
 }
@@ -146,16 +159,18 @@ struct sd_handle* sd_init(struct acm_handle *p_acm_handle, const char* etcd_url)
     }
     
     p_new_handle = malloc(sizeof(struct sd_handle));
+
     if (p_new_handle == NULL) {
         goto err1_ret;
     }
 
+    /*初始化服务表读写锁*/
+    pthread_rwlock_init(&p_new_handle->service_tb_rwlock, NULL);
+    /*初始化服务发现锁*/
+    pthread_mutex_init(&p_new_handle->find_mutex, NULL);
+
     /*初始化服务表*/
     p_new_handle->service_tb_size = SERVICE_DISCOVERY_MAX_SERVICE_NUM;
-    sem_init(&p_new_handle->service_tb_mutex, 0, 1);  // 初始化服务表锁
-    sem_init(&p_new_handle->read_cnt_mutex, 0, 1);  
-    sem_init(&p_new_handle->write_mutex, 0, 1);  
-    p_new_handle->read_cnt = 0;
     for (i = 0;i < p_new_handle->service_tb_size;i++) {
         p_new_handle->service_tb[i] = NULL;
     }
@@ -254,9 +269,9 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
     }
     /*每次服务发现都释放节点*/
     log_info("SERVICE FIND:Release old endpoints.");
-    sem_wait(&p_service_node->endpoint_link_mutex);
+    pthread_spin_lock(&p_service_node->ep_link_spinlock);
     sd_rls_endpoints(p_service_node);
-    sem_post(&p_service_node->endpoint_link_mutex);
+    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
 
     /*etcd*/
     sprintf(etcd_key, "/%s/%s", g_root_path, service_name);
@@ -322,24 +337,25 @@ err1_ret:
  * 返回值: 
  */
 struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *service_name){
-    sem_wait(&p_handle->service_tb_mutex);
     struct sd_service_node *p_service_node = sd_get_service_node(p_handle, service_name);
     if (p_service_node == NULL) {
         /*进行服务发现*/
+        pthread_mutex_lock(&p_handle->find_mutex);
         p_service_node = sd_get_service_node(p_handle, service_name);
         if (p_service_node == NULL) {
             log_info("SERVICE FIND:Find the service:%s", service_name);
             if (sd_service_find(p_handle, service_name) < 0) {
                 log_err("SERIVCE_FIND:Failed to find the service:%s", service_name);
-                sem_post(&p_handle->service_tb_mutex);
+                pthread_mutex_unlock(&p_handle->find_mutex);
                 return NULL;
             }
             p_service_node = sd_get_service_node(p_handle, service_name);
         }
+        pthread_mutex_unlock(&p_handle->find_mutex);
     }
-    sem_post(&p_handle->service_tb_mutex);
 
-    sem_wait(&p_service_node->endpoint_link_mutex);
+    /*使用自旋锁*/
+    pthread_spin_lock(&p_service_node->ep_link_spinlock);
     struct sd_endpoint *p_endpoint = p_service_node->p_next_req_endpoint;
     if (p_endpoint == p_service_node->comsuming_list) {
         /*如果是头节点*/
@@ -358,9 +374,10 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
         /*如果消费完了，则转移节点到饱和链表*/
         p_endpoint->prev->next = p_endpoint->next;
         p_endpoint->next->prev = p_endpoint->prev;
+        /*大多时候都是o(1)操作*/
         sd_insert_endpoint(p_service_node->saturated_list, p_endpoint);
     }
-    sem_post(&p_service_node->endpoint_link_mutex);
+    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
 
     return p_endpoint->p_agent_channel;
 }
