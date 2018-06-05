@@ -1,8 +1,8 @@
 package com.yiran.agent;
 
 import com.yiran.ServiceSwitcher;
-import com.yiran.agent.web.FormDataParser;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.internal.AppendableCharSequence;
@@ -20,7 +20,8 @@ import java.util.Map;
 public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<AgentServiceRequest> {
     private static Logger logger = LoggerFactory.getLogger(ProviderAgentServerHandler.class);
 
-    private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
+    private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
+    //private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
@@ -31,7 +32,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
     }
 
-    private int hex2dec(char c) {
+    private int hex2dec(byte c) {
         if ('0' <= c && c <= '9') {
             return c - '0';
         } else if ('a' <= c && c <= 'f') {
@@ -43,35 +44,35 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         }
     }
 
-    private Map<String, String> parseFormData(ByteBuf src, AppendableCharSequence formDataTemp) {
+    private Map<String, String> parseFormData(ByteBuf src, ByteBuf formDataTemp) {
         Map<String, String> formDataMap = new HashMap<>();  // 表单map
-        formDataTemp.reset();
+        formDataTemp.clear();
         String key = null;
 
         while (src.readableBytes() > 0) {
-            char c = (char)((src.readByte()) & 0xFF);
+            byte c = src.readByte();
 
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
                 formDataMap.put(key, formDataTemp.toString());
-                formDataTemp.reset();
+                formDataTemp.clear();
                 continue;
             }
 
             if (c == '=') {
                 /*key结束*/
                 key = formDataTemp.toString();
-                formDataTemp.reset();
+                formDataTemp.clear();
                 continue;
             }
 
             if (c != '%') {
-                formDataTemp.append(c);
+                formDataTemp.writeByte(c);
             } else {
-                char c1 = (char)((src.readByte()) & 0xFF);
-                char c0 = (char)((src.readByte()) & 0xFF);
+                byte c1 = src.readByte();
+                byte c0 = src.readByte();
                 int num = hex2dec(c1) * 16 + hex2dec(c0);
-                formDataTemp.append((char)(num & 0xFF));
+                formDataTemp.writeByte((byte) (num & 0xFF));
             }
         }
 

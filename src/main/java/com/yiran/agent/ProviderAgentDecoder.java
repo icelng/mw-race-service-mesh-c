@@ -42,9 +42,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                 /*获取数据长度*/
                 dataLength = Bytes.bytes2int(header, 8);
                 for (int i = 0;i < HEADER_LENGTH;i++) {
-                    System.out.print(header[i] + " ");
                 }
-                System.out.print("\n");
 //                logger.info("requestId:{}, dataLength:{}", agentServiceRequest.getRequestId(), dataLength);
                 isHeader = false;
             }
