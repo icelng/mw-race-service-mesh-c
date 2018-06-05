@@ -4,6 +4,7 @@
 
 
 #include "semaphore.h"   //没有移植的打算
+#include "pthread.h"
 
 #ifndef MMPL
 #define MMPL
@@ -44,7 +45,8 @@ typedef struct mm_pool_s{
     struct mm_node use_head;  // 正在使用的内存节点的链表头
     struct mm_node *free[MMPL_MAX_INDEX + 1];
     unsigned int free_size[MMPL_MAX_INDEX + 1];  // 记录free数组对应index含有index(空闲内存)大小
-    sem_t mutex;  //锁，用来互斥访问内存池
+    //sem_t mutex;  //锁，用来互斥访问内存池
+    pthread_spinlock_t spin_lock;
 }*mmpl;
 
 

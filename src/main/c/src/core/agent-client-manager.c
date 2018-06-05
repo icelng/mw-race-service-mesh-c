@@ -430,7 +430,7 @@ void acm_io_write_thread(void *arg){
         p_channel->write_queue_head++;
         if (p_channel->write_queue_head + 1 == p_channel->write_queue_tail) {
             is_queue_empty = 1;
-            /*队列已空，并且此次写过程完毕,不释放消费锁，表示队列是空的*/
+            /*队列已空，并且此次写过程完毕,不释放消费锁，因为空队列不允许被消费*/
             //pthread_spin_unlock(&p_channel->writing_spinlock);
             //__sync_fetch_and_sub(&p_channel->is_writing, 1);
             //__sync_fetch_and_sub(&p_channel->is_write_queue_empty, 1);
@@ -440,7 +440,7 @@ void acm_io_write_thread(void *arg){
     }
 
     if (is_queue_empty != 1) {
-        /*非处理完毕的退出,释放消费锁*/
+        /*非处理完毕的退出,写队列未消费为空，释放消费锁,允许有线程拿锁来消费队列*/
         //__sync_fetch_and_sub(&p_channel->is_writing, 1);
         //pthread_spin_unlock(&p_channel->writing_spinlock);
         pthread_spin_unlock(&p_channel->write_queue_consume_spinlock);

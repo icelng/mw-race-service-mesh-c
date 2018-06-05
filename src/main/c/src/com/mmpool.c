@@ -27,7 +27,8 @@ mmpl mmpl_create(struct mmpl_opt *popt){
     new_mmpl->current_free_index = 0;
     new_mmpl->use_head.next = &(new_mmpl->use_head);
     new_mmpl->use_head.pre = &(new_mmpl->use_head);
-    sem_init(&new_mmpl->mutex,0,1);  //初始化锁
+    //sem_init(&new_mmpl->mutex,0,1);  //初始化锁
+    pthread_spin_init(&new_mmpl->spin_lock, PTHREAD_PROCESS_PRIVATE);
     return new_mmpl;
 }
 
@@ -46,7 +47,8 @@ int mmpl_destroy(struct mm_pool_s *mmpl){
     if(mmpl == NULL){
         return -1;
     }
-    sem_wait(&mmpl->mutex); //互斥访问内存池
+    //sem_wait(&mmpl->mutex); //互斥访问内存池
+    pthread_spin_lock(&mmpl->spin_lock);
     /*归还正在使用的内存空间给操作系统(在这，如果发现还有正在使用的内存节点，应该报错返回)*/
     while(mmpl->use_head.next != &mmpl->use_head){
         p_mm_n = mmpl->use_head.next;
@@ -64,8 +66,10 @@ int mmpl_destroy(struct mm_pool_s *mmpl){
         }
         free(p_free_h);
     }
-    sem_post(&mmpl->mutex);
-    sem_destroy(&mmpl->mutex);
+    pthread_spin_unlock(&mmpl->spin_lock);
+    pthread_spin_destroy(&mmpl->spin_lock);
+    //sem_post(&mmpl->mutex);
+    //sem_destroy(&mmpl->mutex);
     free(mmpl);
     return 1;
 }
@@ -204,13 +208,15 @@ void* mmpl_getmem(struct mm_pool_s *mmpl,unsigned int size){
         index = 0;
     }
 
-    while (sem_trywait(&mmpl->mutex) < 0);  // 使用自旋锁
+    pthread_spin_lock(&mmpl->spin_lock);
+    //while (sem_trywait(&mmpl->mutex) < 0);  // 使用自旋锁
     //sem_wait(&mmpl->mutex);  //互斥操作内存池
     if(((p_mm_n = mmpl->free[index]) == NULL) || index == 0){  
         /*如果free数组中没有相应的内存节点，则向操作系统申请*/
         p_mm_n = (struct mm_node *)malloc(align_size + sizeof(struct mm_node));
         if(p_mm_n == NULL){//向操作系统申请内存失败
-            sem_post(&mmpl->mutex);
+            pthread_spin_unlock(&mmpl->spin_lock);
+            //sem_post(&mmpl->mutex);
             return NULL;
         }
         p_mm_n->pre=p_mm_n->next = p_mm_n;
@@ -230,7 +236,8 @@ void* mmpl_getmem(struct mm_pool_s *mmpl,unsigned int size){
     mmpl_list_insert(&mmpl->use_head,p_mm_n); //插入到使用链表中
     mmpl->get_cnt += 1;  // 申请次数加一
     mmpl->latest_get_cnt[index] = mmpl->get_cnt;  // 记录最近访问统计
-    sem_post(&mmpl->mutex);
+    //sem_post(&mmpl->mutex);
+    pthread_spin_unlock(&mmpl->spin_lock);
 
     return (void *)p_mm_n + sizeof(struct mm_node);
 }
@@ -254,22 +261,26 @@ int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){
     }
     index = p_mm_n->index;
     //互斥操作内存池，自旋锁
-    while(sem_trywait(&mmpl->mutex) < 0);
+    //while(sem_trywait(&mmpl->mutex) < 0);
+    pthread_spin_lock(&mmpl->spin_lock);
     mmpl_list_remove(p_mm_n);  //从使用链表中移除
     p_mm_n->use_flg = 0;
     if(index == 0){  //如果超过了最大index(此时index标为0)，则直接还给操作系统
         free(p_mm_n);
-        sem_post(&mmpl->mutex);
+        pthread_spin_unlock(&mmpl->spin_lock);
+        //sem_post(&mmpl->mutex);
         return 1;
     }
     if(mmpl->current_free_index + index > mmpl->max_free_index){
         /*如果归还之后内存池的空闲空间超过了最大空闲空间大小则直接归还给操作系统*/
         free(p_mm_n);
         if(mmpl_rls_oldestfree(mmpl) < 0){  // 并且释放最久没有申请的index对应空闲内存节点 
-            sem_post(&mmpl->mutex);
+            pthread_spin_unlock(&mmpl->spin_lock);
+            //sem_post(&mmpl->mutex);
             return -2;
         }
-        sem_post(&mmpl->mutex);  //互斥操作内存池
+        //sem_post(&mmpl->mutex);  //互斥操作内存池
+        pthread_spin_unlock(&mmpl->spin_lock);
         return 1;
     }
     if(mmpl->free[index] == NULL){
@@ -282,7 +293,8 @@ int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){
     }
     mmpl->free_size[index] += index;
     mmpl->current_free_index += index;
-    sem_post(&mmpl->mutex);  //互斥操作内存池
+    pthread_spin_unlock(&mmpl->spin_lock);
+    //sem_post(&mmpl->mutex);  //互斥操作内存池
     return 1;
 }
 
