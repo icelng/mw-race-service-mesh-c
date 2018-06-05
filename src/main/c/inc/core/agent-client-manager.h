@@ -10,6 +10,11 @@
 #define ACM_MAX_EPOLL_EVENTS 16
 #define ACM_MAX_CHANNEL_NUM 2048
 
+struct acm_request_map_entry{
+    unsigned long req_id;
+    void (*listening)(void *arg, char *resp_data, int data_size);
+    void *arg;
+};
 
 struct acm_handle {
     tdpl tdpl_io;  // io线程池
@@ -19,13 +24,10 @@ struct acm_handle {
     int epoll_fd;
     int max_write_queue_len;
     int max_hold_req_num;
+    struct acm_request_map_entry* request_map;
+    long request_id;
 };
 
-struct acm_request_map_entry{
-    unsigned long req_id;
-    void (*listening)(void *arg, char *resp_data, int data_size);
-    void *arg;
-};
 
 /*报文头*/
 struct acm_msg_head {
@@ -49,12 +51,10 @@ struct acm_write_task{
 struct acm_channel {
     struct acm_handle* p_handle;
     int socket_fd;  // 客户端套接字描述符
-    long request_id;
 
     unsigned int events;  // channel现在所注册的事件
     struct acm_write_task* write_queue;  // 写请求队列
     /*请求哈希表，因req_id自增，故只要请求量不超过表长度，就不会发生碰撞*/
-    struct acm_request_map_entry* request_map;
     unsigned long write_queue_head;
     unsigned long write_queue_tail;
 

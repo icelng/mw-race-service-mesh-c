@@ -62,6 +62,14 @@ struct acm_handle* acm_start(struct acm_opt* p_opt){
         goto err2_ret;
     }
 
+
+    p_new_handle->request_map = mmpl_getmem(p_new_handle->mmpl, p_opt->max_hold_req_num * sizeof(struct acm_request_map_entry));
+    if (p_new_handle->request_map == NULL) {
+        log_err("ACM:Failed to get memeory from mmpl for request_map!");
+        goto err2_ret;
+    }
+    p_new_handle->request_id = 0;
+
     log_info("ACM:Creating epoll.");
     if ((p_new_handle->epoll_fd = epoll_create(1)) == -1) {
         log_err("ACM:Failed to create epoll:%s", strerror(errno));
@@ -129,15 +137,9 @@ struct acm_channel* acm_connect(
         log_err("ACM:Failed to get memeory from mmpl for write_queue!");
         goto err2_ret;
     }
-    p_channel->request_map = mmpl_getmem(p_acm_handle->mmpl, p_acm_handle->max_hold_req_num * sizeof(struct acm_request_map_entry));
-    if (p_channel->request_map == NULL) {
-        log_err("ACM:Failed to get memeory from mmpl for request_map!");
-        goto err3_ret;
 
-    }
     p_channel->write_queue_head = 0;
     p_channel->write_queue_tail = 1;
-    p_channel->request_id = 0;
     p_channel->is_head = 1;  // 从“头”开始
     p_channel->head_read_index = 0;
     p_channel->events = EPOLLIN | EPOLLRDHUP | EPOLLET;  // 初始化为读边缘出发
@@ -160,14 +162,12 @@ struct acm_channel* acm_connect(
                 p_channel->socket_fd,
                 &event) == -1) {
         log_err("ACM:Failed to ADD sockfd to epoll when connecting:%s",strerror(errno));
-        goto err4_ret;
+        goto err3_ret;
     }
 
     return p_channel;
 
 
-err4_ret:
-    mmpl_rlsmem(p_acm_handle->mmpl, p_channel->request_map);
 err3_ret:
     mmpl_rlsmem(p_acm_handle->mmpl, p_channel->write_queue);
 err2_ret:
@@ -227,7 +227,7 @@ int acm_request(
     struct acm_handle *p_handle = p_channel->p_handle;
 
     /*由原子增操作获得唯一的request_id*/
-    request_id = __sync_add_and_fetch(&p_channel->request_id, 1);
+    request_id = __sync_add_and_fetch(&p_handle->request_id, 1);
     /*hold住请求，等待响应*/
     log_debug("ACM:Hold reqeuest for id:%d", request_id);
     acm_hold_request(p_channel, request_id, listening, arg);  
@@ -606,7 +606,7 @@ int acm_hold_request(struct acm_channel *p_channel,
     struct acm_handle *p_handle = p_channel->p_handle;
     struct acm_request_map_entry *p_entry;
 
-    p_entry = &p_channel->request_map[req_id%p_handle->max_hold_req_num];
+    p_entry = &p_handle->request_map[req_id%p_handle->max_hold_req_num];
     log_debug("ACM:Get a request-map entry.");
     if (p_entry->req_id != 0) {
         /*如果map的entry并不是空的，说明map长度不够长，map长度应大于预估的最大请求量*/
@@ -633,7 +633,7 @@ void acm_response(void *arg){
     struct acm_request_map_entry *p_entry;
     unsigned long req_id = p_msg->head.req_id;
 
-    p_entry = &p_channel->request_map[req_id%p_handle->max_hold_req_num];
+    p_entry = &p_handle->request_map[req_id%p_handle->max_hold_req_num];
     p_entry->req_id = 0;
     if (p_entry->listening == NULL) {
         log_warning("ACM:listening is not setted for req_id:%ld!", req_id);
