@@ -26,7 +26,6 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
 
-        logger.info("requestId:{}", agentServiceRequest.getRequestId());
         /*协议转换*/
         agentServiceRequest.setChannel(ctx.channel());
         ServiceSwitcher.switchToDubbo(agentServiceRequest, parseFormData(agentServiceRequest.getData(), formDataTemp));
@@ -56,11 +55,12 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
                 if (formDataTemp.readableBytes() == 0) {
+                    /*有可能是key的结束*/
+                    key = formDataTemp.toString(Charset.forName("utf-8"));
                     formDataMap.put(key, "");
                 } else {
                     formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
                 }
-                logger.info("key:{} value:{}", key, formDataMap.get(key));
                 formDataTemp.clear();
                 continue;
             }
@@ -71,6 +71,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
                 formDataTemp.clear();
                 continue;
             }
+
 
             if (c != '%') {
                 formDataTemp.writeByte(c);
