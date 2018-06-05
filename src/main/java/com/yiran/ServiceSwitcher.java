@@ -51,11 +51,11 @@ public class ServiceSwitcher {
      * 服务协议转换至Dubbo
      * @param agentServiceRequest
      * agent 接收到的请求
-     * @param agentChannel
+     * @param formData
      * 接收请求对应的Netty Channel
      * @throws IOException
      */
-    public static void switchToDubbo(AgentServiceRequest agentServiceRequest, Channel agentChannel) throws IOException {
+    public static void switchToDubbo(AgentServiceRequest agentServiceRequest, Map<String, String> formData) throws IOException {
         try {
             /*转换服务协议之前，一定要保证已经跟dubbo建立好连接*/
             rpcChannelReady.await();
@@ -66,19 +66,19 @@ public class ServiceSwitcher {
 
         long requestId = agentServiceRequest.getRequestId();
 //        logger.info("Switch service for requestId:{}", requestId);
-        FormDataParser formDataParser = FormDataParser.get();
-        Map<String, String> argumentsMap = formDataParser.parse(agentServiceRequest.getData());
-        formDataParser.release();
+        //FormDataParser formDataParser = FormDataParser.get();
+        //Map<String, String> argumentsMap = formDataParser.parse(agentServiceRequest.getData());
+        //formDataParser.release();
 
         RpcInvocation invocation = new RpcInvocation();
-        invocation.setMethodName(argumentsMap.get("method"));
-        invocation.setAttachment("path", argumentsMap.get("interface"));
+        invocation.setMethodName(formData.get("method"));
+        invocation.setAttachment("path", formData.get("interface"));
         /*先写死一个参数*/
-        String parameterTypeName = argumentsMap.get("parameterTypesString");
+        String parameterTypeName = formData.get("parameterTypesString");
         invocation.setParameterTypes(parameterTypeName);    // Dubbo内部用"Ljava/lang/String"来表示参数类型是String
 
         /*转换参数，先固定成一个，并且是String类型的*/
-        String parameter = argumentsMap.get("parameter");
+        String parameter = formData.get("parameter");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
         JsonUtils.writeObject(parameter, writer);
@@ -90,7 +90,6 @@ public class ServiceSwitcher {
         request.setData(invocation);
         request.setId(requestId);
 
-        agentServiceRequest.setChannel(agentChannel);
         processingRequest.put(String.valueOf(requestId), agentServiceRequest);
 
         rpcClientChannel.writeAndFlush(request);
