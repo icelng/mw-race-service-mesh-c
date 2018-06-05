@@ -48,20 +48,24 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         Map<String, String> formDataMap = new HashMap<>();  // 表单map
         formDataTemp.clear();
         String key = null;
+        boolean isKey = true;
 
         while (src.readableBytes() > 0) {
             byte c = src.readByte();
 
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
-                if (src.readableBytes() == 0) {
+                if (isKey) {
                     /*有可能是key的结束*/
                     key = formDataTemp.toString(Charset.forName("utf-8"));
+                    formDataMap.put(key, "");
+                } else if (formDataTemp.readableBytes() == 0){
                     formDataMap.put(key, "");
                 } else {
                     formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
                 }
                 formDataTemp.clear();
+                isKey = true;
                 continue;
             }
 
@@ -69,6 +73,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
                 /*key结束*/
                 key = formDataTemp.toString(Charset.forName("utf-8"));
                 formDataTemp.clear();
+                isKey = false;
                 continue;
             }
 
