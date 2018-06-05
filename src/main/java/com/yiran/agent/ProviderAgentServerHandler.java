@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.internal.AppendableCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +20,8 @@ import java.util.Map;
 public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<AgentServiceRequest> {
     private static Logger logger = LoggerFactory.getLogger(ProviderAgentServerHandler.class);
 
-    private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
-    //private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
+    //private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
+    private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
@@ -44,52 +45,52 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         }
     }
 
-    private Map<String, String> parseFormData(ByteBuf src, ByteBuf formDataTemp) {
+    private Map<String, String> parseFormData(ByteBuf src, AppendableCharSequence formDataTemp) {
         Map<String, String> formDataMap = new HashMap<>();  // 表单map
-        formDataTemp.clear();
+        formDataTemp.reset();
         String key = null;
 
         while (src.readableBytes() > 0) {
-            byte c = src.readByte();
+            char c = (char) (src.readByte() & 0xFF);
 
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
                 if (c == '=') {
                     /*有可能以等号的结束,说明key对应的value是空的*/
-                    key = formDataTemp.toString(Charset.forName("utf-8"));
+                    key = formDataTemp.toString();
                     formDataMap.put(key, "");
                 } else if (src.readableBytes() == 0) {
                     /*如果value以字符串结束来结束的*/
-                    formDataTemp.writeByte(c);
-                    formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
-                } else if (formDataTemp.readableBytes() == 0){
+                    formDataTemp.append(c);
+                    formDataMap.put(key, formDataTemp.toString());
+                } else if (formDataTemp.length() == 0){
                     /*如果是以&结束的value为空*/
                     formDataMap.put(key, "");
                 } else {
-                    formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
+                    formDataMap.put(key, formDataTemp.toString());
                 }
                 //logger.info("key:{}  value:{}", key, formDataMap.get(key));
-                formDataTemp.clear();
+                formDataTemp.reset();
                 continue;
             }
 
             if (c == '=') {
                 /*key结束*/
-                key = formDataTemp.toString(Charset.forName("utf-8"));
-                formDataTemp.clear();
+                key = formDataTemp.toString();
+                formDataTemp.reset();
                 continue;
             }
 
 
             if (c != '%') {
-                formDataTemp.writeByte(c);
+                formDataTemp.append(c);
             } else {
                 byte c1 = src.readByte();
                 byte c0 = src.readByte();
                 int num = hex2dec(c1) * 16 + hex2dec(c0);
-                formDataTemp.writeByte((byte) (num & 0xFF));
+                formDataTemp.append((char) (num & 0xFF));
                 if (src.readableBytes() == 0) {
-                    formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
+                    formDataMap.put(key, formDataTemp.toString());
                 }
             }
         }
