@@ -142,7 +142,7 @@ struct acm_channel* acm_connect(
     p_channel->head_read_index = 0;
     p_channel->events = EPOLLIN | EPOLLRDHUP | EPOLLET;  // 初始化为读边缘出发
     pthread_spin_init(&p_channel->write_queue_spinlock, PTHREAD_PROCESS_PRIVATE);
-    pthread_spin_init(&p_channel->write_queue_empty_spinlock, PTHREAD_PROCESS_PRIVATE);
+    pthread_spin_init(&p_channel->write_queue_consume_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_spin_init(&p_channel->reading_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_spin_init(&p_channel->writing_spinlock, PTHREAD_PROCESS_PRIVATE);
     p_channel->is_reding = 0;
@@ -254,8 +254,9 @@ int acm_request(
      * io-write线程来消费队列*/
     if (is_queue_empty == 1) {
         log_debug("ACM:Register EPOLLOUT to epoll when adding write-task to empty queue!");
-        /*拿到空锁，说明队列非空*/
-        pthread_spin_lock(&p_channel->write_queue_empty_spinlock);
+        /*释放消费锁，说明队列非空，需要有线程来消费写队列*/
+        pthread_spin_unlock(&p_channel->write_queue_consume_spinlock);
+        //pthread_spin_lock(&p_channel->write_queue_empty_spinlock);
         //__sync_add_and_fetch(&p_channel->is_write_queue_empty, 1);
         // 添加可读(保证不出错)可写事件
         if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
@@ -429,9 +430,8 @@ void acm_io_write_thread(void *arg){
         p_channel->write_queue_head++;
         if (p_channel->write_queue_head + 1 == p_channel->write_queue_tail) {
             is_queue_empty = 1;
-            /*队列已空，并且此次写过程完毕*/
-            pthread_spin_unlock(&p_channel->writing_spinlock);
-            pthread_spin_unlock(&p_channel->write_queue_empty_spinlock);
+            /*队列已空，并且此次写过程完毕,不释放消费锁，表示队列是空的*/
+            //pthread_spin_unlock(&p_channel->writing_spinlock);
             //__sync_fetch_and_sub(&p_channel->is_writing, 1);
             //__sync_fetch_and_sub(&p_channel->is_write_queue_empty, 1);
         }
@@ -440,9 +440,10 @@ void acm_io_write_thread(void *arg){
     }
 
     if (is_queue_empty != 1) {
-        /*非处理完毕的退出*/
+        /*非处理完毕的退出,释放消费锁*/
         //__sync_fetch_and_sub(&p_channel->is_writing, 1);
-        pthread_spin_unlock(&p_channel->writing_spinlock);
+        //pthread_spin_unlock(&p_channel->writing_spinlock);
+        pthread_spin_unlock(&p_channel->write_queue_consume_spinlock);
         if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
         }
@@ -451,8 +452,9 @@ void acm_io_write_thread(void *arg){
     return;
 
 err_ret:
+    /*不释放消费锁，因为出错了，写队列就没必要去消费了*/
     //__sync_fetch_and_sub(&p_channel->is_writing, 1);
-    pthread_spin_unlock(&p_channel->writing_spinlock);
+    //pthread_spin_unlock(&p_channel->writing_spinlock);
     return;
 }
 
@@ -574,14 +576,8 @@ void* acm_event_loop(void *arg){
                 //    __sync_fetch_and_sub(&p_channel->is_writing, 1);
                 //}
 
-                if (pthread_spin_trylock(&p_channel->write_queue_empty_spinlock) == 0) {
-                    /*队列是空的，则肯定不能执行写线程*/
-                    pthread_spin_unlock(&p_channel->write_queue_empty_spinlock);
-                    continue;
-                }
-
-                if (pthread_spin_trylock(&p_channel->writing_spinlock) == 0) {
-                    /*保证只能运行一个写操作过程*/
+                if (pthread_spin_trylock(&p_channel->write_queue_consume_spinlock) == 0) {
+                    /*同时只能有一个线程消费写队列*/
                     acm_io_do_write(p_channel);
                 }
             }

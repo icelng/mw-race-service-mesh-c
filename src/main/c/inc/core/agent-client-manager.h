@@ -68,7 +68,7 @@ struct acm_channel {
     /*锁或信号量*/
     //sem_t write_queue_mutex;
     pthread_spinlock_t write_queue_spinlock;
-    pthread_spinlock_t write_queue_empty_spinlock;
+    pthread_spinlock_t write_queue_consume_spinlock;  // 写队列消费锁，只有一个线程消费
     pthread_spinlock_t reading_spinlock;
     pthread_spinlock_t writing_spinlock;
     int is_reding;
