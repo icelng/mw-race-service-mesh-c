@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.util.internal.AppendableCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
 
         /*协议转换*/
-        logger.info("reqId:{}", agentServiceRequest.getRequestId());
+        //logger.info("reqId:{}", agentServiceRequest.getRequestId());
         agentServiceRequest.setChannel(ctx.channel());
         ServiceSwitcher.switchToDubbo(agentServiceRequest, parseFormData(agentServiceRequest.getData(), formDataTemp));
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
@@ -49,25 +48,28 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         Map<String, String> formDataMap = new HashMap<>();  // 表单map
         formDataTemp.clear();
         String key = null;
-        boolean isKey = true;
 
         while (src.readableBytes() > 0) {
             byte c = src.readByte();
 
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
-                if (isKey) {
-                    /*有可能是key的结束*/
+                if (c == '=') {
+                    /*有可能以等号的结束,说明key对应的value是空的*/
                     key = formDataTemp.toString(Charset.forName("utf-8"));
                     formDataMap.put(key, "");
+                } else if (src.readableBytes() == 0) {
+                    /*如果value以字符串结束来结束的*/
+                    formDataTemp.writeByte(c);
+                    formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
                 } else if (formDataTemp.readableBytes() == 0){
+                    /*如果是以&结束的value为空*/
                     formDataMap.put(key, "");
                 } else {
                     formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
                 }
-                logger.info("key:{}  value:{}", key, formDataMap.get(key));
+                //logger.info("key:{}  value:{}", key, formDataMap.get(key));
                 formDataTemp.clear();
-                isKey = true;
                 continue;
             }
 
@@ -75,7 +77,6 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
                 /*key结束*/
                 key = formDataTemp.toString(Charset.forName("utf-8"));
                 formDataTemp.clear();
-                isKey = false;
                 continue;
             }
 
@@ -87,6 +88,9 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
                 byte c0 = src.readByte();
                 int num = hex2dec(c1) * 16 + hex2dec(c0);
                 formDataTemp.writeByte((byte) (num & 0xFF));
+                if (src.readableBytes() == 0) {
+                    formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
+                }
             }
         }
 
