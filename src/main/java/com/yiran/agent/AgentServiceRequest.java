@@ -33,7 +33,7 @@ public class AgentServiceRequest {
     }
 
     public void release(){
-        this.data.clear();
+        this.data.release();
         recyclerHandle.recycle(this);
     }
 
