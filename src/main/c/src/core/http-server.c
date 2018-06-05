@@ -63,6 +63,7 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
         goto err2_ret;
     }
 
+    /*建立内存池*/
     log_info("Creating channel memory pool.");
     struct mmpl_opt mmpl_opt;
     mmpl_opt.boundary = MMPL_BOUNDARY_2K;  // 2K对齐
@@ -98,6 +99,11 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
             goto err2_ret;
         }
     }
+
+    /*建立链接等待表,其长度是最大连接数的十倍*/
+    p_new_hs_handle->new_connection_map = mmpl_getmem(p_new_hs_handle->mmpl, hs_bt->max_connection * 10 * sizeof(struct hs_connection_entry));
+    p_new_hs_handle->new_connection_map_size = hs_bt->max_connection * 10;
+    p_new_hs_handle->connection_id = 0;
 
     /*启动accept线程*/
     log_info("Starting accept thread.");
@@ -143,17 +149,18 @@ int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events){
  * 参数: int client_sockfd, 客户端套接字
  * 返回值: 
  */
-int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
+void hs_new_connection(void *arg){
+    struct hs_connection_entry *p_conection_entry = arg;
+    int client_sockfd = p_conection_entry->socket_fd;
+    struct hs_handle *p_hs_handle = p_conection_entry->p_handle;
     static unsigned long epoll_i = 0;
 
     log_debug("New connection");
-    int ret_value;
 
     /*创建decode_handle*/
     struct hs_channel *p_channel;
     p_channel = mmpl_getmem(p_hs_handle->mmpl, sizeof(struct hs_channel) + p_hs_handle->buffer_size);
     if (p_channel == NULL) {
-        ret_value = -1;
         goto err1_ret;
     }
 
@@ -189,17 +196,17 @@ int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
                 client_sockfd,
                 &event) == -1){  //把客户端的socket加入epoll
         log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
-        ret_value = -2;
         goto err2_ret;
     }
 
-    return 1;
+    p_conection_entry->p_handle = NULL;
+    log_debug("Create new connection successfully!");
+    return;
 
 err2_ret:
     mmpl_rlsmem(p_hs_handle->mmpl, p_channel);
 err1_ret:
-    return ret_value;
-    
+    return;
 }
 
 
@@ -213,6 +220,7 @@ void hs_accept_thread(void *arg){
 
     struct sockaddr_in client_addr;
     struct hs_handle *hs_h = (struct hs_handle*)arg;
+    struct hs_connection_entry *p_conection_entry;
     int sin_size;
     int client_sockfd;
 
@@ -229,11 +237,22 @@ void hs_accept_thread(void *arg){
             log_err("Accept error:%s",strerror(errno));
             continue;
         }
+
         /*建立新链接*/
-        if (hs_new_connection(hs_h, client_sockfd) < 0) {
-            log_err("Failed to create connection!%s", strerror(errno));
+        p_conection_entry = &hs_h->new_connection_map[__sync_fetch_and_add(&hs_h->connection_id, 1) % hs_h->new_connection_map_size];
+        if (p_conection_entry->p_handle != NULL) {
+            log_err("HS:The connection map is full!!");
+            close(client_sockfd);
+            continue;
         }
-        log_debug("Create new connection successfully!");
+        p_conection_entry->p_handle = hs_h;
+        p_conection_entry->socket_fd = client_sockfd;
+        /*使用io线程调用函数*/
+        if (tdpl_call_func(hs_h->tdpl_io, hs_new_connection, p_conection_entry) < 0) {
+            log_err("Failed to start o thread for hs_new_connection:%s", strerror(errno));
+            close(client_sockfd);
+            continue;
+        }
     }
 }
 

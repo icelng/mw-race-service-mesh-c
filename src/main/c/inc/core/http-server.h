@@ -12,6 +12,13 @@
 #define HTTP_URL_DECODE_BUFSIZE 2048
 
 struct hs_channel;  // 不完全声明
+struct hs_handle;
+
+/*建立链接时所用*/
+struct hs_connection_entry {
+    struct hs_handle *p_handle;
+    int socket_fd;
+};
 
 struct hs_handle{
     tdpl tdpl_io;  // IO线程池
@@ -25,6 +32,9 @@ struct hs_handle{
     int epoll_fd[MAX_EPOLL_EVENT_LOOP_NUM];  // epoll描述符数组，描述符
     int event_loop_num;
     void (*content_handler)(struct hs_channel *p_channel, int cotent_size, char *content);  // 对content的处理函数
+    struct hs_connection_entry *new_connection_map;  // 链接映射，建立新链接时所用
+    int new_connection_map_size;
+    unsigned long connection_id;  // 链接id建立新链接时所用
 };
 
 
