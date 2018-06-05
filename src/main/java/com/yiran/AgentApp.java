@@ -60,7 +60,7 @@ public class AgentApp {
         ServiceSwitcher.setRpcClientChannel(dubboConnectManager.getChannel());
 
         /*启动Agent服务*/
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             try {
                 //int port = 1090;
                 int port = Integer.valueOf(System.getProperty("server.port" + i));

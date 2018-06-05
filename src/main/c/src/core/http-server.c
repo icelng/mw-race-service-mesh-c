@@ -115,6 +115,29 @@ err1_ret:
     return NULL;
 }
 
+/* 函数名: int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events) 
+ * 功能: 
+ * 参数: struct hs_channel *p_channel,
+         unsigned int events,
+ * 返回值: 
+ */
+int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events){
+    struct epoll_event event;
+
+    event.data.ptr = p_channel;
+    event.events = events | EPOLLET;  // 边缘出发
+    if (epoll_ctl(p_channel->epoll_fd,
+                EPOLL_CTL_MOD,
+                p_channel->socket,
+                &event) == -1) {
+        log_err("HS:Failed to MOD sockfd to epoll:%s",strerror(errno));
+        return -1;
+    }
+    
+    return 1;
+}
+
+
 /* 函数名: int hs_new_connection(struct hs_handle* p_hs_h, int client_sockfd) 
  * 功能: 新建链接，进行各种初始化
  * 参数: int client_sockfd, 客户端套接字
@@ -160,7 +183,7 @@ int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){
     /*向epoll注册读事件*/
     struct epoll_event event;
     event.data.ptr = p_channel;  
-    event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
+    event.events = EPOLLIN | EPOLLRDHUP | EPOLLET;  //注册读事件，远端关闭事件，边缘
     if(epoll_ctl(p_channel->epoll_fd,
                 EPOLL_CTL_ADD,
                 client_sockfd,
@@ -276,7 +299,6 @@ void hs_event_loop(void *arg){
  */
 void hs_io_write(void *arg){
     struct hs_channel *p_channel = arg;
-    struct epoll_event event;
     int hava_write_size;
 
     if (p_channel->write_index >= p_channel->write_size) {
@@ -303,12 +325,7 @@ void hs_io_write(void *arg){
         mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
     } else {
         /*继续监听写事件*/
-        event.data.ptr = p_channel;
-        event.events = EPOLLOUT | EPOLLRDHUP;  // 设置可写事件,水平触发模式
-        if (epoll_ctl(p_channel->epoll_fd,
-                    EPOLL_CTL_ADD,
-                    p_channel->socket,
-                    &event) == -1) {
+        if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
             log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
             close(p_channel->socket);
             mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
@@ -325,9 +342,6 @@ void hs_io_write(void *arg){
 int hs_io_do_write(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
     
-    /*channel对应的io线程在进行写操作的时候，不监听写事件*/
-    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
-
     /*使用io线程池里的线程来进行写操作*/
     if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
         log_err("Failed to start o thread for hs_io_write:%s", strerror(errno));
@@ -345,7 +359,6 @@ int hs_io_do_write(struct hs_channel *p_channel){
 void hs_io_read(void *arg){
     struct hs_channel *p_channel = arg;
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
-    struct epoll_event event;
     int read_size;
 
     /*开始把TCP读缓存上的数据拷贝到自己指定的buffer里*/
@@ -354,16 +367,11 @@ void hs_io_read(void *arg){
             p_hs_handle->buffer_size - p_channel->read_index, 
             MSG_DONTWAIT);
     if (read_size < 0) {
-        /*关闭连接*/
+        /*使用写事件来关闭连接*/
         log_err("Some error occured when reading data from socket!%s", strerror(errno));
         p_channel->write_index = 0;
         p_channel->write_size = 0;
-        event.data.ptr = p_channel;
-        event.events = EPOLLOUT | EPOLLRDHUP;  // 设置可写事件,水平触发模式
-        if (epoll_ctl(p_channel->epoll_fd,
-                    EPOLL_CTL_ADD,
-                    p_channel->socket,
-                    &event) == -1) {
+        if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
             log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
             close(p_channel->socket);
             mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
@@ -381,15 +389,9 @@ void hs_io_read(void *arg){
     p_channel->processing_index_now = p_channel->processing_index;
     hs_decoder(p_channel);  // 调用decoder
 
-    /*进行解码之后，如果还有需要读的数据，则向epoll注册读事件，表示要继续读取数据*/
+    /*进行解码之后，如果还有需要读的数据，则向epoll注册可读事件，表示要继续读取数据*/
     if (p_channel->is_read_done != 1) {
-        struct epoll_event event;
-        event.data.ptr = p_channel;  
-        event.events = EPOLLIN | EPOLLRDHUP;  //注册读事件，远端关闭事件，水平触发模式
-        if(epoll_ctl(p_channel->epoll_fd,
-                    EPOLL_CTL_ADD,
-                    p_channel->socket,
-                    &event) == -1){  //把客户端的socket加入epoll
+        if (hs_epoll_mod(p_channel, EPOLLIN | EPOLLRDHUP) < 0) {
             log_err("Failed to add sockfd to epoll for EPOLLIN:%s",strerror(errno));
         }
     }
@@ -402,9 +404,6 @@ void hs_io_read(void *arg){
  */
 int hs_io_do_read(struct hs_channel *p_channel){
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
-
-    /*chanell对应的io线程在进行读操作的时候，不监听读事件*/
-    epoll_ctl(p_channel->epoll_fd, EPOLL_CTL_DEL, p_channel->socket, NULL);
 
     /*使用io线程池里的线程来进行读操作*/
     if (tdpl_call_func(p_hs_handle->tdpl_io, hs_io_read, p_channel) < 0) {
@@ -567,7 +566,6 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     char head[32];  // 32字节的栈空间，不过分吧
     int head_length;
     char *buffer = p_channel->buffer;
-    struct epoll_event event;
 
     /*组装响应行和头*/
     int response_line_length = strlen(HTTP_SERVER_RESPONSE_OK);
@@ -600,12 +598,7 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     //    return -2;
     //}
     /*不跟event-lopp抢线程锁,IO线程皆由event-loop调用*/
-    event.data.ptr = p_channel;
-    event.events = EPOLLOUT | EPOLLRDHUP;  // 设置可写事件,水平触发模式
-    if (epoll_ctl(p_channel->epoll_fd,
-                EPOLL_CTL_ADD,
-                p_channel->socket,
-                &event) == -1) {
+    if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
         log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
     }
     
