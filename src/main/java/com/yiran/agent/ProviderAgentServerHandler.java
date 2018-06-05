@@ -54,14 +54,14 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
 
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
-                formDataMap.put(key, formDataTemp.toString());
+                formDataMap.put(key, formDataTemp.toString(Charset.forName("utf-8")));
                 formDataTemp.clear();
                 continue;
             }
 
             if (c == '=') {
                 /*key结束*/
-                key = formDataTemp.toString();
+                key = formDataTemp.toString(Charset.forName("utf-8"));
                 formDataTemp.clear();
                 continue;
             }
