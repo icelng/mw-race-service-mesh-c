@@ -68,9 +68,9 @@ struct acm_channel {
     /*锁或信号量*/
     //sem_t write_queue_mutex;
     pthread_spinlock_t write_queue_spinlock;
-    //pthread_spinlock_t write_queue_empty_spinlock;
-    //pthread_spinlock_t reading_spinlock;
-    //pthread_spinlock_t writing_spinlock;
+    pthread_spinlock_t write_queue_empty_spinlock;
+    pthread_spinlock_t reading_spinlock;
+    pthread_spinlock_t writing_spinlock;
     int is_reding;
     int is_writing;
     int is_write_queue_empty;
