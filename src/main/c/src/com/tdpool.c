@@ -202,9 +202,9 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     p_new_tdpl_s->call_queue_tail = 1;
 
     /*启动master线程*/
-    if(pthread_create(&p_new_tdpl_s->master_tid,NULL,tdpl_master_thread,p_new_tdpl_s) == -1){ 
-        goto err3_ret;
-    }
+    //if(pthread_create(&p_new_tdpl_s->master_tid,NULL,tdpl_master_thread,p_new_tdpl_s) == -1){ 
+    //    goto err3_ret;
+    //}
     /*建立worker线程*/
     for(i = 0;i < thread_num;i++){
         p_td_handle = &p_new_tdpl_s->td_handle_array[i];
