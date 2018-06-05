@@ -54,7 +54,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
 
             if (src.readableBytes() == 0 || c == '&') {
                 /*value结束*/
-                if (formDataTemp.readableBytes() == 0) {
+                if (src.readableBytes() == 0) {
                     /*有可能是key的结束*/
                     key = formDataTemp.toString(Charset.forName("utf-8"));
                     formDataMap.put(key, "");
