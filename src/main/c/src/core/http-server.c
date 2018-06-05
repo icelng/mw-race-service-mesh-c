@@ -154,6 +154,7 @@ void hs_new_connection(void *arg){
     int client_sockfd = p_conection_entry->socket_fd;
     struct hs_handle *p_hs_handle = p_conection_entry->p_handle;
     static unsigned long epoll_i = 0;
+    int no = 1;
 
     log_debug("New connection");
 
@@ -162,6 +163,15 @@ void hs_new_connection(void *arg){
     p_channel = mmpl_getmem(p_hs_handle->mmpl, sizeof(struct hs_channel) + p_hs_handle->buffer_size);
     if (p_channel == NULL) {
         goto err1_ret;
+    }
+
+    /*设置套接字*/
+    if(setsockopt(client_sockfd, 
+                IPPROTO_TCP, 
+                TCP_NODELAY, 
+                &no, 
+                sizeof(no)) < 0){
+        log_err("HS:Failed to set client_socket_fd!");
     }
 
     /*初始化channel*/
@@ -648,13 +658,13 @@ int hs_bind(int port){
                 sizeof(no)) < 0){
         return -2;
     }
-    //if(setsockopt(server_sockfd, 
-    //            IPPROTO_TCP, 
-    //            TCP_NODELAY, 
-    //            &no, 
-    //            sizeof(no)) < 0){
-    //    return -3;
-    //}
+    if(setsockopt(server_sockfd, 
+                IPPROTO_TCP, 
+                TCP_NODELAY, 
+                &no, 
+                sizeof(no)) < 0){
+        return -3;
+    }
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;

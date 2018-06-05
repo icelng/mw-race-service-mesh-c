@@ -8,6 +8,7 @@
 #include "sys/epoll.h"
 #include "sys/socket.h"
 #include "netinet/in.h"
+#include "netinet/tcp.h"
 #include "arpa/inet.h"
 #include "pthread.h"
 
@@ -110,6 +111,7 @@ struct acm_channel* acm_connect(
     struct epoll_event event;
     struct sockaddr_in servaddr;  
     int socket_fd;
+    int no = 1;
 
     /*先进行套接字连接*/
     log_info("ACM:Creating socket for agent-client.");
@@ -152,6 +154,14 @@ struct acm_channel* acm_connect(
     p_channel->is_write_queue_empty = 0;
     //sem_init(&p_channel->write_queue_mutex, 0, 1);
     
+    /*设置套接字*/
+    if(setsockopt(p_channel->socket_fd, 
+                IPPROTO_TCP, 
+                TCP_NODELAY, 
+                &no, 
+                sizeof(no)) < 0){
+        log_err("ACM:Failed to set agent_client_socket_fd!");
+    }
 
     /*注册事件*/
     log_info("ACM:Add event to epoll for new channel.");
