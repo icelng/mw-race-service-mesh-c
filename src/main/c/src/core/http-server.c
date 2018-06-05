@@ -100,9 +100,9 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
         }
     }
 
-    /*建立链接等待表,其长度是最大连接数的十倍*/
-    p_new_hs_handle->new_connection_map = mmpl_getmem(p_new_hs_handle->mmpl, hs_bt->max_connection * 10 * sizeof(struct hs_connection_entry));
-    p_new_hs_handle->new_connection_map_size = hs_bt->max_connection * 10;
+    /*建立链接等待表,其长度是最大连接数的二十倍*/
+    p_new_hs_handle->new_connection_map = mmpl_getmem(p_new_hs_handle->mmpl, hs_bt->max_connection * 20 * sizeof(struct hs_connection_entry));
+    p_new_hs_handle->new_connection_map_size = hs_bt->max_connection * 20;
     p_new_hs_handle->connection_id = 0;
 
     /*启动accept线程*/
@@ -206,6 +206,7 @@ void hs_new_connection(void *arg){
 err2_ret:
     mmpl_rlsmem(p_hs_handle->mmpl, p_channel);
 err1_ret:
+    p_conection_entry->p_handle = NULL;
     return;
 }
 
