@@ -94,7 +94,8 @@ struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char
     p_service_node->endpoint_list2_head.next = &p_service_node->endpoint_list2_head;
     p_service_node->endpoint_list2_head.prev = &p_service_node->endpoint_list2_head;
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list;
-    pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
+    pthread_mutex_init(&p_service_node->ep_link_lock, NULL);
 
     /*链入链表，需抢写者锁*/
     log_info("SERVICD_FIND:Write lock before");
@@ -202,7 +203,8 @@ err1_ret:
 int sd_rls_endpoints(struct sd_service_node *p_service_node){
     struct sd_endpoint *p_ep, *q;
 
-    pthread_spin_lock(&p_service_node->ep_link_spinlock);
+    pthread_mutex_lock(&p_service_node->ep_link_lock);
+    //pthread_spin_lock(&p_service_node->ep_link_spinlock);
     p_ep = p_service_node->comsuming_list->next;
     while(p_ep->next != p_ep) {
         /*非头结点*/
@@ -223,7 +225,8 @@ int sd_rls_endpoints(struct sd_service_node *p_service_node){
 
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list;
     p_service_node->endpoints_num = 0;
-    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+    pthread_mutex_unlock(&p_service_node->ep_link_lock);
+    //pthread_spin_unlock(&p_service_node->ep_link_spinlock);
     
     return 1;
 }
@@ -317,9 +320,11 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
         p_new_endpoint->load_level = atoi(value->valuestring);
         p_new_endpoint->p_agent_channel = p_new_channel;
         p_new_endpoint->remain = p_new_endpoint->load_level;
-        pthread_spin_lock(&p_service_node->ep_link_spinlock);
+        pthread_mutex_lock(&p_service_node->ep_link_lock);
+        //pthread_spin_lock(&p_service_node->ep_link_spinlock);
         sd_insert_endpoint(p_service_node->comsuming_list, p_new_endpoint);
-        pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+        //pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+        pthread_mutex_unlock(&p_service_node->ep_link_lock);
     }
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list->next;
     log_info("SERVICE_DISCOVERY:Service found complete.");
@@ -355,7 +360,8 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
     }
 
     /*使用自旋锁*/
-    pthread_spin_lock(&p_service_node->ep_link_spinlock);
+    pthread_mutex_lock(&p_service_node->ep_link_lock);
+    //pthread_spin_lock(&p_service_node->ep_link_spinlock);
     struct sd_endpoint *p_endpoint = p_service_node->p_next_req_endpoint;
     if (p_endpoint == p_service_node->comsuming_list) {
         /*如果是头节点*/
@@ -377,7 +383,8 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
         /*大多时候都是o(1)操作*/
         sd_insert_endpoint(p_service_node->saturated_list, p_endpoint);
     }
-    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+    pthread_mutex_unlock(&p_service_node->ep_link_lock);
+    //pthread_spin_unlock(&p_service_node->ep_link_spinlock);
 
     return p_endpoint->p_agent_channel;
 }

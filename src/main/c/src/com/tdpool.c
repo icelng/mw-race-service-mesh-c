@@ -104,9 +104,9 @@ void *tdpl_worker_thread(void *arg){
         sem_wait(&pts->call_wait_n); // 等待有调用请求
 
         /*请求队列出队，需抢读者锁*/
-        pthread_spin_lock(&pts->call_queue_read_spinlock);
-        p_call_node = &pts->call_queue[(++pts->call_queue_head) % pts->call_queue_period];
-        pthread_spin_unlock(&pts->call_queue_read_spinlock);
+        //pthread_spin_lock(&pts->call_queue_read_spinlock);
+        p_call_node = &pts->call_queue[__sync_add_and_fetch(&pts->call_queue_head, 1) % pts->call_queue_period];
+        //pthread_spin_unlock(&pts->call_queue_read_spinlock);
         p_td_handle->call_func = p_call_node->call_func;
         p_td_handle->arg = p_call_node->arg;
 
@@ -187,8 +187,10 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     //sem_init(&p_new_tdpl_s->call_queue_write_mutex, 0, 1);
     //sem_init(&p_new_tdpl_s->avali_queue_write_mutex, 0, 1);
     //sem_init(&p_new_tdpl_s->call_queue_read_mutex, 0, 1);
-    pthread_spin_init(&p_new_tdpl_s->call_queue_read_spinlock, PTHREAD_PROCESS_PRIVATE);
-    pthread_spin_init(&p_new_tdpl_s->call_queue_write_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //pthread_spin_init(&p_new_tdpl_s->call_queue_read_spinlock, PTHREAD_PROCESS_PRIVATE);
+    //pthread_spin_init(&p_new_tdpl_s->call_queue_write_spinlock, PTHREAD_PROCESS_PRIVATE);
+    pthread_mutex_init(&p_new_tdpl_s->call_queue_read_lock, NULL);
+    pthread_mutex_init(&p_new_tdpl_s->call_queue_write_lock, NULL);
     
 
     /*初始化队列*/
@@ -257,15 +259,18 @@ int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){
     /*因为没有加锁，所以被判断成满的那一瞬间，队列的节点被消费了*/
 
     /*请求队列节点入队,需要抢读者锁*/
-    pthread_spin_lock(&pts->call_queue_write_spinlock);
+    //pthread_spin_lock(&pts->call_queue_write_spinlock);
+    pthread_mutex_lock(&pts->call_queue_write_lock);
     if(pts->call_queue_head == pts->call_queue_tail){  // 查看请求队列是否已满
-        pthread_spin_unlock(&pts->call_queue_write_spinlock);
+        //pthread_spin_unlock(&pts->call_queue_write_spinlock);
+        pthread_mutex_unlock(&pts->call_queue_write_lock);
         return -2;  // 如果满则放弃请求
     }
     p_call_node = &pts->call_queue[(pts->call_queue_tail++)%pts->call_queue_period];
     p_call_node->call_func = call_func;
     p_call_node->arg = arg;
-    pthread_spin_unlock(&pts->call_queue_write_spinlock);
+    pthread_mutex_unlock(&pts->call_queue_write_lock);
+    //pthread_spin_unlock(&pts->call_queue_write_spinlock);
     sem_post(&pts->call_wait_n);  // 告知有调用请求
 
     return 1;

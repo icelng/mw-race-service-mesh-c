@@ -28,7 +28,8 @@ struct sd_service_node {
 
     /*节点单项链表，按load_level大到小排序*/
     struct sd_endpoint endpoint_list1_head, endpoint_list2_head;
-    pthread_spinlock_t ep_link_spinlock;  // 节点链表自旋锁
+    //pthread_spinlock_t ep_link_spinlock;  // 节点链表自旋锁
+    pthread_mutex_t ep_link_lock;  // 节点链表锁
     //sem_t endpoint_link_mutex;
 
     /*哈希链表链接*/

@@ -46,7 +46,8 @@ typedef struct mm_pool_s{
     struct mm_node *free[MMPL_MAX_INDEX + 1];
     unsigned int free_size[MMPL_MAX_INDEX + 1];  // 记录free数组对应index含有index(空闲内存)大小
     //sem_t mutex;  //锁，用来互斥访问内存池
-    pthread_spinlock_t spin_lock;
+    //pthread_spinlock_t spin_lock;
+    pthread_mutex_t lock;
 }*mmpl;
 
 
