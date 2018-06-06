@@ -5,6 +5,7 @@ import com.yiran.agent.AgentServiceRequest;
 import com.yiran.agent.AgentServiceResponse;
 import com.yiran.agent.Bytes;
 import com.yiran.agent.web.FormDataParser;
+import com.yiran.dubbo.DubboConnectManager;
 import com.yiran.dubbo.model.JsonUtils;
 import com.yiran.dubbo.model.Request;
 import com.yiran.dubbo.model.RpcInvocation;
@@ -26,7 +27,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ServiceSwitcher {
     private static Logger logger = LoggerFactory.getLogger(ServiceSwitcher.class);
-    private static Channel rpcClientChannel = null;
+    private static DubboConnectManager dubboConnectManager = null;
     private static CountDownLatch rpcChannelReady = new CountDownLatch(1);
     /*使用可并发Hash表*/
     private static ConcurrentHashMap<String, AgentServiceRequest> processingRequest = new ConcurrentHashMap<>();
@@ -39,11 +40,11 @@ public class ServiceSwitcher {
 
     /**
      * 设置实现Dubbo协议的Netty客户端通道(Channel)
-     * @param client
+     * @param connectManager
      * 客户端Channel
      */
-    public static void setRpcClientChannel(Channel client){
-        rpcClientChannel = client;
+    public static void setRpcClientChannel(DubboConnectManager connectManager){
+        dubboConnectManager = connectManager;
         rpcChannelReady.countDown();
     }
 
@@ -92,7 +93,7 @@ public class ServiceSwitcher {
 
         processingRequest.put(String.valueOf(requestId), agentServiceRequest);
 
-        rpcClientChannel.writeAndFlush(request);
+        dubboConnectManager.getChannel().writeAndFlush(request);
     }
 
     /**

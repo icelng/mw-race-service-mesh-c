@@ -9,21 +9,26 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class DubboConnectManager {
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(16);
 
     private Bootstrap bootstrap;
 
-    private Channel channel;
+    private AtomicLong channelSelectNum;
+    private int connectionNum;
+    private Channel channels[];
     private Object lock = new Object();
 
-    public DubboConnectManager() {
+    public DubboConnectManager(int connectionNum) {
+        this.connectionNum = connectionNum;
+        eventLoopGroup = new NioEventLoopGroup(connectionNum);
+        channels = new Channel[connectionNum];
+        channelSelectNum = new AtomicLong(0);
     }
 
-    public Channel getChannel() throws Exception {
-        if (null != channel) {
-            return channel;
-        }
+    public void connect() throws InterruptedException {
 
         if (null == bootstrap) {
             synchronized (lock) {
@@ -33,17 +38,19 @@ public class DubboConnectManager {
             }
         }
 
-        if (null == channel) {
-            synchronized (lock){
-                if (null == channel){
-//                    int port = 20880;
-                    int port = Integer.valueOf(System.getProperty("dubbo.protocol.port"));
-                    channel = bootstrap.connect("127.0.0.1", port).sync().channel();
-                }
-            }
+        int port = Integer.valueOf(System.getProperty("dubbo.protocol.port"));
+        for (int i = 0;i < connectionNum;i++) {
+            channels[i] = bootstrap.connect("127.0.0.1", port).sync().channel();
         }
 
-        return channel;
+    }
+
+    public Channel getChannel(){
+
+        if (null == bootstrap) {
+            return null;
+        }
+        return channels[(int) (channelSelectNum.getAndIncrement() % connectionNum)];
     }
 
     public void initBootstrap() {

@@ -45,22 +45,23 @@ public class AgentApp {
         //new ProviderAgentBootstrap().boot();
 
         /*先与Dubbo进行连接*/
-        DubboConnectManager dubboConnectManager = new DubboConnectManager();
-        Channel dubboChannel = null;
-        while (dubboChannel == null) {
-            logger.info("Connecting to Dubbo..");
-            try {
-                dubboChannel = dubboConnectManager.getChannel();
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-                Thread.sleep(500);
-            }
-        }
+        DubboConnectManager dubboConnectManager = new DubboConnectManager(4);  // 4条链接
+        logger.info("Connecting to Dubbo..");
+        dubboConnectManager.connect();
+        //Channel dubboChannel = null;
+        //while (dubboChannel == null) {
+        //    try {
+        //        dubboChannel = dubboConnectManager.getChannel();
+        //    } catch (Exception e) {
+        //        logger.error(e.getMessage());
+        //        Thread.sleep(500);
+        //    }
+        //}
         /*往服务交换机注册支持的通道*/
-        ServiceSwitcher.setRpcClientChannel(dubboConnectManager.getChannel());
+        ServiceSwitcher.setRpcClientChannel(dubboConnectManager);
 
         /*启动Agent服务*/
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 2; i++) {
             try {
                 //int port = 1090;
                 int port = Integer.valueOf(System.getProperty("server.port" + i));
