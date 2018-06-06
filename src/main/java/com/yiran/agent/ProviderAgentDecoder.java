@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.CharsetUtil;
 import io.netty.util.internal.AppendableCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,18 +70,6 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
         isHeader = true;
     }
 
-    public static void main(String[] args){
-        byte[] intBytes = new byte[4];
-        intBytes[0] = 32;
-        intBytes[1] = 0;
-        intBytes[2] = 0;
-        intBytes[3] = -1;
-        int size;
-        size = ((intBytes[0] << 24) | (intBytes[1] << 16) | (intBytes[2] << 8) | (intBytes[3] & 0xFF));
-        System.out.println(size);
-
-    }
-
     private int hex2dec(byte c) {
         if ('0' <= c && c <= '9') {
             return c - '0';
@@ -105,17 +94,17 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                 /*value结束*/
                 if (c == '=') {
                     /*有可能以等号的结束,说明key对应的value是空的*/
-                    key = formDataTemp.toString();
+                    key = formDataTemp.toString(CharsetUtil.UTF_8);
                     formDataMap.put(key, "");
                 } else if (i == length) {
                     /*如果value以字符串结束来结束的*/
                     formDataTemp.writeByte(c);
-                    formDataMap.put(key, formDataTemp.toString());
+                    formDataMap.put(key, formDataTemp.toString(CharsetUtil.UTF_8));
                 } else if (formDataTemp.readableBytes() == 0){
                     /*如果是以&结束的value为空*/
                     formDataMap.put(key, "");
                 } else {
-                    formDataMap.put(key, formDataTemp.toString());
+                    formDataMap.put(key, formDataTemp.toString(CharsetUtil.UTF_8));
                 }
                 //logger.info("key:{}  value:{}", key, formDataMap.get(key));
                 formDataTemp.clear();
@@ -124,7 +113,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
 
             if (c == '=') {
                 /*key结束*/
-                key = formDataTemp.toString();
+                key = formDataTemp.toString(CharsetUtil.UTF_8);
                 formDataTemp.clear();
                 continue;
             }
@@ -138,7 +127,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                 int num = hex2dec(c1) * 16 + hex2dec(c0);
                 formDataTemp.writeByte((byte) (num & 0xFF));
                 if (i + 2 == length) {
-                    formDataMap.put(key, formDataTemp.toString());
+                    formDataMap.put(key, formDataTemp.toString(CharsetUtil.UTF_8));
                 }
             }
 
