@@ -29,7 +29,9 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
 
         /*协议转换*/
         //logger.info("reqId:{}", agentServiceRequest.getRequestId());
-        agentServiceRequest.setFormDataMap(FormDataParser.get().parse(agentServiceRequest.getData()));
+        FormDataParser formDataParser = FormDataParser.get();
+        agentServiceRequest.setFormDataMap(formDataParser.parse(agentServiceRequest.getData()));
+        formDataParser.release();
         agentServiceRequest.setChannel(ctx.channel());
         ServiceSwitcher.switchToDubbo(agentServiceRequest);
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
