@@ -51,11 +51,10 @@ public class ServiceSwitcher {
      * 服务协议转换至Dubbo
      * @param agentServiceRequest
      * agent 接收到的请求
-     * @param formData
      * 接收请求对应的Netty Channel
      * @throws IOException
      */
-    public static void switchToDubbo(AgentServiceRequest agentServiceRequest, Map<String, String> formData) throws IOException {
+    public static void switchToDubbo(AgentServiceRequest agentServiceRequest) throws IOException {
         try {
             /*转换服务协议之前，一定要保证已经跟dubbo建立好连接*/
             rpcChannelReady.await();
@@ -64,6 +63,7 @@ public class ServiceSwitcher {
             return;
         }
 
+        Map<String, String> formData = agentServiceRequest.getFormDataMap();
         long requestId = agentServiceRequest.getRequestId();
 //        logger.info("Switch service for requestId:{}", requestId);
         //FormDataParser formDataParser = FormDataParser.get();
@@ -117,7 +117,7 @@ public class ServiceSwitcher {
         /*生成响应报文*/
         AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
         agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
-        agentServiceRequest.release();
+        //agentServiceRequest.release();
 
         /*设置返回值为整形，hashcode*/
         //String returnStr = new String(rpcResponse.getBytes(), "utf-8");
