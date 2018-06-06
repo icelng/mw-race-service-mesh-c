@@ -173,7 +173,7 @@ public class FormDataParser implements ByteProcessor {
                 isC0 = false;
                 return true;
             } else {
-                seq.writeByte(hex2dec(c1) * 16 + hex2dec(c0));
+                seq.writeByte((byte) ((hex2dec(c1) * 16 + hex2dec(c0)) & 0xFF));
                 isUrlDec = false;
                 return true;
             }
