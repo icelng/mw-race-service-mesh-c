@@ -137,7 +137,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                 byte c0 = src.readByte();
                 int num = hex2dec(c1) * 16 + hex2dec(c0);
                 formDataTemp.writeByte((byte) (num & 0xFF));
-                if (src.readableBytes() == 0) {
+                if (i + 2 == length) {
                     formDataMap.put(key, formDataTemp.toString());
                 }
             }
