@@ -8,11 +8,14 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 public class DubboConnectManager {
-    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(16);
+    private static Logger logger = LoggerFactory.getLogger(DubboConnectManager.class);
+    private EventLoopGroup eventLoopGroup;
 
     private Bootstrap bootstrap;
 
@@ -40,7 +43,13 @@ public class DubboConnectManager {
 
         int port = Integer.valueOf(System.getProperty("dubbo.protocol.port"));
         for (int i = 0;i < connectionNum;i++) {
-            channels[i] = bootstrap.connect("127.0.0.1", port).sync().channel();
+            try {
+                channels[i] = bootstrap.connect("127.0.0.1", port).sync().channel();
+            } catch (Exception e) {
+                logger.error("Failed to connect Dubbo:{}", i);
+                i--;
+                Thread.sleep(1000);
+            }
         }
 
     }

@@ -111,15 +111,15 @@ public class FormDataParser implements ByteProcessor {
             k++;
             if (k % 2 == 1) {
                 /*key*/
-                //key = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
-                key = seq.toString(Charset.forName("utf-8"));
+                key = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                //key = seq.toString(Charset.forName("utf-8"));
                 if (key == null) {
                     logger.error("Failed to parse key!");
                 }
             } else if (k % 2 == 0) {
                 /*value*/
-                //value = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
-                value = seq.toString(Charset.forName("utf-8"));
+                value = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                //value = seq.toString(Charset.forName("utf-8"));
                 if (value == null && this.nextIsValue) {
                     parameterMap.put(key, "");
                     //logger.info("key:{} value:{}", key, parameterMap.get(key));
@@ -157,26 +157,26 @@ public class FormDataParser implements ByteProcessor {
             throw newException(maxLength);
         }
 
-        if (value == '%') {
-            isUrlDec = true;
-            isC0 = true;
-            isC1 = true;
-            return true;
-        }
+        //if (value == '%') {
+        //    isUrlDec = true;
+        //    isC0 = true;
+        //    isC1 = true;
+        //    return true;
+        //}
 
-        if (isUrlDec) {
-            if (isC1) {
-                c1 = value;
-                isC1 = false;
-                return true;
-            } else if (isC0) {
-                c0 = value;
-                isC0 = false;
-                seq.writeByte((byte) ((hex2dec(c1) * 16 + hex2dec(c0)) & 0xFF));
-                isUrlDec = false;
-                return true;
-            }
-        }
+        //if (isUrlDec) {
+        //    if (isC1) {
+        //        c1 = value;
+        //        isC1 = false;
+        //        return true;
+        //    } else if (isC0) {
+        //        c0 = value;
+        //        isC0 = false;
+        //        seq.writeByte((byte) ((hex2dec(c1) * 16 + hex2dec(c0)) & 0xFF));
+        //        isUrlDec = false;
+        //        return true;
+        //    }
+        //}
 
         seq.writeByte(value);
         return true;
