@@ -65,7 +65,7 @@ public class ServiceSwitcher {
 
         Map<String, String> formData = agentServiceRequest.getFormDataMap();
         long requestId = agentServiceRequest.getRequestId();
-        logger.info("Switch service for requestId:{}", requestId);
+        //logger.info("Switch service for requestId:{}", requestId);
         //FormDataParser formDataParser = FormDataParser.get();
         //Map<String, String> argumentsMap = formDataParser.parse(agentServiceRequest.getData());
         //formDataParser.release();
@@ -108,7 +108,7 @@ public class ServiceSwitcher {
             logger.warn("No rpcResponse for requestId:{}", rpcResponse.getRequestId());
             return;
         }
-        logger.info("Receive response(id:{}) from provider:{}", rpcResponse.getRequestId(), new String(rpcResponse.getBytes()));
+        //logger.info("Receive response(id:{}) from provider:{}", rpcResponse.getRequestId(), new String(rpcResponse.getBytes()));
         processingRequest.remove(String.valueOf(rpcResponse.getRequestId()));
 
         /*获取得到consumer-agent 与 provider-agent之间的Channel*/

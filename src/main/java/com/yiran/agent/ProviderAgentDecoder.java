@@ -48,7 +48,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                 agentServiceRequest.setRequestId(Bytes.bytes2long(header, 0));
                 /*获取数据长度*/
                 dataLength = Bytes.bytes2int(header, 8);
-                logger.info("requestId:{}, dataLength:{}", agentServiceRequest.getRequestId(), dataLength);
+                //logger.info("requestId:{}, dataLength:{}", agentServiceRequest.getRequestId(), dataLength);
                 isHeader = false;
             }
         }
@@ -106,7 +106,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
                 } else {
                     formDataMap.put(key, formDataTemp.toString(CharsetUtil.UTF_8));
                 }
-                logger.info("key:{}  value:{}", key, formDataMap.get(key));
+                //logger.info("key:{}  value:{}", key, formDataMap.get(key));
                 formDataTemp.clear();
                 continue;
             }
@@ -124,9 +124,10 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
             } else {
                 byte c1 = src.readByte();
                 byte c0 = src.readByte();
+                i = i + 2;
                 int num = hex2dec(c1) * 16 + hex2dec(c0);
                 formDataTemp.writeByte((byte) (num & 0xFF));
-                if (i + 2 == length) {
+                if (i == length) {
                     formDataMap.put(key, formDataTemp.toString(CharsetUtil.UTF_8));
                 }
             }
