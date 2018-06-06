@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 public class ServiceSwitcher {
     private static Logger logger = LoggerFactory.getLogger(ServiceSwitcher.class);
     private static DubboConnectManager dubboConnectManager = null;
+    private static Channel dubboChannel;
     private static CountDownLatch rpcChannelReady = new CountDownLatch(1);
     /*使用可并发Hash表*/
     private static ConcurrentHashMap<String, AgentServiceRequest> processingRequest = new ConcurrentHashMap<>();
@@ -40,11 +41,10 @@ public class ServiceSwitcher {
 
     /**
      * 设置实现Dubbo协议的Netty客户端通道(Channel)
-     * @param connectManager
      * 客户端Channel
      */
-    public static void setRpcClientChannel(DubboConnectManager connectManager){
-        dubboConnectManager = connectManager;
+    public static void setRpcClientChannel(Channel channel){
+        dubboChannel = channel;
         rpcChannelReady.countDown();
     }
 
@@ -93,7 +93,8 @@ public class ServiceSwitcher {
 
         processingRequest.put(String.valueOf(requestId), agentServiceRequest);
 
-        dubboConnectManager.getChannel().writeAndFlush(request);
+        //dubboConnectManager.getChannel().writeAndFlush(request);
+        dubboChannel.writeAndFlush(request);
     }
 
     /**
