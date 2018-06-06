@@ -63,12 +63,12 @@ public class ServiceSwitcher {
             return;
         }
 
-        //Map<String, String> formData = agentServiceRequest.getFormDataMap();
+        Map<String, String> formData = agentServiceRequest.getFormDataMap();
         long requestId = agentServiceRequest.getRequestId();
         //logger.info("Switch service for requestId:{}", requestId);
-        FormDataParser formDataParser = FormDataParser.get();
-        Map<String, String> formData = formDataParser.parse(agentServiceRequest.getData());
-        formDataParser.release();
+        //FormDataParser formDataParser = FormDataParser.get();
+        //Map<String, String> formData = formDataParser.parse(agentServiceRequest.getData());
+        //formDataParser.release();
 
         RpcInvocation invocation = new RpcInvocation();
         invocation.setMethodName(formData.get("method"));

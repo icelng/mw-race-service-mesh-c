@@ -1,6 +1,7 @@
 package com.yiran.agent;
 
 import com.yiran.ServiceSwitcher;
+import com.yiran.agent.web.FormDataParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,6 +29,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
 
         /*协议转换*/
         //logger.info("reqId:{}", agentServiceRequest.getRequestId());
+        agentServiceRequest.setFormDataMap(FormDataParser.get().parse(agentServiceRequest.getData()));
         agentServiceRequest.setChannel(ctx.channel());
         ServiceSwitcher.switchToDubbo(agentServiceRequest);
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
