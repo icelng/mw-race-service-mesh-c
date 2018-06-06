@@ -65,7 +65,6 @@ public class FormDataParser implements ByteProcessor {
         this.nextIsValue = false;
         isC0 =false;
         isC1 = false;
-        isUrlDec = false;
         size = 0;
         String key = null;
         String value;
@@ -107,6 +106,7 @@ public class FormDataParser implements ByteProcessor {
         String value = null;
         while(true){
             seq.clear();
+            isUrlDec = false;
             int i = buffer.forEachByte(this);
             k++;
             if (k % 2 == 1) {
@@ -122,8 +122,10 @@ public class FormDataParser implements ByteProcessor {
                 value = seq.toString(Charset.forName("utf-8"));
                 if (value == null && this.nextIsValue) {
                     parameterMap.put(key, "");
+                    logger.info("key:{} value:{}", key, parameterMap.get(key));
                 } else {
                     parameterMap.put(key, value);
+                    logger.info("key:{} value:{}", key, parameterMap.get(key));
                 }
             }
             if (i == -1) {
@@ -136,19 +138,18 @@ public class FormDataParser implements ByteProcessor {
 
     @Override
     public boolean process(byte value) throws Exception {
-        byte nextByte = value;
-        if (nextByte == CHAR_EQUAL) {
+        if (value == CHAR_EQUAL) {
             this.nextIsValue = true;
             return false;
         }
-        if (nextByte == CHAR_AND) {
+        if (value == CHAR_AND) {
             this.nextIsValue = false;
             return false;
         }
-        if (nextByte == HttpConstants.CR) {
+        if (value == HttpConstants.CR) {
             return false;
         }
-        if (nextByte == HttpConstants.LF) {
+        if (value == HttpConstants.LF) {
             return false;
         }
 
@@ -156,7 +157,7 @@ public class FormDataParser implements ByteProcessor {
             throw newException(maxLength);
         }
 
-        if (nextByte == '%') {
+        if (value == '%') {
             isUrlDec = true;
             isC0 = true;
             isC1 = true;
@@ -165,11 +166,11 @@ public class FormDataParser implements ByteProcessor {
 
         if (isUrlDec) {
             if (isC1) {
-                c1 = nextByte;
+                c1 = value;
                 isC1 = false;
                 return true;
             } else if (isC0) {
-                c0 = nextByte;
+                c0 = value;
                 isC0 = false;
                 return true;
             } else {
@@ -179,7 +180,7 @@ public class FormDataParser implements ByteProcessor {
             }
         }
 
-        seq.writeByte(nextByte);
+        seq.writeByte(value);
         return true;
     }
 
