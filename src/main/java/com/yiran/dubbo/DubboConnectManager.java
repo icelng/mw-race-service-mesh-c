@@ -26,7 +26,7 @@ public class DubboConnectManager {
 
     public DubboConnectManager(int connectionNum) {
         this.connectionNum = connectionNum;
-        eventLoopGroup = new NioEventLoopGroup(connectionNum);
+        eventLoopGroup = new NioEventLoopGroup(connectionNum + 8);
         channels = new Channel[connectionNum];
         channelSelectNum = new AtomicLong(0);
     }
