@@ -112,7 +112,7 @@ public class ServiceSwitcher {
         processingRequest.remove(String.valueOf(rpcResponse.getRequestId()));
 
         /*获取得到consumer-agent 与 provider-agent之间的Channel*/
-        Channel agentChannel =  agentServiceRequest.getChannel();
+        Channel agentChannel = agentServiceRequest.getChannel();
 
         /*生成响应报文*/
         AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
