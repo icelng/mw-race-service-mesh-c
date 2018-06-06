@@ -32,6 +32,11 @@ public class FormDataParser implements ByteProcessor {
     private ByteBuf seq;
     private final int maxLength;
     private Recycler.Handle<FormDataParser> recyclerHandle;
+    private boolean isUrlDec = false;
+    private boolean isC0 = false;
+    private boolean isC1 = false;
+    private byte c1;
+    private byte c0;
 
     public FormDataParser(Recycler.Handle<FormDataParser> handle){
         this.recyclerHandle = handle;
@@ -58,6 +63,9 @@ public class FormDataParser implements ByteProcessor {
         int oldReaderIndex = buffer.readerIndex();
         int k = 0;
         this.nextIsValue = false;
+        isC0 =false;
+        isC1 = false;
+        isUrlDec = false;
         size = 0;
         String key = null;
         String value;
@@ -103,13 +111,15 @@ public class FormDataParser implements ByteProcessor {
             k++;
             if (k % 2 == 1) {
                 /*key*/
-                key = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                //key = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                key = seq.toString(Charset.forName("utf-8"));
                 if (key == null) {
                     logger.error("Failed to parse key!");
                 }
             } else if (k % 2 == 0) {
                 /*value*/
-                value = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                //value = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                value = seq.toString(Charset.forName("utf-8"));
                 if (value == null && this.nextIsValue) {
                     parameterMap.put(key, "");
                 } else {
@@ -146,8 +156,43 @@ public class FormDataParser implements ByteProcessor {
             throw newException(maxLength);
         }
 
+        if (nextByte == '%') {
+            isUrlDec = true;
+            isC0 = true;
+            isC1 = true;
+            return true;
+        }
+
+        if (isUrlDec) {
+            if (isC1) {
+                c1 = nextByte;
+                isC1 = false;
+                return true;
+            } else if (isC0) {
+                c0 = nextByte;
+                isC0 = false;
+                return true;
+            } else {
+                seq.writeByte(hex2dec(c1) * 16 + hex2dec(c0));
+                isUrlDec = false;
+                return true;
+            }
+        }
+
         seq.writeByte(nextByte);
         return true;
+    }
+
+    private int hex2dec(byte c) {
+        if ('0' <= c && c <= '9') {
+            return c - '0';
+        } else if ('a' <= c && c <= 'f') {
+            return c - 'a' + 10;
+        } else if ('A' <= c && c <= 'F') {
+            return c - 'A' + 10;
+        } else {
+            return -1;
+        }
     }
 
     protected TooLongFrameException newException(int maxLength) {
