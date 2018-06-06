@@ -132,12 +132,12 @@ struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* se
         return NULL;
     }
 
-    while (p != NULL) {
-        if (!strcmp(p->service_name, service_name)) {
-            break;
-        }
-        p = p->next;
-    }
+    //while (p != NULL) {
+    //    if (!strcmp(p->service_name, service_name)) {
+    //        break;
+    //    }
+    //    p = p->next;
+    //}
 
     /*释放读者锁*/
     pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
