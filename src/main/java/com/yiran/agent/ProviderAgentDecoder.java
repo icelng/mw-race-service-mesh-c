@@ -1,6 +1,8 @@
 package com.yiran.agent;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -30,6 +32,7 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
     private byte[] header = new byte[HEADER_LENGTH];
 
     private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
+    private ByteBufAllocator byteBufAllocator = PooledByteBufAllocator.DEFAULT;
 
 
 
@@ -58,8 +61,11 @@ public class ProviderAgentDecoder extends ByteToMessageDecoder {
             return;
         }
 
+        agentServiceRequest.setData(byteBufAllocator.buffer(dataLength));
+        in.readBytes(agentServiceRequest.getData(), dataLength);
+
         /*解析表单*/
-        agentServiceRequest.setFormDataMap(parseFormData(in, dataLength, formDataTemp));
+        //agentServiceRequest.setFormDataMap(parseFormData(in, dataLength, formDataTemp));
 
         out.add(agentServiceRequest);
 //        logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));

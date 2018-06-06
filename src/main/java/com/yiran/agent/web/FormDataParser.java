@@ -39,6 +39,11 @@ public class FormDataParser implements ByteProcessor {
         this.seq = Unpooled.directBuffer(2048);
     }
 
+    public FormDataParser(ByteBuf seq) {
+        this.seq = seq;
+        this.maxLength = 2048;
+    }
+
     public void release(){
         this.seq.clear();
         recyclerHandle.recycle(this);
