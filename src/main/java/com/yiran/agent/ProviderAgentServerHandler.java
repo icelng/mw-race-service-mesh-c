@@ -21,17 +21,17 @@ import java.util.Map;
 public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<AgentServiceRequest> {
     private static Logger logger = LoggerFactory.getLogger(ProviderAgentServerHandler.class);
 
-    //private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
-    private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
+    private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
+    //private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
 
         /*协议转换*/
         //logger.info("reqId:{}", agentServiceRequest.getRequestId());
-        FormDataParser formDataParser = FormDataParser.get();
+        FormDataParser formDataParser = new FormDataParser(formDataTemp);
         agentServiceRequest.setFormDataMap(formDataParser.parse(agentServiceRequest.getData()));
-        formDataParser.release();
+        //formDataParser.release();
         agentServiceRequest.setChannel(ctx.channel());
         ServiceSwitcher.switchToDubbo(agentServiceRequest);
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
