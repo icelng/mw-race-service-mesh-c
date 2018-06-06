@@ -28,7 +28,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
 
         /*协议转换*/
-        logger.info("reqId:{}", agentServiceRequest.getRequestId());
+        //logger.info("reqId:{}", agentServiceRequest.getRequestId());
         FormDataParser formDataParser = new FormDataParser(formDataTemp);
         agentServiceRequest.setFormDataMap(formDataParser.parse(agentServiceRequest.getData()));
         //formDataParser.release();

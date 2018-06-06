@@ -122,10 +122,10 @@ public class FormDataParser implements ByteProcessor {
                 value = seq.toString(Charset.forName("utf-8"));
                 if (value == null && this.nextIsValue) {
                     parameterMap.put(key, "");
-                    logger.info("key:{} value:{}", key, parameterMap.get(key));
+                    //logger.info("key:{} value:{}", key, parameterMap.get(key));
                 } else {
                     parameterMap.put(key, value);
-                    logger.info("key:{} value:{}", key, parameterMap.get(key));
+                    //logger.info("key:{} value:{}", key, parameterMap.get(key));
                 }
             }
             if (i == -1) {
