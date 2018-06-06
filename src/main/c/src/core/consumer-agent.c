@@ -60,8 +60,8 @@ void cagent_start(int argc, char *argv[]){
     struct acm_handle *p_acm_handle;
 
 
-    acm_opt.io_thread_num = 8;
-    acm_opt.worker_thread_num = 8;
+    acm_opt.io_thread_num = 16;
+    acm_opt.worker_thread_num = 16;
     acm_opt.max_hold_req_num = 51200;
     acm_opt.max_write_queue_len = 51200;
 
