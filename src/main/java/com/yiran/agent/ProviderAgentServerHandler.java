@@ -37,5 +37,9 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
     }
 
-
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+        logger.error("", cause);
+    }
 }
