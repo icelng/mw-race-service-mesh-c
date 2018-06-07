@@ -81,7 +81,7 @@ void cagent_start(int argc, char *argv[]){
     hs_bt.max_connection = 512;  // 最大连接等待数
     hs_bt.server_port = 20000;  // 端口
     hs_bt.worker_thread_num = 1;  // 工作线程数
-    hs_bt.io_thread_num = 16;  // io线程数
+    hs_bt.io_thread_num = 32;  // io线程数
     hs_bt.event_loop_num = 1;  // 一个事件循环
     hs_bt.content_handler = content_handler;  // content处理函数
 
