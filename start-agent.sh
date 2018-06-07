@@ -15,7 +15,7 @@ elif [[ "$1" == "provider-small" ]]; then
        -Xms512M \
        -Xmx512M \
        -Dtype=provider \
-       -Dload.level=1 \
+       -Dload.level=4 \
        -Dio.netty.leakDetection.level=disabled \
        -Dserver.port0=30001\
        -Dserver.port1=30002\
@@ -31,7 +31,7 @@ elif [[ "$1" == "provider-medium" ]]; then
        -Xms1536M \
        -Xmx1536M \
        -Dtype=provider \
-       -Dload.level=2 \
+       -Dload.level=8 \
        -Dio.netty.leakDetection.level=disabled \
        -Dserver.port0=30011\
        -Dserver.port1=30012\
@@ -47,7 +47,7 @@ elif [[ "$1" == "provider-large" ]]; then
        -Xms2560M \
        -Xmx2560M \
        -Dtype=provider \
-       -Dload.level=3 \
+       -Dload.level=10 \
        -Dio.netty.leakDetection.level=disabled \
        -Dserver.port0=30021\
        -Dserver.port1=30022\
