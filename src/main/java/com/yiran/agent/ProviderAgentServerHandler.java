@@ -45,7 +45,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
             } catch (InterruptedException e) {
                 logger.error("", e);
             }
-            String respStr = String.format("1\n%d", agentServiceRequest.getFormDataMap().get("parameter").hashCode());
+            String respStr = String.format("1\n%d\n", agentServiceRequest.getFormDataMap().get("parameter").hashCode());
             AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
             agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
             try {
