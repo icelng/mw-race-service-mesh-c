@@ -72,13 +72,23 @@ struct acm_handle* acm_start(struct acm_opt* p_opt){
     p_new_handle->request_id = 0;
 
     log_info("ACM:Creating epoll.");
-    if ((p_new_handle->epoll_fd = epoll_create(1)) == -1) {
+    if ((p_new_handle->epoll_write_fd = epoll_create(1)) == -1) {
+        log_err("ACM:Failed to create epoll:%s", strerror(errno));
+        goto err2_ret;
+    }
+
+    if ((p_new_handle->epoll_read_fd = epoll_create(1)) == -1) {
         log_err("ACM:Failed to create epoll:%s", strerror(errno));
         goto err2_ret;
     }
 
     log_info("ACM:Creating event loop-thread.");
-    if(pthread_create(&tid, NULL, acm_event_loop, p_new_handle) == -1){ 
+    if(pthread_create(&tid, NULL, acm_event_loop, &p_new_handle->epoll_read_fd) == -1){ 
+        log_err("ACM:Failed to create thread for event-loop.");
+        goto err2_ret;
+    }
+
+    if(pthread_create(&tid, NULL, acm_event_loop, &p_new_handle->epoll_write_fd) == -1){ 
         log_err("ACM:Failed to create thread for event-loop.");
         goto err2_ret;
     }
@@ -196,12 +206,12 @@ err1_ret:
          unsigned int events,
  * 返回值: 
  */
-int acm_epoll_mod(struct acm_channel *p_channel, unsigned int events){
+int acm_epoll_mod(int epoll_fd, struct acm_channel *p_channel, unsigned int events){
     struct epoll_event event;
 
     event.data.ptr = p_channel;
     event.events = events | EPOLLET;  // 边缘出发,只触发一次
-    if (epoll_ctl(p_channel->p_handle->epoll_fd,
+    if (epoll_ctl(epoll_fd,
                 EPOLL_CTL_MOD,
                 p_channel->socket_fd,
                 &event) == -1) {
@@ -270,7 +280,7 @@ int acm_request(
         //pthread_spin_lock(&p_channel->write_queue_empty_spinlock);
         //__sync_add_and_fetch(&p_channel->is_write_queue_empty, 1);
         // 添加可读(保证不出错)可写事件
-        if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
+        if (acm_epoll_mod(p_channel->p_handle->epoll_write_fd, p_channel, EPOLLOUT) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when requesting:%s",strerror(errno));
             return -2;
         }
@@ -361,7 +371,7 @@ void acm_io_read_thread(void *arg){
     /*读处理完毕之后，原子操作告知处理完毕，并且注册可读写事件*/
     pthread_spin_unlock(&p_channel->reading_spinlock);
     //__sync_fetch_and_sub(&p_channel->is_reding, 1);
-    if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
+    if (acm_epoll_mod(p_handle->epoll_read_fd, p_channel, EPOLLIN | EPOLLRDHUP) < 0) {
         log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing read:%s",strerror(errno));
     }
 }
@@ -456,7 +466,7 @@ void acm_io_write_thread(void *arg){
         //__sync_fetch_and_sub(&p_channel->is_writing, 1);
         //pthread_spin_unlock(&p_channel->writing_spinlock);
         pthread_spin_unlock(&p_channel->write_queue_consume_spinlock);
-        if (acm_epoll_mod(p_channel, EPOLLOUT | EPOLLIN | EPOLLRDHUP) < 0) {
+        if (acm_epoll_mod(p_handle->epoll_write_fd, p_channel, EPOLLOUT) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
         }
     }
@@ -518,11 +528,9 @@ int acm_io_do_write(struct acm_channel *p_channel){
 void* acm_event_loop(void *arg){
     log_info("ACM:Started event-loop thread successfully!");
 
-    struct acm_handle *p_handle = arg;
-
     struct epoll_event events[ACM_MAX_EPOLL_EVENTS];
     struct acm_channel *p_channel;
-    int epoll_fd = p_handle->epoll_fd;
+    int epoll_fd = *(int *)arg;
     int ready_num, i;
 
     while(1) {

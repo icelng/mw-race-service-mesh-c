@@ -21,7 +21,8 @@ struct acm_handle {
     tdpl tdpl_worker;  // worker线程池
     mmpl mmpl;  // 内存池
 
-    int epoll_fd;
+    int epoll_write_fd;
+    int epoll_read_fd;
     int max_write_queue_len;
     int max_hold_req_num;
     struct acm_request_map_entry* request_map;
