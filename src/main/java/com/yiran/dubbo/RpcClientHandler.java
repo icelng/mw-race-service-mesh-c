@@ -14,7 +14,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws UnsupportedEncodingException {
-        //ServiceSwitcher.responseFromDubbo(response);
+        ServiceSwitcher.responseFromDubbo(response);
     }
 
     @Override

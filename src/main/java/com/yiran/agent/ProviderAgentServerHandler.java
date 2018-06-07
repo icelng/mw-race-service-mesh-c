@@ -37,25 +37,25 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         agentServiceRequest.setFormDataMap(formDataParser.parse(agentServiceRequest.getData()));
         //formDataParser.release();
         agentServiceRequest.setChannel(ctx.channel());
-        //ServiceSwitcher.switchToDubbo(agentServiceRequest);
+        ServiceSwitcher.switchToDubbo(agentServiceRequest);
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
-        executor.execute(() -> {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                logger.error("", e);
-            }
-            String respStr = String.format("1\n%d\n", agentServiceRequest.getFormDataMap().get("parameter").hashCode());
-            logger.info(respStr);
-            AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
-            agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
-            try {
-                agentServiceResponse.setReturnValue(respStr.getBytes("utf-8"));
-                ctx.writeAndFlush(agentServiceResponse);
-            } catch (UnsupportedEncodingException e) {
-                logger.error("", e);
-            }
-        });
+        //executor.execute(() -> {
+        //    try {
+        //        Thread.sleep(50);
+        //    } catch (InterruptedException e) {
+        //        logger.error("", e);
+        //    }
+        //    String respStr = String.format("1\n%d\n", agentServiceRequest.getFormDataMap().get("parameter").hashCode());
+        //    logger.info(respStr);
+        //    AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
+        //    agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
+        //    try {
+        //        agentServiceResponse.setReturnValue(respStr.getBytes("utf-8"));
+        //        ctx.writeAndFlush(agentServiceResponse);
+        //    } catch (UnsupportedEncodingException e) {
+        //        logger.error("", e);
+        //    }
+        //});
     }
 
     @Override
