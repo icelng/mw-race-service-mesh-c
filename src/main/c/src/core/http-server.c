@@ -131,7 +131,7 @@ int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events){
     struct epoll_event event;
 
     event.data.ptr = p_channel;
-    event.events = events | EPOLLET | EPOLLONESHOT;  // 边缘出发，只触发一次
+    event.events = events | EPOLLET;  // 边缘出发，只触发一次
     if (epoll_ctl(p_channel->epoll_fd,
                 EPOLL_CTL_MOD,
                 p_channel->socket,
