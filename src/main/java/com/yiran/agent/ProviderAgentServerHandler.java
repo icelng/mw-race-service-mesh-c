@@ -10,9 +10,12 @@ import io.netty.util.internal.AppendableCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -20,6 +23,7 @@ import java.util.Map;
  */
 public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<AgentServiceRequest> {
     private static Logger logger = LoggerFactory.getLogger(ProviderAgentServerHandler.class);
+    private Executor executor = Executors.newFixedThreadPool(256);
 
     private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
     //private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
@@ -33,8 +37,24 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
         agentServiceRequest.setFormDataMap(formDataParser.parse(agentServiceRequest.getData()));
         //formDataParser.release();
         agentServiceRequest.setChannel(ctx.channel());
-        ServiceSwitcher.switchToDubbo(agentServiceRequest);
+        //ServiceSwitcher.switchToDubbo(agentServiceRequest);
         //logger.info(agentServiceRequest.getData().toString(Charset.forName("utf-8")));
+        executor.execute(() -> {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                logger.error("", e);
+            }
+            String respStr = String.format("1\n%d", agentServiceRequest.getFormDataMap().get("parameter").hashCode());
+            AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
+            agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
+            try {
+                agentServiceResponse.setReturnValue(respStr.getBytes("utf-8"));
+                ctx.writeAndFlush(agentServiceResponse);
+            } catch (UnsupportedEncodingException e) {
+                logger.error("", e);
+            }
+        });
     }
 
     @Override
