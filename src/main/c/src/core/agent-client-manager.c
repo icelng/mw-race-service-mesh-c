@@ -200,7 +200,7 @@ int acm_epoll_mod(struct acm_channel *p_channel, unsigned int events){
     struct epoll_event event;
 
     event.data.ptr = p_channel;
-    event.events = events | EPOLLET;  // 边缘出发
+    event.events = events | EPOLLET | EPOLLONESHOT;  // 边缘出发,只触发一次
     if (epoll_ctl(p_channel->p_handle->epoll_fd,
                 EPOLL_CTL_MOD,
                 p_channel->socket_fd,
