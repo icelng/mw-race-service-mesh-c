@@ -46,6 +46,7 @@ public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<Agen
                 logger.error("", e);
             }
             String respStr = String.format("1\n%d\n", agentServiceRequest.getFormDataMap().get("parameter").hashCode());
+            logger.info(respStr);
             AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
             agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
             try {
