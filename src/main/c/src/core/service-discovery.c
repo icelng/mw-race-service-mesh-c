@@ -72,7 +72,13 @@ struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char
     int tb_entry_index = hash_code % p_handle->service_tb_size;
 
     /*检查是否存在*/
-    p_service_node = sd_get_service_node(p_handle, service_name);
+    p_service_node = p_handle->service_tb[tb_entry_index];
+    while (p_service_node != NULL) {
+        if (!strcmp(p_service_node->service_name, service_name)) {
+            break;
+        }
+        p_service_node = p_service_node->next;
+    }
     if (p_service_node != NULL) {
         log_info("SERVICE FIND:Service(%s) is exists, release old endpoints.", service_name);
         sd_rls_endpoints(p_service_node);
