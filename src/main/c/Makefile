@@ -15,7 +15,7 @@ LINKS = -pthread -lrt -lcurl
 TARGET = consumer-agent
 
 $(TARGET):$(OBJS)
-	gcc -o $(BIN_DIR)/$(TARGET) $(OBJS) $(LINKS)
+	gcc -O2 -o $(BIN_DIR)/$(TARGET) $(OBJS) $(LINKS)
 
 include $(DEPENDECE)
 
