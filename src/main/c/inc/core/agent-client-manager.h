@@ -65,6 +65,9 @@ struct acm_channel {
     int head_read_index;
     int data_read_index;
 
+    /*请求数*/
+    unsigned long request_num;
+
     /*锁或信号量*/
     //sem_t write_queue_mutex;
     pthread_spinlock_t write_queue_spinlock;

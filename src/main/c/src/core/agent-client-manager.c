@@ -152,6 +152,7 @@ struct acm_channel* acm_connect(
     p_channel->is_reding = 0;
     p_channel->is_writing = 0;
     p_channel->is_write_queue_empty = 0;
+    p_channel->request_num = 0;
     //sem_init(&p_channel->write_queue_mutex, 0, 1);
     
     /*设置套接字*/
@@ -345,6 +346,7 @@ void acm_io_read_thread(void *arg){
         } else {
             /*表示一次报文接收完毕*/
             /*针对这次接收到的报文，执行工作线程*/
+            __sync_sub_and_fetch(&p_channel->request_num, 1);  // 请求数减一
             if (tdpl_call_func(p_channel->p_handle->tdpl_worker, acm_response, p_channel->recv_msg) < 0) {
                 log_err("Failed to start io thread for acm_io_do_write:%s", strerror(errno));
                 mmpl_rlsmem(p_handle->mmpl, p_channel->recv_msg);

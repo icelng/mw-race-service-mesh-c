@@ -10,7 +10,7 @@
 
 /*服务节点*/
 struct sd_endpoint {
-    void* p_agent_channel;  // 索引到对应的通道
+    struct acm_channel* p_agent_channel;  // 索引到对应的通道
     int load_level;
     unsigned long remain;  // 剩余请求数
 

@@ -47,7 +47,7 @@ elif [[ "$1" == "provider-large" ]]; then
        -Xms2560M \
        -Xmx2560M \
        -Dtype=provider \
-       -Dload.level=10 \
+       -Dload.level=12 \
        -Dio.netty.leakDetection.level=disabled \
        -Dserver.port0=30021\
        -Dserver.port1=30022\
