@@ -411,10 +411,11 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
     
     /*使用静态数组的负载均衡*/
     pthread_rwlock_rdlock(&p_service_node->lb_list_rwlock);
-    do {
+    p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
+    while(__sync_add_and_fetch(&p_endpoint->p_agent_channel->request_num, 1) >= 200){
+        __sync_sub_and_fetch(&p_endpoint->p_agent_channel->request_num, 1);
         p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
-    } while (p_endpoint->p_agent_channel->request_num > 200);  // 熔断
-    __sync_add_and_fetch(&p_endpoint->p_agent_channel->request_num, 1);
+    }
     pthread_rwlock_unlock(&p_service_node->lb_list_rwlock);
 
     return p_endpoint->p_agent_channel;
