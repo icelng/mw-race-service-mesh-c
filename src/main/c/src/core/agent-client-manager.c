@@ -154,7 +154,7 @@ struct acm_channel* acm_connect(
     p_channel->write_queue_tail = 1;
     p_channel->is_head = 1;  // 从“头”开始
     p_channel->head_read_index = 0;
-    p_channel->events = EPOLLIN | EPOLLRDHUP | EPOLLET;  // 初始化为读边缘出发
+    p_channel->events = EPOLLIN | EPOLLRDHUP | EPOLLET | EPOLLONESHOT;  // 初始化为读边缘出发
     pthread_spin_init(&p_channel->write_queue_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_spin_init(&p_channel->write_queue_consume_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_spin_init(&p_channel->reading_spinlock, PTHREAD_PROCESS_PRIVATE);
@@ -178,7 +178,7 @@ struct acm_channel* acm_connect(
     log_info("ACM:Add event to epoll for new channel.");
     event.data.ptr = p_channel;
     event.events = p_channel->events;
-    if (epoll_ctl(p_acm_handle->epoll_fd,
+    if (epoll_ctl(p_acm_handle->epoll_read_fd,
                 EPOLL_CTL_ADD,
                 p_channel->socket_fd,
                 &event) == -1) {
