@@ -282,9 +282,11 @@ int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){
     }
     if(mmpl->current_free_index + index > mmpl->max_free_index){
         /*如果归还之后内存池的空闲空间超过了最大空闲空间大小则直接归还给操作系统*/
+        printf("rls memory to system");
         free(p_mm_n);
         if(mmpl_rls_oldestfree(mmpl) < 0){  // 并且释放最久没有申请的index对应空闲内存节点 
             pthread_mutex_unlock(&mmpl->lock);
+            printf("rls old memory");
             //pthread_spin_unlock(&mmpl->spin_lock);
             //sem_post(&mmpl->mutex);
             return -2;
