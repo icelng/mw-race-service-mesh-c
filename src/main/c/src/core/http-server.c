@@ -63,6 +63,13 @@ struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){
         goto err2_ret;
     }
 
+    log_info("Creating accept thread pool.");
+    p_new_hs_handle->tdpl_accept = tdpl_create(8, 51200);  // 8个线程负责关闭，51200个等待
+    if (p_new_hs_handle->tdpl_accept == NULL) {
+        log_err("启动http-server时，close线程池创建失败!%s", strerror(errno));
+        goto err2_ret;
+    }
+
     /*建立内存池*/
     log_info("Creating channel memory pool.");
     struct mmpl_opt mmpl_opt;
@@ -259,7 +266,7 @@ void hs_accept_thread(void *arg){
         p_conection_entry->p_handle = hs_h;
         p_conection_entry->socket_fd = client_sockfd;
         /*使用io线程调用函数*/
-        if (tdpl_call_func(hs_h->tdpl_io, hs_new_connection, p_conection_entry) < 0) {
+        if (tdpl_call_func(hs_h->tdpl_accept, hs_new_connection, p_conection_entry) < 0) {
             log_err("Failed to start o thread for hs_new_connection:%s", strerror(errno));
             close(client_sockfd);
             continue;
