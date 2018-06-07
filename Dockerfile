@@ -31,7 +31,7 @@ RUN set -ex && apt-get install curl -y
 
 RUN set -ex && mkdir -p /root/logs
 RUN set -ex && chmod 777 /root/dists/consumer-agent
-RUN set -ex && chmod 777 /usr/local/bin/docker-entrypoint.sh
+# RUN set -ex && chmod 777 /usr/local/bin/docker-entrypoint.sh
 RUN set -ex && chmod 777 /usr/local/bin/start-agent.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]

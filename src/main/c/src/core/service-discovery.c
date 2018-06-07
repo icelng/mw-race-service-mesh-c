@@ -99,14 +99,12 @@ struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char
 
     /*链入链表，需抢写者锁*/
     log_info("SERVICD_FIND:Write lock before");
-    pthread_rwlock_wrlock(&p_handle->service_tb_rwlock);
     if (p_handle->service_tb[tb_entry_index] == NULL) {
         p_service_node->next = NULL;
     } else {
         p_service_node->next = p_handle->service_tb[tb_entry_index];
     }
     p_handle->service_tb[tb_entry_index] = p_service_node;
-    pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
     log_info("SERVICD_FIND:Write lock after");
     
     return p_service_node;
@@ -349,11 +347,14 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
         p_service_node = sd_get_service_node(p_handle, service_name);
         if (p_service_node == NULL) {
             log_info("SERVICE FIND:Find the service:%s", service_name);
+            pthread_rwlock_wrlock(&p_handle->service_tb_rwlock);
             if (sd_service_find(p_handle, service_name) < 0) {
                 log_err("SERIVCE_FIND:Failed to find the service:%s", service_name);
                 pthread_mutex_unlock(&p_handle->find_mutex);
+                pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
                 return NULL;
             }
+            pthread_rwlock_unlock(&p_handle->service_tb_rwlock);
             p_service_node = sd_get_service_node(p_handle, service_name);
         }
         pthread_mutex_unlock(&p_handle->find_mutex);
