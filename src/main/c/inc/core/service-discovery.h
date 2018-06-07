@@ -5,6 +5,7 @@
 
 #define SERVICE_DISCOVERY_MAX_SERVICE_NUM 1024
 #define SERVICE_DISCOVERY_MAX_KEY_LEN 1024
+#define SERVICE_DISCOVERY_MAX_LOAD_BALANCE_LIST_LEN 10000
 
 
 /*服务节点*/
@@ -27,8 +28,12 @@ struct sd_service_node {
     struct sd_endpoint *saturated_list;  // 饱和的列表
 
     /*节点单项链表，按load_level大到小排序*/
+    struct sd_endpoint* load_balance_list[SERVICE_DISCOVERY_MAX_LOAD_BALANCE_LIST_LEN];
+    int lb_list_len;
+    unsigned long next_select_ep;
     struct sd_endpoint endpoint_list1_head, endpoint_list2_head;
     //pthread_spinlock_t ep_link_spinlock;  // 节点链表自旋锁
+    pthread_rwlock_t lb_list_rwlock;  // 负载均衡列表读写锁
     pthread_mutex_t ep_link_lock;  // 节点链表锁
     //sem_t endpoint_link_mutex;
 

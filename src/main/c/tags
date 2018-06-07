@@ -4,39 +4,18 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ACM_MAX_CHANNEL_NUM	inc/core/agent-client-manager.h	10;"	d	language:C++
-ACM_MAX_EPOLL_EVENTS	inc/core/agent-client-manager.h	9;"	d	language:C++
-ACM_MSG_HEAD_SIZE	inc/core/agent-client-manager.h	8;"	d	language:C++
+ACM_MAX_CHANNEL_NUM	inc/core/agent-client-manager.h	11;"	d	language:C++
+ACM_MAX_EPOLL_EVENTS	inc/core/agent-client-manager.h	10;"	d	language:C++
+ACM_MSG_HEAD_SIZE	inc/core/agent-client-manager.h	9;"	d	language:C++
 AGENT_CLIENT_MANAGER	inc/core/agent-client-manager.h	2;"	d	language:C++
 BIN_DIR	Makefile	/^BIN_DIR = .\/bin$/;"	m	language:Make
 CJSON_EXPORT_SYMBOLS	inc/com/cJSON.h	108;"	d	language:C++
-CJSON_EXPORT_SYMBOLS	lib/cJSON/cJSON.h	108;"	d	language:C++
 CJSON_NESTING_LIMIT	inc/com/cJSON.h	129;"	d	language:C++
-CJSON_NESTING_LIMIT	lib/cJSON/cJSON.h	129;"	d	language:C++
 CJSON_PUBLIC	inc/com/cJSON.h	112;"	d	language:C++
 CJSON_PUBLIC	inc/com/cJSON.h	114;"	d	language:C++
 CJSON_PUBLIC	inc/com/cJSON.h	116;"	d	language:C++
 CJSON_PUBLIC	inc/com/cJSON.h	120;"	d	language:C++
 CJSON_PUBLIC	inc/com/cJSON.h	122;"	d	language:C++
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_Compare(const cJSON * const a, const cJSON * const b, const cJSON_bool case_sensitive)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_HasObjectItem(const cJSON *object, const char *string)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsArray(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsBool(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsFalse(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsInvalid(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsNull(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsNumber(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsObject(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsRaw(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsString(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsTrue(const cJSON * const item)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_PrintPreallocated(cJSON *item, char *buf, const int len, const cJSON_bool fmt)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_ReplaceItemViaPointer(cJSON * const parent, cJSON * const item, cJSON * replacement)$/;"	f	language:C
-CJSON_PUBLIC	lib/cJSON/cJSON.h	112;"	d	language:C++
-CJSON_PUBLIC	lib/cJSON/cJSON.h	114;"	d	language:C++
-CJSON_PUBLIC	lib/cJSON/cJSON.h	116;"	d	language:C++
-CJSON_PUBLIC	lib/cJSON/cJSON.h	120;"	d	language:C++
-CJSON_PUBLIC	lib/cJSON/cJSON.h	122;"	d	language:C++
 CJSON_PUBLIC	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_Compare(const cJSON * const a, const cJSON * const b, const cJSON_bool case_sensitive)$/;"	f	language:C
 CJSON_PUBLIC	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_HasObjectItem(const cJSON *object, const char *string)$/;"	f	language:C
 CJSON_PUBLIC	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsArray(const cJSON * const item)$/;"	f	language:C
@@ -52,11 +31,8 @@ CJSON_PUBLIC	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsTrue(const cJSON
 CJSON_PUBLIC	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_PrintPreallocated(cJSON *item, char *buf, const int len, const cJSON_bool fmt)$/;"	f	language:C
 CJSON_PUBLIC	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON_bool) cJSON_ReplaceItemViaPointer(cJSON * const parent, cJSON * const item, cJSON * replacement)$/;"	f	language:C
 CJSON_VERSION_MAJOR	inc/com/cJSON.h	32;"	d	language:C++
-CJSON_VERSION_MAJOR	lib/cJSON/cJSON.h	32;"	d	language:C++
 CJSON_VERSION_MINOR	inc/com/cJSON.h	33;"	d	language:C++
-CJSON_VERSION_MINOR	lib/cJSON/cJSON.h	33;"	d	language:C++
 CJSON_VERSION_PATCH	inc/com/cJSON.h	34;"	d	language:C++
-CJSON_VERSION_PATCH	lib/cJSON/cJSON.h	34;"	d	language:C++
 DEPENDECE	Makefile	/^DEPENDECE = $(SRC_COM_FILES:.c=.d)$/;"	m	language:Make
 DirectoryOfThisScript	.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	f	language:Python
 ETCD_MAX_CURL_URL_LEN	inc/core/etcdctl.h	4;"	d	language:C++
@@ -79,40 +55,39 @@ LIST_POISON2	inc/com/list.h	15;"	d	language:C++
 MAX_EPOLL_EVENTS	inc/core/http-server.h	5;"	d	language:C++
 MAX_EPOLL_EVENT_LOOP_NUM	inc/core/http-server.h	7;"	d	language:C++
 MAX_IO_THREAD_NUM	inc/core/http-server.h	6;"	d	language:C++
-MMPL	inc/com/mmpool.h	9;"	d	language:C++
-MMPL_ALIGN	inc/com/mmpool.h	24;"	d	language:C++
-MMPL_ALIGN_DEFAULT	inc/com/mmpool.h	26;"	d	language:C++
-MMPL_BOUNDARY_16K	inc/com/mmpool.h	18;"	d	language:C++
-MMPL_BOUNDARY_1K	inc/com/mmpool.h	14;"	d	language:C++
-MMPL_BOUNDARY_2K	inc/com/mmpool.h	15;"	d	language:C++
-MMPL_BOUNDARY_32K	inc/com/mmpool.h	19;"	d	language:C++
-MMPL_BOUNDARY_4K	inc/com/mmpool.h	16;"	d	language:C++
-MMPL_BOUNDARY_8K	inc/com/mmpool.h	17;"	d	language:C++
-MMPL_BOUNDARY_DEFAULT	inc/com/mmpool.h	20;"	d	language:C++
-MMPL_MAX_FREE_INDEX_DEFAULT	inc/com/mmpool.h	13;"	d	language:C++
-MMPL_MAX_INDEX	inc/com/mmpool.h	11;"	d	language:C++
-MMPL_OLDEST_RANGE	inc/com/mmpool.h	22;"	d	language:C++
+MMPL	inc/com/mmpool.h	10;"	d	language:C++
+MMPL_ALIGN	inc/com/mmpool.h	25;"	d	language:C++
+MMPL_ALIGN_DEFAULT	inc/com/mmpool.h	27;"	d	language:C++
+MMPL_BOUNDARY_16K	inc/com/mmpool.h	19;"	d	language:C++
+MMPL_BOUNDARY_1K	inc/com/mmpool.h	15;"	d	language:C++
+MMPL_BOUNDARY_2K	inc/com/mmpool.h	16;"	d	language:C++
+MMPL_BOUNDARY_32K	inc/com/mmpool.h	20;"	d	language:C++
+MMPL_BOUNDARY_4K	inc/com/mmpool.h	17;"	d	language:C++
+MMPL_BOUNDARY_8K	inc/com/mmpool.h	18;"	d	language:C++
+MMPL_BOUNDARY_DEFAULT	inc/com/mmpool.h	21;"	d	language:C++
+MMPL_MAX_FREE_INDEX_DEFAULT	inc/com/mmpool.h	14;"	d	language:C++
+MMPL_MAX_INDEX	inc/com/mmpool.h	12;"	d	language:C++
+MMPL_OLDEST_RANGE	inc/com/mmpool.h	23;"	d	language:C++
 MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	f	language:Python
 OBJS	Makefile	/^OBJS = $(patsubst %.c, %.o, $(SRC_COM_FILES) $(SRC_CORE_FILES))$/;"	m	language:Make
 RB_BLACK	inc/com/rbtree.h	4;"	d	language:C++
 RB_RED	inc/com/rbtree.h	3;"	d	language:C++
-SERVICE_DISCOVERY_MAX_SERVICE_NUM	inc/core/service-discovery.h	5;"	d	language:C++
+SERVICE_DISCOVERY_MAX_KEY_LEN	inc/core/service-discovery.h	7;"	d	language:C++
+SERVICE_DISCOVERY_MAX_LOAD_BALANCE_LIST_LEN	inc/core/service-discovery.h	8;"	d	language:C++
+SERVICE_DISCOVERY_MAX_SERVICE_NUM	inc/core/service-discovery.h	6;"	d	language:C++
 SOURCE_EXTENSIONS	.ycm_extra_conf.py	/^SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]$/;"	v	language:Python
 SRC_COM_FILES	Makefile	/^SRC_COM_FILES = $(wildcard $(SRC_DIR)\/com\/*.c)$/;"	m	language:Make
 SRC_CORE_FILES	Makefile	/^SRC_CORE_FILES = $(wildcard $(SRC_DIR)\/core\/*.c)$/;"	m	language:Make
 SRC_DIR	Makefile	/^SRC_DIR = .\/src$/;"	m	language:Make
 TARGET	Makefile	/^TARGET = consumer-agent$/;"	m	language:Make
-TDPL	inc/com/tdpool.h	4;"	d	language:C++
-UMSG_TYPE_FD	inc/com/ipc-uds.h	4;"	d	language:C++
+TDPL	inc/com/tdpool.h	5;"	d	language:C++
 _LINUX_LIST_H	inc/com/list.h	3;"	d	language:C++
 __WINDOWS__	inc/com/cJSON.h	84;"	d	language:C++
-__WINDOWS__	lib/cJSON/cJSON.h	84;"	d	language:C++
 __hlist_del	inc/com/list.h	/^static inline void __hlist_del(struct hlist_node *n)   $/;"	f	language:C++
 __list_add	inc/com/list.h	/^static inline void __list_add(struct list_head *new,   $/;"	f	language:C++
 __list_del	inc/com/list.h	/^static inline void __list_del(struct list_head * prev, struct list_head * next)   $/;"	f	language:C++
 __list_for_each	inc/com/list.h	163;"	d	language:C++
 __list_splice	inc/com/list.h	/^static inline void __list_splice(struct list_head *list,   $/;"	f	language:C++
-_uds_sendfd	src/com/ipc-uds.c	/^int _uds_sendfd(int usockfd, int fd){$/;"	f	language:C
 acm_bytes2int	src/core/agent-client-manager.c	/^unsigned int acm_bytes2int(char* buf, int offset){$/;"	f	language:C
 acm_bytes2long	src/core/agent-client-manager.c	/^unsigned long acm_bytes2long(char* buf, int offset) {$/;"	f	language:C
 acm_channel	inc/core/agent-client-manager.h	/^struct acm_channel {$/;"	s	language:C++
@@ -136,188 +111,103 @@ acm_request_map_entry	inc/core/agent-client-manager.h	/^struct acm_request_map_e
 acm_response	src/core/agent-client-manager.c	/^void acm_response(void *arg){$/;"	f	language:C
 acm_start	src/core/agent-client-manager.c	/^struct acm_handle* acm_start(struct acm_opt* p_opt){$/;"	f	language:C
 acm_write_task	inc/core/agent-client-manager.h	/^struct acm_write_task{$/;"	s	language:C++
-allocate	lib/cJSON/cJSON.c	/^    void *(*allocate)(size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 allocate	src/com/cJSON.c	/^    void *(*allocate)(size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 arg	inc/com/tdpool.h	/^    void *arg;  \/\/线程调用函数的参数$/;"	m	language:C++	struct:tdpl_td_handle
 arg	inc/com/tdpool.h	/^    void *arg;$/;"	m	language:C++	struct:tdpl_call_node
 arg	inc/core/agent-client-manager.h	/^    void *arg;$/;"	m	language:C++	struct:acm_request_map_entry
 array	inc/com/cJSON.h	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array);$/;"	v	language:C++
-array	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array);$/;"	v	language:C++
 avali_queue	inc/com/tdpool.h	/^    struct tdpl_td_handle **avali_queue;  \/\/ 可用线程队列$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_td_handle
 avali_queue_head	inc/com/tdpool.h	/^    unsigned long avali_queue_head;  \/\/ 可用队列头索引$/;"	m	language:C++	struct:tdpl_s
 avali_queue_period	inc/com/tdpool.h	/^    int avali_queue_period;$/;"	m	language:C++	struct:tdpl_s
 avali_queue_tail	inc/com/tdpool.h	/^    unsigned long avali_queue_tail;  \/\/ 可用队列尾索引$/;"	m	language:C++	struct:tdpl_s
-avali_queue_write_mutex	inc/com/tdpool.h	/^    sem_t avali_queue_write_mutex;$/;"	m	language:C++	struct:tdpl_s
-avali_td_n	inc/com/tdpool.h	/^    sem_t avali_td_n;   \/\/用信号量表示可用线程数$/;"	m	language:C++	struct:tdpl_s
 body_size	inc/core/http-server.h	/^    int body_size;  \/\/ content 大小$/;"	m	language:C++	struct:hs_channel
 body_start	inc/core/http-server.h	/^    int body_start;  \/\/ body起始指针$/;"	m	language:C++	struct:hs_channel
 boolean	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON *) cJSON_CreateBool(cJSON_bool boolean);$/;"	v	language:C++
-boolean	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON *) cJSON_CreateBool(cJSON_bool boolean);$/;"	v	language:C++
 boundary	inc/com/mmpool.h	/^    unsigned int boundary;  \/\/ 对齐,也表示index对应内存大小，也表示最小内存节点大小$/;"	m	language:C++	struct:mm_pool_s
 boundary	inc/com/mmpool.h	/^    unsigned int boundary;  \/\/ 对齐,也表示index对应内存大小，也表示最小内存节点大小$/;"	m	language:C++	struct:mmpl_opt
 buffer	inc/core/http-server.h	/^    char *buffer;$/;"	m	language:C++	struct:hs_channel
-buffer	lib/cJSON/cJSON.c	/^    unsigned char *buffer;$/;"	m	language:C	struct:__anon4	file:
-buffer	src/com/cJSON.c	/^    unsigned char *buffer;$/;"	m	language:C	struct:__anon7	file:
-buffer_at_offset	lib/cJSON/cJSON.c	216;"	d	language:C	file:
+buffer	src/com/cJSON.c	/^    unsigned char *buffer;$/;"	m	language:C	struct:__anon3	file:
 buffer_at_offset	src/com/cJSON.c	216;"	d	language:C	file:
 buffer_size	inc/core/http-server.h	/^    int buffer_size;  \/\/ 缓存大小$/;"	m	language:C++	struct:hs_channel
 buffer_size	inc/core/http-server.h	/^    int buffer_size;$/;"	m	language:C++	struct:hs_bootstrap
 buffer_size	inc/core/http-server.h	/^    int buffer_size;$/;"	m	language:C++	struct:hs_handle
-buffer_skip_whitespace	lib/cJSON/cJSON.c	/^static parse_buffer *buffer_skip_whitespace(parse_buffer * const buffer)$/;"	f	language:C	file:
 buffer_skip_whitespace	src/com/cJSON.c	/^static parse_buffer *buffer_skip_whitespace(parse_buffer * const buffer)$/;"	f	language:C	file:
 c	inc/com/cJSON.h	/^CJSON_PUBLIC(void) cJSON_Delete(cJSON *c);$/;"	v	language:C++
-c	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void) cJSON_Delete(cJSON *c);$/;"	v	language:C++
 cJSON	inc/com/cJSON.h	/^typedef struct cJSON$/;"	s	language:C++
 cJSON	inc/com/cJSON.h	/^} cJSON;$/;"	t	language:C++	typeref:struct:cJSON
-cJSON	lib/cJSON/cJSON.h	/^typedef struct cJSON$/;"	s	language:C++
-cJSON	lib/cJSON/cJSON.h	/^} cJSON;$/;"	t	language:C++	typeref:struct:cJSON
 cJSON_AddBoolToObject	inc/com/cJSON.h	241;"	d	language:C++
-cJSON_AddBoolToObject	lib/cJSON/cJSON.h	241;"	d	language:C++
 cJSON_AddFalseToObject	inc/com/cJSON.h	240;"	d	language:C++
-cJSON_AddFalseToObject	lib/cJSON/cJSON.h	240;"	d	language:C++
-cJSON_AddItemReferenceToArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item)$/;"	f	language:C
 cJSON_AddItemReferenceToArray	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item)$/;"	f	language:C
-cJSON_AddItemReferenceToObject	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemReferenceToObject(cJSON *object, const char *string, cJSON *item)$/;"	f	language:C
 cJSON_AddItemReferenceToObject	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemReferenceToObject(cJSON *object, const char *string, cJSON *item)$/;"	f	language:C
-cJSON_AddItemToArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemToArray(cJSON *array, cJSON *item)$/;"	f	language:C
 cJSON_AddItemToArray	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemToArray(cJSON *array, cJSON *item)$/;"	f	language:C
-cJSON_AddItemToObject	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemToObject(cJSON *object, const char *string, cJSON *item)$/;"	f	language:C
 cJSON_AddItemToObject	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemToObject(cJSON *object, const char *string, cJSON *item)$/;"	f	language:C
-cJSON_AddItemToObjectCS	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemToObjectCS(cJSON *object, const char *string, cJSON *item)$/;"	f	language:C
 cJSON_AddItemToObjectCS	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_AddItemToObjectCS(cJSON *object, const char *string, cJSON *item)$/;"	f	language:C
 cJSON_AddNullToObject	inc/com/cJSON.h	238;"	d	language:C++
-cJSON_AddNullToObject	lib/cJSON/cJSON.h	238;"	d	language:C++
 cJSON_AddNumberToObject	inc/com/cJSON.h	242;"	d	language:C++
-cJSON_AddNumberToObject	lib/cJSON/cJSON.h	242;"	d	language:C++
 cJSON_AddRawToObject	inc/com/cJSON.h	244;"	d	language:C++
-cJSON_AddRawToObject	lib/cJSON/cJSON.h	244;"	d	language:C++
 cJSON_AddStringToObject	inc/com/cJSON.h	243;"	d	language:C++
-cJSON_AddStringToObject	lib/cJSON/cJSON.h	243;"	d	language:C++
 cJSON_AddTrueToObject	inc/com/cJSON.h	239;"	d	language:C++
-cJSON_AddTrueToObject	lib/cJSON/cJSON.h	239;"	d	language:C++
 cJSON_Array	inc/com/cJSON.h	45;"	d	language:C++
-cJSON_Array	lib/cJSON/cJSON.h	45;"	d	language:C++
 cJSON_ArrayForEach	inc/com/cJSON.h	253;"	d	language:C++
-cJSON_ArrayForEach	lib/cJSON/cJSON.h	253;"	d	language:C++
-cJSON_CreateArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateArray(void)$/;"	f	language:C
 cJSON_CreateArray	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateArray(void)$/;"	f	language:C
-cJSON_CreateBool	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateBool(cJSON_bool b)$/;"	f	language:C
 cJSON_CreateBool	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateBool(cJSON_bool b)$/;"	f	language:C
-cJSON_CreateDoubleArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateDoubleArray(const double *numbers, int count)$/;"	f	language:C
 cJSON_CreateDoubleArray	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateDoubleArray(const double *numbers, int count)$/;"	f	language:C
-cJSON_CreateFalse	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateFalse(void)$/;"	f	language:C
 cJSON_CreateFalse	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateFalse(void)$/;"	f	language:C
-cJSON_CreateFloatArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateFloatArray(const float *numbers, int count)$/;"	f	language:C
 cJSON_CreateFloatArray	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateFloatArray(const float *numbers, int count)$/;"	f	language:C
-cJSON_CreateIntArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateIntArray(const int *numbers, int count)$/;"	f	language:C
 cJSON_CreateIntArray	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateIntArray(const int *numbers, int count)$/;"	f	language:C
-cJSON_CreateNull	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateNull(void)$/;"	f	language:C
 cJSON_CreateNull	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateNull(void)$/;"	f	language:C
-cJSON_CreateNumber	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateNumber(double num)$/;"	f	language:C
 cJSON_CreateNumber	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateNumber(double num)$/;"	f	language:C
-cJSON_CreateObject	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateObject(void)$/;"	f	language:C
 cJSON_CreateObject	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateObject(void)$/;"	f	language:C
-cJSON_CreateRaw	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateRaw(const char *raw)$/;"	f	language:C
 cJSON_CreateRaw	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateRaw(const char *raw)$/;"	f	language:C
-cJSON_CreateString	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateString(const char *string)$/;"	f	language:C
 cJSON_CreateString	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateString(const char *string)$/;"	f	language:C
-cJSON_CreateStringArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateStringArray(const char **strings, int count)$/;"	f	language:C
 cJSON_CreateStringArray	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateStringArray(const char **strings, int count)$/;"	f	language:C
-cJSON_CreateTrue	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateTrue(void)$/;"	f	language:C
 cJSON_CreateTrue	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_CreateTrue(void)$/;"	f	language:C
-cJSON_Delete	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_Delete(cJSON *item)$/;"	f	language:C
 cJSON_Delete	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_Delete(cJSON *item)$/;"	f	language:C
-cJSON_DeleteItemFromArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_DeleteItemFromArray(cJSON *array, int which)$/;"	f	language:C
 cJSON_DeleteItemFromArray	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_DeleteItemFromArray(cJSON *array, int which)$/;"	f	language:C
-cJSON_DeleteItemFromObject	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_DeleteItemFromObject(cJSON *object, const char *string)$/;"	f	language:C
 cJSON_DeleteItemFromObject	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_DeleteItemFromObject(cJSON *object, const char *string)$/;"	f	language:C
-cJSON_DeleteItemFromObjectCaseSensitive	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_DeleteItemFromObjectCaseSensitive(cJSON *object, const char *string)$/;"	f	language:C
 cJSON_DeleteItemFromObjectCaseSensitive	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_DeleteItemFromObjectCaseSensitive(cJSON *object, const char *string)$/;"	f	language:C
-cJSON_DetachItemFromArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemFromArray(cJSON *array, int which)$/;"	f	language:C
 cJSON_DetachItemFromArray	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemFromArray(cJSON *array, int which)$/;"	f	language:C
-cJSON_DetachItemFromObject	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemFromObject(cJSON *object, const char *string)$/;"	f	language:C
 cJSON_DetachItemFromObject	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemFromObject(cJSON *object, const char *string)$/;"	f	language:C
-cJSON_DetachItemFromObjectCaseSensitive	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemFromObjectCaseSensitive(cJSON *object, const char *string)$/;"	f	language:C
 cJSON_DetachItemFromObjectCaseSensitive	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemFromObjectCaseSensitive(cJSON *object, const char *string)$/;"	f	language:C
-cJSON_DetachItemViaPointer	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemViaPointer(cJSON *parent, cJSON * const item)$/;"	f	language:C
 cJSON_DetachItemViaPointer	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_DetachItemViaPointer(cJSON *parent, cJSON * const item)$/;"	f	language:C
-cJSON_Duplicate	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_Duplicate(const cJSON *item, cJSON_bool recurse)$/;"	f	language:C
 cJSON_Duplicate	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_Duplicate(const cJSON *item, cJSON_bool recurse)$/;"	f	language:C
 cJSON_False	inc/com/cJSON.h	40;"	d	language:C++
-cJSON_False	lib/cJSON/cJSON.h	40;"	d	language:C++
-cJSON_GetArrayItem	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_GetArrayItem(const cJSON *array, int index)$/;"	f	language:C
 cJSON_GetArrayItem	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_GetArrayItem(const cJSON *array, int index)$/;"	f	language:C
-cJSON_GetArraySize	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array)$/;"	f	language:C
 cJSON_GetArraySize	src/com/cJSON.c	/^CJSON_PUBLIC(int) cJSON_GetArraySize(const cJSON *array)$/;"	f	language:C
-cJSON_GetErrorPtr	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(const char *) cJSON_GetErrorPtr(void)$/;"	f	language:C
 cJSON_GetErrorPtr	src/com/cJSON.c	/^CJSON_PUBLIC(const char *) cJSON_GetErrorPtr(void)$/;"	f	language:C
-cJSON_GetObjectItem	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_GetObjectItem(const cJSON * const object, const char * const string)$/;"	f	language:C
 cJSON_GetObjectItem	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_GetObjectItem(const cJSON * const object, const char * const string)$/;"	f	language:C
-cJSON_GetObjectItemCaseSensitive	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_GetObjectItemCaseSensitive(const cJSON * const object, const char * const string)$/;"	f	language:C
 cJSON_GetObjectItemCaseSensitive	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_GetObjectItemCaseSensitive(const cJSON * const object, const char * const string)$/;"	f	language:C
 cJSON_Hooks	inc/com/cJSON.h	/^typedef struct cJSON_Hooks$/;"	s	language:C++
 cJSON_Hooks	inc/com/cJSON.h	/^} cJSON_Hooks;$/;"	t	language:C++	typeref:struct:cJSON_Hooks
-cJSON_Hooks	lib/cJSON/cJSON.h	/^typedef struct cJSON_Hooks$/;"	s	language:C++
-cJSON_Hooks	lib/cJSON/cJSON.h	/^} cJSON_Hooks;$/;"	t	language:C++	typeref:struct:cJSON_Hooks
-cJSON_InitHooks	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks* hooks)$/;"	f	language:C
 cJSON_InitHooks	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks* hooks)$/;"	f	language:C
-cJSON_InsertItemInArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_InsertItemInArray(cJSON *array, int which, cJSON *newitem)$/;"	f	language:C
 cJSON_InsertItemInArray	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_InsertItemInArray(cJSON *array, int which, cJSON *newitem)$/;"	f	language:C
 cJSON_Invalid	inc/com/cJSON.h	39;"	d	language:C++
-cJSON_Invalid	lib/cJSON/cJSON.h	39;"	d	language:C++
 cJSON_IsReference	inc/com/cJSON.h	49;"	d	language:C++
-cJSON_IsReference	lib/cJSON/cJSON.h	49;"	d	language:C++
-cJSON_Minify	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_Minify(char *json)$/;"	f	language:C
 cJSON_Minify	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_Minify(char *json)$/;"	f	language:C
 cJSON_NULL	inc/com/cJSON.h	42;"	d	language:C++
-cJSON_NULL	lib/cJSON/cJSON.h	42;"	d	language:C++
-cJSON_New_Item	lib/cJSON/cJSON.c	/^static cJSON *cJSON_New_Item(const internal_hooks * const hooks)$/;"	f	language:C	file:
 cJSON_New_Item	src/com/cJSON.c	/^static cJSON *cJSON_New_Item(const internal_hooks * const hooks)$/;"	f	language:C	file:
 cJSON_Number	inc/com/cJSON.h	43;"	d	language:C++
-cJSON_Number	lib/cJSON/cJSON.h	43;"	d	language:C++
 cJSON_Object	inc/com/cJSON.h	46;"	d	language:C++
-cJSON_Object	lib/cJSON/cJSON.h	46;"	d	language:C++
-cJSON_Parse	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_Parse(const char *value)$/;"	f	language:C
 cJSON_Parse	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_Parse(const char *value)$/;"	f	language:C
-cJSON_ParseWithOpts	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_ParseWithOpts(const char *value, const char **return_parse_end, cJSON_bool require_null_terminated)$/;"	f	language:C
 cJSON_ParseWithOpts	src/com/cJSON.c	/^CJSON_PUBLIC(cJSON *) cJSON_ParseWithOpts(const char *value, const char **return_parse_end, cJSON_bool require_null_terminated)$/;"	f	language:C
-cJSON_Print	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(char *) cJSON_Print(const cJSON *item)$/;"	f	language:C
 cJSON_Print	src/com/cJSON.c	/^CJSON_PUBLIC(char *) cJSON_Print(const cJSON *item)$/;"	f	language:C
-cJSON_PrintBuffered	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(char *) cJSON_PrintBuffered(const cJSON *item, int prebuffer, cJSON_bool fmt)$/;"	f	language:C
 cJSON_PrintBuffered	src/com/cJSON.c	/^CJSON_PUBLIC(char *) cJSON_PrintBuffered(const cJSON *item, int prebuffer, cJSON_bool fmt)$/;"	f	language:C
-cJSON_PrintUnformatted	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(char *) cJSON_PrintUnformatted(const cJSON *item)$/;"	f	language:C
 cJSON_PrintUnformatted	src/com/cJSON.c	/^CJSON_PUBLIC(char *) cJSON_PrintUnformatted(const cJSON *item)$/;"	f	language:C
 cJSON_Raw	inc/com/cJSON.h	47;"	d	language:C++
-cJSON_Raw	lib/cJSON/cJSON.h	47;"	d	language:C++
-cJSON_ReplaceItemInArray	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_ReplaceItemInArray(cJSON *array, int which, cJSON *newitem)$/;"	f	language:C
 cJSON_ReplaceItemInArray	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_ReplaceItemInArray(cJSON *array, int which, cJSON *newitem)$/;"	f	language:C
-cJSON_ReplaceItemInObject	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_ReplaceItemInObject(cJSON *object, const char *string, cJSON *newitem)$/;"	f	language:C
 cJSON_ReplaceItemInObject	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_ReplaceItemInObject(cJSON *object, const char *string, cJSON *newitem)$/;"	f	language:C
-cJSON_ReplaceItemInObjectCaseSensitive	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_ReplaceItemInObjectCaseSensitive(cJSON *object, const char *string, cJSON *newitem)$/;"	f	language:C
 cJSON_ReplaceItemInObjectCaseSensitive	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_ReplaceItemInObjectCaseSensitive(cJSON *object, const char *string, cJSON *newitem)$/;"	f	language:C
 cJSON_SetIntValue	inc/com/cJSON.h	247;"	d	language:C++
-cJSON_SetIntValue	lib/cJSON/cJSON.h	247;"	d	language:C++
-cJSON_SetNumberHelper	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(double) cJSON_SetNumberHelper(cJSON *object, double number)$/;"	f	language:C
 cJSON_SetNumberHelper	src/com/cJSON.c	/^CJSON_PUBLIC(double) cJSON_SetNumberHelper(cJSON *object, double number)$/;"	f	language:C
 cJSON_SetNumberValue	inc/com/cJSON.h	250;"	d	language:C++
-cJSON_SetNumberValue	lib/cJSON/cJSON.h	250;"	d	language:C++
 cJSON_String	inc/com/cJSON.h	44;"	d	language:C++
-cJSON_String	lib/cJSON/cJSON.h	44;"	d	language:C++
 cJSON_StringIsConst	inc/com/cJSON.h	50;"	d	language:C++
-cJSON_StringIsConst	lib/cJSON/cJSON.h	50;"	d	language:C++
 cJSON_True	inc/com/cJSON.h	41;"	d	language:C++
-cJSON_True	lib/cJSON/cJSON.h	41;"	d	language:C++
-cJSON_Version	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(const char*) cJSON_Version(void)$/;"	f	language:C
 cJSON_Version	src/com/cJSON.c	/^CJSON_PUBLIC(const char*) cJSON_Version(void)$/;"	f	language:C
 cJSON__h	inc/com/cJSON.h	24;"	d	language:C++
-cJSON__h	lib/cJSON/cJSON.h	24;"	d	language:C++
 cJSON_bool	inc/com/cJSON.h	/^typedef int cJSON_bool;$/;"	t	language:C++
-cJSON_bool	lib/cJSON/cJSON.h	/^typedef int cJSON_bool;$/;"	t	language:C++
-cJSON_free	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void) cJSON_free(void *object)$/;"	f	language:C
 cJSON_free	src/com/cJSON.c	/^CJSON_PUBLIC(void) cJSON_free(void *object)$/;"	f	language:C
-cJSON_malloc	lib/cJSON/cJSON.c	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size)$/;"	f	language:C
 cJSON_malloc	src/com/cJSON.c	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size)$/;"	f	language:C
-cJSON_strdup	lib/cJSON/cJSON.c	/^static unsigned char* cJSON_strdup(const unsigned char* string, const internal_hooks * const hooks)$/;"	f	language:C	file:
 cJSON_strdup	src/com/cJSON.c	/^static unsigned char* cJSON_strdup(const unsigned char* string, const internal_hooks * const hooks)$/;"	f	language:C	file:
 cagent_start	src/core/consumer-agent.c	/^void cagent_start(int argc, char *argv[]){$/;"	f	language:C
 call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用的函数$/;"	m	language:C++	struct:tdpl_call_node
@@ -325,66 +215,48 @@ call_func	inc/com/tdpool.h	/^    void (*call_func)(void *arg); \/\/需要调用�
 call_queue	inc/com/tdpool.h	/^    struct tdpl_call_node *call_queue; \/\/ 调用队列$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_call_node
 call_queue_head	inc/com/tdpool.h	/^    unsigned long call_queue_head;  \/\/ 调用队列头索引$/;"	m	language:C++	struct:tdpl_s
 call_queue_period	inc/com/tdpool.h	/^    int call_queue_period;$/;"	m	language:C++	struct:tdpl_s
-call_queue_read_mutex	inc/com/tdpool.h	/^    sem_t call_queue_read_mutex;  \/\/\/ 调用队列读者锁$/;"	m	language:C++	struct:tdpl_s
+call_queue_read_lock	inc/com/tdpool.h	/^    pthread_mutex_t call_queue_read_lock;$/;"	m	language:C++	struct:tdpl_s
 call_queue_tail	inc/com/tdpool.h	/^    unsigned long call_queue_tail;  \/\/ 调用队列尾索引$/;"	m	language:C++	struct:tdpl_s
-call_queue_write_mutex	inc/com/tdpool.h	/^    sem_t call_queue_write_mutex;  \/\/ 调用队列写着锁$/;"	m	language:C++	struct:tdpl_s
+call_queue_write_lock	inc/com/tdpool.h	/^    pthread_mutex_t call_queue_write_lock;$/;"	m	language:C++	struct:tdpl_s
 call_wait_n	inc/com/tdpool.h	/^    sem_t call_wait_n;   $/;"	m	language:C++	struct:tdpl_s
-can_access_at_index	lib/cJSON/cJSON.c	213;"	d	language:C	file:
 can_access_at_index	src/com/cJSON.c	213;"	d	language:C	file:
-can_read	lib/cJSON/cJSON.c	210;"	d	language:C	file:
 can_read	src/com/cJSON.c	210;"	d	language:C	file:
-cannot_access_at_index	lib/cJSON/cJSON.c	214;"	d	language:C	file:
 cannot_access_at_index	src/com/cJSON.c	214;"	d	language:C	file:
-cannot_read	lib/cJSON/cJSON.c	211;"	d	language:C	file:
 cannot_read	src/com/cJSON.c	211;"	d	language:C	file:
-case_insensitive_strcmp	lib/cJSON/cJSON.c	/^static int case_insensitive_strcmp(const unsigned char *string1, const unsigned char *string2)$/;"	f	language:C	file:
 case_insensitive_strcmp	src/com/cJSON.c	/^static int case_insensitive_strcmp(const unsigned char *string1, const unsigned char *string2)$/;"	f	language:C	file:
 child	inc/com/cJSON.h	/^    struct cJSON *child;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
-child	lib/cJSON/cJSON.h	/^    struct cJSON *child;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
-cjson_min	lib/cJSON/cJSON.c	1022;"	d	language:C	file:
 cjson_min	src/com/cJSON.c	1022;"	d	language:C	file:
 color	inc/com/rbtree.h	/^    unsigned char color; \/\/颜色$/;"	m	language:C++	struct:rb_node
 compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v	language:Python
 comsuming_list	inc/core/service-discovery.h	/^    struct sd_endpoint *comsuming_list;  \/\/ 正在消费的列表$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
+connection_id	inc/core/http-server.h	/^    unsigned long connection_id;  \/\/ 链接id建立新链接时所用$/;"	m	language:C++	struct:hs_handle
 container_of	inc/com/list.h	7;"	d	language:C++
 container_of	inc/com/rbtree.h	8;"	d	language:C++
-content	lib/cJSON/cJSON.c	/^    const unsigned char *content;$/;"	m	language:C	struct:__anon3	file:
-content	src/com/cJSON.c	/^    const unsigned char *content;$/;"	m	language:C	struct:__anon6	file:
+content	src/com/cJSON.c	/^    const unsigned char *content;$/;"	m	language:C	struct:__anon2	file:
 content_handler	inc/core/http-server.h	/^    void (*content_handler)(struct hs_channel *p_channel, int cotent_size, char *content);  \/\/ 对content的处理函数$/;"	m	language:C++	struct:hs_bootstrap
 content_handler	inc/core/http-server.h	/^    void (*content_handler)(struct hs_channel *p_channel, int cotent_size, char *content);  \/\/ 对content的处理函数$/;"	m	language:C++	struct:hs_handle
 content_handler	src/core/consumer-agent.c	/^void content_handler(struct hs_channel *p_channel, int content_size, char *content){$/;"	f	language:C
-create_reference	lib/cJSON/cJSON.c	/^static cJSON *create_reference(const cJSON *item, const internal_hooks * const hooks)$/;"	f	language:C	file:
 create_reference	src/com/cJSON.c	/^static cJSON *create_reference(const cJSON *item, const internal_hooks * const hooks)$/;"	f	language:C	file:
 current_free_index	inc/com/mmpool.h	/^    unsigned int current_free_index;   \/\/当前内存池空闲的内存$/;"	m	language:C++	struct:mm_pool_s
-data	inc/com/ipc-uds.h	/^    void *data;  \/\/ 数据$/;"	m	language:C++	struct:uds_umsg
 data	inc/core/agent-client-manager.h	/^    char *data;$/;"	m	language:C++	struct:acm_msg
 data	inc/core/agent-client-manager.h	/^    char *data;$/;"	m	language:C++	struct:acm_write_task
 data_read_index	inc/core/agent-client-manager.h	/^    int data_read_index;$/;"	m	language:C++	struct:acm_channel
-data_size	inc/com/ipc-uds.h	/^    unsigned int data_size;  \/\/ data大小$/;"	m	language:C++	struct:uds_umsg
-data_size	inc/com/ipc-uds.h	/^    unsigned int data_size;$/;"	m	language:C++	struct:uds_umsg_h
 data_size	inc/core/agent-client-manager.h	/^    int data_size;$/;"	m	language:C++	struct:acm_msg_head
-data_type	inc/com/ipc-uds.h	/^    int data_type;  \/\/ 数据类型$/;"	m	language:C++	struct:uds_umsg
-data_type	inc/com/ipc-uds.h	/^    int data_type;$/;"	m	language:C++	struct:uds_umsg_h
 database	.ycm_extra_conf.py	/^  database = None$/;"	v	language:Python
 database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	v	language:Python
-deallocate	lib/cJSON/cJSON.c	/^    void (*deallocate)(void *pointer);$/;"	m	language:C	struct:internal_hooks	file:
 deallocate	src/com/cJSON.c	/^    void (*deallocate)(void *pointer);$/;"	m	language:C	struct:internal_hooks	file:
 decode_index	inc/core/http-server.h	/^    int decode_index;  \/\/ 解码索引$/;"	m	language:C++	struct:hs_channel
-depth	lib/cJSON/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/objects) is the input at the current offset. *\/$/;"	m	language:C	struct:__anon3	file:
-depth	lib/cJSON/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon4	file:
-depth	src/com/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/objects) is the input at the current offset. *\/$/;"	m	language:C	struct:__anon6	file:
-depth	src/com/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon7	file:
-endpoint_link_mutex	inc/core/service-discovery.h	/^    sem_t endpoint_link_mutex;$/;"	m	language:C++	struct:sd_service_node
+depth	src/com/cJSON.c	/^    size_t depth; \/* How deeply nested (in arrays\/objects) is the input at the current offset. *\/$/;"	m	language:C	struct:__anon2	file:
+depth	src/com/cJSON.c	/^    size_t depth; \/* current nesting depth (for formatted printing) *\/$/;"	m	language:C	struct:__anon3	file:
 endpoint_list1_head	inc/core/service-discovery.h	/^    struct sd_endpoint endpoint_list1_head, endpoint_list2_head;$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
 endpoint_list2_head	inc/core/service-discovery.h	/^    struct sd_endpoint endpoint_list1_head, endpoint_list2_head;$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::
 endpoints_num	inc/core/service-discovery.h	/^    int endpoints_num;  \/\/ 节点数$/;"	m	language:C++	struct:sd_service_node
-ensure	lib/cJSON/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, size_t needed)$/;"	f	language:C	file:
 ensure	src/com/cJSON.c	/^static unsigned char* ensure(printbuffer * const p, size_t needed)$/;"	f	language:C	file:
+ep_link_lock	inc/core/service-discovery.h	/^    pthread_mutex_t ep_link_lock;  \/\/ 节点链表锁$/;"	m	language:C++	struct:sd_service_node
 epoll_fd	inc/core/agent-client-manager.h	/^    int epoll_fd;$/;"	m	language:C++	struct:acm_handle
 epoll_fd	inc/core/http-server.h	/^    int epoll_fd;  \/\/ 所属epoll_fd$/;"	m	language:C++	struct:hs_channel
 epoll_fd	inc/core/http-server.h	/^    int epoll_fd[MAX_EPOLL_EVENT_LOOP_NUM];  \/\/ epoll描述符数组，描述符$/;"	m	language:C++	struct:hs_handle
-error	lib/cJSON/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon2	file:
-error	src/com/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon5	file:
+error	src/com/cJSON.c	/^} error;$/;"	t	language:C	typeref:struct:__anon1	file:
 etcd_get	src/core/etcdctl.c	/^cJSON* etcd_get(struct etcdctl_handle *p_handle, const char* key_or_dir){$/;"	f	language:C
 etcd_handle	inc/core/service-discovery.h	/^    struct etcdctl_handle *etcd_handle;$/;"	m	language:C++	struct:sd_handle	typeref:struct:sd_handle::etcdctl_handle
 etcd_init	src/core/etcdctl.c	/^struct etcdctl_handle* etcd_init(const char* etcd_url, int port){$/;"	f	language:C
@@ -395,39 +267,33 @@ etcdctl_opt	inc/core/etcdctl.h	/^struct etcdctl_opt {$/;"	s	language:C++
 event_loop_num	inc/core/http-server.h	/^    int event_loop_num;  \/\/ epoll事件循环线程数$/;"	m	language:C++	struct:hs_bootstrap
 event_loop_num	inc/core/http-server.h	/^    int event_loop_num;$/;"	m	language:C++	struct:hs_handle
 events	inc/core/agent-client-manager.h	/^    unsigned int events;  \/\/ channel现在所注册的事件$/;"	m	language:C++	struct:acm_channel
-false	lib/cJSON/cJSON.c	47;"	d	language:C	file:
 false	src/com/cJSON.c	47;"	d	language:C	file:
+find_mutex	inc/core/service-discovery.h	/^    pthread_mutex_t find_mutex;  \/\/ 服务发现锁$/;"	m	language:C++	struct:sd_handle
 first	inc/com/list.h	/^struct hlist_node *first;   $/;"	m	language:C++	struct:hlist_head	typeref:struct:hlist_head::hlist_node
 flags	.ycm_extra_conf.py	/^flags = [$/;"	v	language:Python
-format	lib/cJSON/cJSON.c	/^    cJSON_bool format; \/* is this print a formatted print *\/$/;"	m	language:C	struct:__anon4	file:
-format	src/com/cJSON.c	/^    cJSON_bool format; \/* is this print a formatted print *\/$/;"	m	language:C	struct:__anon7	file:
+format	src/com/cJSON.c	/^    cJSON_bool format; \/* is this print a formatted print *\/$/;"	m	language:C	struct:__anon3	file:
 free	inc/com/mmpool.h	/^    struct mm_node *free[MMPL_MAX_INDEX + 1];$/;"	m	language:C++	struct:mm_pool_s	typeref:struct:mm_pool_s::mm_node
 free_fn	inc/com/cJSON.h	/^      void (*free_fn)(void *ptr);$/;"	m	language:C++	struct:cJSON_Hooks
-free_fn	lib/cJSON/cJSON.h	/^      void (*free_fn)(void *ptr);$/;"	m	language:C++	struct:cJSON_Hooks
 free_size	inc/com/mmpool.h	/^    unsigned int free_size[MMPL_MAX_INDEX + 1];  \/\/ 记录free数组对应index含有index(空闲内存)大小$/;"	m	language:C++	struct:mm_pool_s
 g_log_level	src/com/log.c	/^static int g_log_level = 0;$/;"	v	language:C	file:
 g_root_path	src/core/service-discovery.c	/^char* g_root_path = "dubbomesh";$/;"	v	language:C
-g_uds_mmpl	src/com/ipc-uds.c	/^static mmpl g_uds_mmpl;  \/\/ 使用到的内存池$/;"	v	language:C	file:
-get_array_item	lib/cJSON/cJSON.c	/^static cJSON* get_array_item(const cJSON *array, size_t index)$/;"	f	language:C	file:
 get_array_item	src/com/cJSON.c	/^static cJSON* get_array_item(const cJSON *array, size_t index)$/;"	f	language:C	file:
 get_cnt	inc/com/mmpool.h	/^    unsigned long get_cnt;  \/\/ 统计申请次数$/;"	m	language:C++	struct:mm_pool_s
-get_decimal_point	lib/cJSON/cJSON.c	/^static unsigned char get_decimal_point(void)$/;"	f	language:C	file:
 get_decimal_point	src/com/cJSON.c	/^static unsigned char get_decimal_point(void)$/;"	f	language:C	file:
-get_object_item	lib/cJSON/cJSON.c	/^static cJSON *get_object_item(const cJSON * const object, const char * const name, const cJSON_bool case_sensitive)$/;"	f	language:C	file:
 get_object_item	src/com/cJSON.c	/^static cJSON *get_object_item(const cJSON * const object, const char * const name, const cJSON_bool case_sensitive)$/;"	f	language:C	file:
 get_parameter_start_index	src/core/consumer-agent.c	/^int get_parameter_start_index(char *str){$/;"	f	language:C
-global_error	lib/cJSON/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	language:C	file:
+get_service_name	src/core/consumer-agent.c	/^void get_service_name(char *src, char *dst_buf){$/;"	f	language:C
 global_error	src/com/cJSON.c	/^static error global_error = { NULL, 0 };$/;"	v	language:C	file:
-global_hooks	lib/cJSON/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
 global_hooks	src/com/cJSON.c	/^static internal_hooks global_hooks = { malloc, free, realloc };$/;"	v	language:C	file:
 gp_acm_channel	src/core/consumer-agent.c	/^struct acm_channel *gp_acm_channel;$/;"	v	language:C	typeref:struct:acm_channel
+gp_sd_handle	src/core/consumer-agent.c	/^struct sd_handle *gp_sd_handle;$/;"	v	language:C	typeref:struct:sd_handle
 hash_code	inc/core/service-discovery.h	/^    unsigned int hash_code;  \/\/ 服务名的hash，用来索引表$/;"	m	language:C++	struct:sd_service_node
 hash_code	src/core/consumer-agent.c	/^int hash_code(char *str){$/;"	f	language:C
 head	inc/core/agent-client-manager.h	/^    char head[ACM_MSG_HEAD_SIZE];$/;"	m	language:C++	struct:acm_channel
 head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_msg	typeref:struct:acm_msg::acm_msg_head
 head	inc/core/agent-client-manager.h	/^    struct acm_msg_head head;$/;"	m	language:C++	struct:acm_write_task	typeref:struct:acm_write_task::acm_msg_head
 head_read_index	inc/core/agent-client-manager.h	/^    int head_read_index;$/;"	m	language:C++	struct:acm_channel
-hex2dec	src/core/http-server.c	/^int hex2dec(char c){$/;"	f	language:C
+hex2dec	src/core/consumer-agent.c	/^int hex2dec(char c){$/;"	f	language:C
 hlist_add_after	inc/com/list.h	/^static inline void hlist_add_after(struct hlist_node *n,   $/;"	f	language:C++
 hlist_add_before	inc/com/list.h	/^static inline void hlist_add_before(struct hlist_node *n,   $/;"	f	language:C++
 hlist_add_head	inc/com/list.h	/^static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)   $/;"	f	language:C++
@@ -445,46 +311,46 @@ hlist_head	inc/com/list.h	/^struct hlist_head {   $/;"	s	language:C++
 hlist_node	inc/com/list.h	/^struct hlist_node {   $/;"	s	language:C++
 hlist_unhashed	inc/com/list.h	/^static inline int hlist_unhashed(const struct hlist_node *h)   $/;"	f	language:C++
 hooks	inc/com/cJSON.h	/^CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks* hooks);$/;"	v	language:C++
-hooks	lib/cJSON/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon3	file:
-hooks	lib/cJSON/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon4	file:
-hooks	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks* hooks);$/;"	v	language:C++
-hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon6	file:
-hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon7	file:
+hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon2	file:
+hooks	src/com/cJSON.c	/^    internal_hooks hooks;$/;"	m	language:C	struct:__anon3	file:
 hs_accept_thread	src/core/http-server.c	/^void hs_accept_thread(void *arg){$/;"	f	language:C
 hs_bind	src/core/http-server.c	/^int hs_bind(int port){$/;"	f	language:C
 hs_bootstrap	inc/core/http-server.h	/^struct hs_bootstrap{$/;"	s	language:C++
 hs_channel	inc/core/http-server.h	/^struct hs_channel{$/;"	s	language:C++
 hs_close_channel	src/core/http-server.c	/^int hs_close_channel(struct hs_channel *p_channel){$/;"	f	language:C
 hs_close_channel_thread	src/core/http-server.c	/^void hs_close_channel_thread(void *arg){$/;"	f	language:C
+hs_connection_entry	inc/core/http-server.h	/^struct hs_connection_entry {$/;"	s	language:C++
 hs_content_handler_thread	src/core/http-server.c	/^void hs_content_handler_thread(void *arg){$/;"	f	language:C
 hs_decoder	src/core/http-server.c	/^void hs_decoder(struct hs_channel *p_channel){$/;"	f	language:C
+hs_epoll_mod	src/core/http-server.c	/^int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events){$/;"	f	language:C
 hs_event_loop	src/core/http-server.c	/^void hs_event_loop(void *arg){$/;"	f	language:C
 hs_handle	inc/core/http-server.h	/^struct hs_handle{$/;"	s	language:C++
+hs_hex2dec	src/core/http-server.c	/^int hs_hex2dec(char c){$/;"	f	language:C
 hs_io_do_read	src/core/http-server.c	/^int hs_io_do_read(struct hs_channel *p_channel){$/;"	f	language:C
 hs_io_do_write	src/core/http-server.c	/^int hs_io_do_write(struct hs_channel *p_channel){$/;"	f	language:C
 hs_io_read	src/core/http-server.c	/^void hs_io_read(void *arg){$/;"	f	language:C
 hs_io_write	src/core/http-server.c	/^void hs_io_write(void *arg){$/;"	f	language:C
-hs_new_connection	src/core/http-server.c	/^int hs_new_connection(struct hs_handle* p_hs_handle, int client_sockfd){$/;"	f	language:C
+hs_new_connection	src/core/http-server.c	/^void hs_new_connection(void *arg){$/;"	f	language:C
 hs_response_ok	src/core/http-server.c	/^int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_size){$/;"	f	language:C
 hs_start	src/core/http-server.c	/^struct hs_handle* hs_start(struct hs_bootstrap *hs_bt){$/;"	f	language:C
 hs_tolower	src/core/http-server.c	/^void hs_tolower(char *str){$/;"	f	language:C
 hs_url_decode	src/core/http-server.c	/^void hs_url_decode(char *url){$/;"	f	language:C
 index	inc/com/mmpool.h	/^    unsigned int index;  \/\/既可以表示节点内存的大小，也可以作为free数组的下标$/;"	m	language:C++	struct:mm_node
-internal_hooks	lib/cJSON/cJSON.c	/^typedef struct internal_hooks$/;"	s	language:C	file:
-internal_hooks	lib/cJSON/cJSON.c	/^} internal_hooks;$/;"	t	language:C	typeref:struct:internal_hooks	file:
 internal_hooks	src/com/cJSON.c	/^typedef struct internal_hooks$/;"	s	language:C	file:
 internal_hooks	src/com/cJSON.c	/^} internal_hooks;$/;"	t	language:C	typeref:struct:internal_hooks	file:
 io_thread_num	inc/core/agent-client-manager.h	/^    int io_thread_num;$/;"	m	language:C++	struct:acm_opt
 io_thread_num	inc/core/http-server.h	/^    int io_thread_num;  \/\/ io处理线程$/;"	m	language:C++	struct:hs_bootstrap
 is_body	inc/core/http-server.h	/^    int is_body;  \/\/ 是否是content$/;"	m	language:C++	struct:hs_channel
 is_content_length	inc/core/http-server.h	/^    int is_content_length;$/;"	m	language:C++	struct:hs_channel
-is_doing_read	inc/core/agent-client-manager.h	/^    int is_doing_read;$/;"	m	language:C++	struct:acm_channel
 is_head	inc/core/agent-client-manager.h	/^    int is_head;$/;"	m	language:C++	struct:acm_channel
 is_head	inc/core/http-server.h	/^    int is_head;  \/\/ 表明是否正在解码头部$/;"	m	language:C++	struct:hs_channel
 is_key	inc/core/http-server.h	/^    int is_key;  \/\/ 解析头时，是否为key$/;"	m	language:C++	struct:hs_channel
 is_line	inc/core/http-server.h	/^    int is_line;  \/\/ 请求行$/;"	m	language:C++	struct:hs_channel
 is_processing	inc/core/http-server.h	/^    int is_processing;  \/\/ 表明是否在处理$/;"	m	language:C++	struct:hs_channel
 is_read_done	inc/core/http-server.h	/^    int is_read_done;  \/\/ 是否完成了读操作$/;"	m	language:C++	struct:hs_channel
+is_reding	inc/core/agent-client-manager.h	/^    int is_reding;$/;"	m	language:C++	struct:acm_channel
+is_write_queue_empty	inc/core/agent-client-manager.h	/^    int is_write_queue_empty;$/;"	m	language:C++	struct:acm_channel
+is_writing	inc/core/agent-client-manager.h	/^    int is_writing;$/;"	m	language:C++	struct:acm_channel
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsArray(const cJSON * const item);$/;"	v	language:C++
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsBool(const cJSON * const item);$/;"	v	language:C++
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsFalse(const cJSON * const item);$/;"	v	language:C++
@@ -497,28 +363,15 @@ item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsString(const cJSON * con
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsTrue(const cJSON * const item);$/;"	v	language:C++
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(char *) cJSON_Print(const cJSON *item);$/;"	v	language:C++
 item	inc/com/cJSON.h	/^CJSON_PUBLIC(char *) cJSON_PrintUnformatted(const cJSON *item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsArray(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsBool(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsFalse(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsInvalid(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsNull(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsNumber(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsObject(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsRaw(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsString(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(cJSON_bool) cJSON_IsTrue(const cJSON * const item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(char *) cJSON_Print(const cJSON *item);$/;"	v	language:C++
-item	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(char *) cJSON_PrintUnformatted(const cJSON *item);$/;"	v	language:C++
-json	lib/cJSON/cJSON.c	/^    const unsigned char *json;$/;"	m	language:C	struct:__anon2	file:
-json	src/com/cJSON.c	/^    const unsigned char *json;$/;"	m	language:C	struct:__anon5	file:
+json	src/com/cJSON.c	/^    const unsigned char *json;$/;"	m	language:C	struct:__anon1	file:
 key	inc/com/rbtree.h	/^    int key;  \/\/关键字$/;"	m	language:C++	struct:rb_node
 key_start	inc/core/http-server.h	/^    int key_start;$/;"	m	language:C++	struct:hs_channel
 latest_get_cnt	inc/com/mmpool.h	/^    unsigned long latest_get_cnt[MMPL_MAX_INDEX + 1];  \/\/ 记录各个index对应内存节点的最近申请$/;"	m	language:C++	struct:mm_pool_s
+lb_list_len	inc/core/service-discovery.h	/^    int lb_list_len;$/;"	m	language:C++	struct:sd_service_node
+lb_list_rwlock	inc/core/service-discovery.h	/^    pthread_rwlock_t lb_list_rwlock;  \/\/ 负载均衡列表读写锁$/;"	m	language:C++	struct:sd_service_node
 lchild	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::rb_node
-length	lib/cJSON/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon3	file:
-length	lib/cJSON/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon4	file:
-length	src/com/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon6	file:
-length	src/com/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon7	file:
+length	src/com/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon2	file:
+length	src/com/cJSON.c	/^    size_t length;$/;"	m	language:C	struct:__anon3	file:
 list_add_tail	inc/com/list.h	/^static inline void list_add_tail(struct list_head *new, struct list_head *head)   $/;"	f	language:C++
 list_del	inc/com/list.h	/^static inline void list_del(struct list_head *entry)   $/;"	f	language:C++
 list_del_init	inc/com/list.h	/^static inline void list_del_init(struct list_head *entry)   $/;"	f	language:C++
@@ -539,7 +392,9 @@ list_prepare_entry	inc/com/list.h	184;"	d	language:C++
 list_splice	inc/com/list.h	/^static inline void list_splice(struct list_head *list, struct list_head *head)   $/;"	f	language:C++
 list_splice_init	inc/com/list.h	/^static inline void list_splice_init(struct list_head *list,   $/;"	f	language:C++
 listening	inc/core/agent-client-manager.h	/^    void (*listening)(void *arg, char *resp_data, int data_size);$/;"	m	language:C++	struct:acm_request_map_entry
+load_balance_list	inc/core/service-discovery.h	/^    struct sd_endpoint* load_balance_list[SERVICE_DISCOVERY_MAX_LOAD_BALANCE_LIST_LEN];$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
 load_level	inc/core/service-discovery.h	/^    int load_level;$/;"	m	language:C++	struct:sd_endpoint
+lock	inc/com/mmpool.h	/^    pthread_mutex_t lock;$/;"	m	language:C++	struct:mm_pool_s
 log_alert	inc/com/log.h	12;"	d	language:C++
 log_debug	inc/com/log.h	47;"	d	language:C++
 log_emerg	inc/com/log.h	5;"	d	language:C++
@@ -553,7 +408,6 @@ log_set_level	src/com/log.c	/^int log_set_level(int level){$/;"	f	language:C
 log_warning	inc/com/log.h	26;"	d	language:C++
 main	src/core/main.c	/^int main(int argc, char *argv[]){$/;"	f	language:C
 malloc_fn	inc/com/cJSON.h	/^      void *(*malloc_fn)(size_t sz);$/;"	m	language:C++	struct:cJSON_Hooks
-malloc_fn	lib/cJSON/cJSON.h	/^      void *(*malloc_fn)(size_t sz);$/;"	m	language:C++	struct:cJSON_Hooks
 master_tid	inc/com/tdpool.h	/^    unsigned long master_tid; \/\/master线程id$/;"	m	language:C++	struct:tdpl_s
 max_connection	inc/core/http-server.h	/^    int max_connection;  \/\/ 最大连接数$/;"	m	language:C++	struct:hs_bootstrap
 max_connection	inc/core/http-server.h	/^    int max_connection;$/;"	m	language:C++	struct:hs_handle
@@ -577,49 +431,40 @@ mmpl_list_remove	src/com/mmpool.c	/^int mmpl_list_remove(struct mm_node *p_rm_no
 mmpl_opt	inc/com/mmpool.h	/^struct mmpl_opt{$/;"	s	language:C++
 mmpl_rls_oldestfree	src/com/mmpool.c	/^int mmpl_rls_oldestfree(struct mm_pool_s *mmpl){$/;"	f	language:C
 mmpl_rlsmem	src/com/mmpool.c	/^int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){$/;"	f	language:C
-mutex	inc/com/mmpool.h	/^    sem_t mutex;  \/\/锁，用来互斥访问内存池$/;"	m	language:C++	struct:mm_pool_s
 my_list_add	inc/com/list.h	/^static inline void my_list_add(struct list_head *new, struct list_head *head)   $/;"	f	language:C++
+new_connection_map	inc/core/http-server.h	/^    struct hs_connection_entry *new_connection_map;  \/\/ 链接映射，建立新链接时所用$/;"	m	language:C++	struct:hs_handle	typeref:struct:hs_handle::hs_connection_entry
+new_connection_map_size	inc/core/http-server.h	/^    int new_connection_map_size;$/;"	m	language:C++	struct:hs_handle
 next	inc/com/cJSON.h	/^    struct cJSON *next;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 next	inc/com/list.h	/^struct hlist_node *next, **pprev;   $/;"	m	language:C++	struct:hlist_node	typeref:struct:hlist_node::hlist_node
 next	inc/com/list.h	/^struct list_head *next, *prev;   $/;"	m	language:C++	struct:list_head	typeref:struct:list_head::list_head
 next	inc/com/mmpool.h	/^    struct mm_node *next;  \/\/下一个节点$/;"	m	language:C++	struct:mm_node	typeref:struct:mm_node::mm_node
 next	inc/core/service-discovery.h	/^    struct sd_endpoint *next;$/;"	m	language:C++	struct:sd_endpoint	typeref:struct:sd_endpoint::sd_endpoint
 next	inc/core/service-discovery.h	/^    struct sd_service_node *next;$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_service_node
-next	lib/cJSON/cJSON.h	/^    struct cJSON *next;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
+next_select_ep	inc/core/service-discovery.h	/^    unsigned long next_select_ep;$/;"	m	language:C++	struct:sd_service_node
 nil	inc/com/rbtree.h	/^    struct rb_node nil;  \/\/哨兵指针$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
-noalloc	lib/cJSON/cJSON.c	/^    cJSON_bool noalloc;$/;"	m	language:C	struct:__anon4	file:
-noalloc	src/com/cJSON.c	/^    cJSON_bool noalloc;$/;"	m	language:C	struct:__anon7	file:
-offset	lib/cJSON/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon3	file:
-offset	lib/cJSON/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon4	file:
-offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon6	file:
-offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon7	file:
+noalloc	src/com/cJSON.c	/^    cJSON_bool noalloc;$/;"	m	language:C	struct:__anon3	file:
+offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon2	file:
+offset	src/com/cJSON.c	/^    size_t offset;$/;"	m	language:C	struct:__anon3	file:
 offsetof	inc/com/list.h	5;"	d	language:C++
 offsetof	inc/com/rbtree.h	6;"	d	language:C++
 p_acm_handle	inc/core/service-discovery.h	/^    struct acm_handle *p_acm_handle;$/;"	m	language:C++	struct:sd_handle	typeref:struct:sd_handle::acm_handle
 p_agent_channel	inc/core/service-discovery.h	/^    void* p_agent_channel;  \/\/ 索引到对应的通道$/;"	m	language:C++	struct:sd_endpoint
 p_channel	inc/core/agent-client-manager.h	/^    struct acm_channel *p_channel;  \/\/ 所属channel$/;"	m	language:C++	struct:acm_msg	typeref:struct:acm_msg::acm_channel
 p_handle	inc/core/agent-client-manager.h	/^    struct acm_handle* p_handle;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_handle
+p_handle	inc/core/http-server.h	/^    struct hs_handle *p_handle;$/;"	m	language:C++	struct:hs_connection_entry	typeref:struct:hs_connection_entry::hs_handle
 p_hs_handle	inc/core/http-server.h	/^    struct hs_handle *p_hs_handle;  \/\/ 所属的http-server-handle$/;"	m	language:C++	struct:hs_channel	typeref:struct:hs_channel::hs_handle
 p_next_req_endpoint	inc/core/service-discovery.h	/^    struct sd_endpoint  *p_next_req_endpoint;  \/\/ 下一次请求该选用的endpoint$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
 p_tdpl_s	inc/com/tdpool.h	/^    struct tdpl_s *p_tdpl_s; \/\/线程所属的线程池的结构体$/;"	m	language:C++	struct:tdpl_td_handle	typeref:struct:tdpl_td_handle::tdpl_s
 parent	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
-parse_array	lib/cJSON/cJSON.c	/^static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_array	src/com/cJSON.c	/^static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
-parse_buffer	lib/cJSON/cJSON.c	/^} parse_buffer;$/;"	t	language:C	typeref:struct:__anon3	file:
-parse_buffer	src/com/cJSON.c	/^} parse_buffer;$/;"	t	language:C	typeref:struct:__anon6	file:
-parse_hex4	lib/cJSON/cJSON.c	/^static unsigned parse_hex4(const unsigned char * const input)$/;"	f	language:C	file:
+parse_buffer	src/com/cJSON.c	/^} parse_buffer;$/;"	t	language:C	typeref:struct:__anon2	file:
 parse_hex4	src/com/cJSON.c	/^static unsigned parse_hex4(const unsigned char * const input)$/;"	f	language:C	file:
-parse_number	lib/cJSON/cJSON.c	/^static cJSON_bool parse_number(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_number	src/com/cJSON.c	/^static cJSON_bool parse_number(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
-parse_object	lib/cJSON/cJSON.c	/^static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_object	src/com/cJSON.c	/^static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
-parse_string	lib/cJSON/cJSON.c	/^static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_string	src/com/cJSON.c	/^static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
-parse_value	lib/cJSON/cJSON.c	/^static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 parse_value	src/com/cJSON.c	/^static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buffer)$/;"	f	language:C	file:
 port	inc/core/etcdctl.h	/^    int port;$/;"	m	language:C++	struct:etcdctl_handle
-position	lib/cJSON/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon2	file:
-position	src/com/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon5	file:
+position	src/com/cJSON.c	/^    size_t position;$/;"	m	language:C	struct:__anon1	file:
 pprev	inc/com/list.h	/^struct hlist_node *next, **pprev;   $/;"	m	language:C++	struct:hlist_node	typeref:struct:hlist_node::
 pre	inc/com/mmpool.h	/^    struct mm_node *pre;  \/\/上一个节点$/;"	m	language:C++	struct:mm_node	typeref:struct:mm_node::mm_node
 prefetch	inc/com/list.h	/^static inline void prefetch(const void *x) {;}   $/;"	f	language:C++
@@ -627,23 +472,14 @@ prefetchw	inc/com/list.h	/^static inline void prefetchw(const void *x) {;}   $/;
 prev	inc/com/cJSON.h	/^    struct cJSON *prev;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
 prev	inc/com/list.h	/^struct list_head *next, *prev;   $/;"	m	language:C++	struct:list_head	typeref:struct:list_head::
 prev	inc/core/service-discovery.h	/^    struct sd_endpoint *prev;$/;"	m	language:C++	struct:sd_endpoint	typeref:struct:sd_endpoint::sd_endpoint
-prev	lib/cJSON/cJSON.h	/^    struct cJSON *prev;$/;"	m	language:C++	struct:cJSON	typeref:struct:cJSON::cJSON
-print	lib/cJSON/cJSON.c	/^static unsigned char *print(const cJSON * const item, cJSON_bool format, const internal_hooks * const hooks)$/;"	f	language:C	file:
 print	src/com/cJSON.c	/^static unsigned char *print(const cJSON * const item, cJSON_bool format, const internal_hooks * const hooks)$/;"	f	language:C	file:
-print_array	lib/cJSON/cJSON.c	/^static cJSON_bool print_array(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
 print_array	src/com/cJSON.c	/^static cJSON_bool print_array(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
-print_number	lib/cJSON/cJSON.c	/^static cJSON_bool print_number(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
 print_number	src/com/cJSON.c	/^static cJSON_bool print_number(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
-print_object	lib/cJSON/cJSON.c	/^static cJSON_bool print_object(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
 print_object	src/com/cJSON.c	/^static cJSON_bool print_object(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
-print_string	lib/cJSON/cJSON.c	/^static cJSON_bool print_string(const cJSON * const item, printbuffer * const p)$/;"	f	language:C	file:
 print_string	src/com/cJSON.c	/^static cJSON_bool print_string(const cJSON * const item, printbuffer * const p)$/;"	f	language:C	file:
-print_string_ptr	lib/cJSON/cJSON.c	/^static cJSON_bool print_string_ptr(const unsigned char * const input, printbuffer * const output_buffer)$/;"	f	language:C	file:
 print_string_ptr	src/com/cJSON.c	/^static cJSON_bool print_string_ptr(const unsigned char * const input, printbuffer * const output_buffer)$/;"	f	language:C	file:
-print_value	lib/cJSON/cJSON.c	/^static cJSON_bool print_value(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
 print_value	src/com/cJSON.c	/^static cJSON_bool print_value(const cJSON * const item, printbuffer * const output_buffer)$/;"	f	language:C	file:
-printbuffer	lib/cJSON/cJSON.c	/^} printbuffer;$/;"	t	language:C	typeref:struct:__anon4	file:
-printbuffer	src/com/cJSON.c	/^} printbuffer;$/;"	t	language:C	typeref:struct:__anon7	file:
+printbuffer	src/com/cJSON.c	/^} printbuffer;$/;"	t	language:C	typeref:struct:__anon3	file:
 processing_index	inc/core/http-server.h	/^    int processing_index;  \/\/ 需处理到索引，表明该要处理到的字节$/;"	m	language:C++	struct:hs_channel
 processing_index_now	inc/core/http-server.h	/^    int processing_index_now;  \/\/ 正要处理到的索引$/;"	m	language:C++	struct:hs_channel
 processing_mutex	inc/core/http-server.h	/^    sem_t processing_mutex;  \/\/ 处理状态锁，同一个时间只能由一条线程处理$/;"	m	language:C++	struct:hs_channel
@@ -663,27 +499,26 @@ rb_tree	inc/com/rbtree.h	/^struct rb_tree{$/;"	s	language:C++
 rb_tree_minimum	src/com/rbtree.c	/^struct rb_node* rb_tree_minimum(struct rb_tree *p_rb_t,struct rb_node *p_root){$/;"	f	language:C
 rchild	inc/com/rbtree.h	/^    struct rb_node *lchild,*rchild,*parent; \/\/孩子节点和父节点$/;"	m	language:C++	struct:rb_node	typeref:struct:rb_node::
 read_index	inc/core/http-server.h	/^    int read_index;  \/\/  读索引$/;"	m	language:C++	struct:hs_channel
+reading_spinlock	inc/core/agent-client-manager.h	/^    pthread_spinlock_t reading_spinlock;$/;"	m	language:C++	struct:acm_channel
 ready_n	inc/com/tdpool.h	/^    sem_t ready_n;  \/\/ 初始化时用$/;"	m	language:C++	struct:tdpl_s
-reallocate	lib/cJSON/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 reallocate	src/com/cJSON.c	/^    void *(*reallocate)(void *pointer, size_t size);$/;"	m	language:C	struct:internal_hooks	file:
 recv_msg	inc/core/agent-client-manager.h	/^    struct acm_msg* recv_msg;  \/\/ 接收到的报文$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_msg
 remain	inc/core/service-discovery.h	/^    unsigned long remain;  \/\/ 剩余请求数$/;"	m	language:C++	struct:sd_endpoint
-replace_item_in_object	lib/cJSON/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
 replace_item_in_object	src/com/cJSON.c	/^static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSON *replacement, cJSON_bool case_sensitive)$/;"	f	language:C	file:
 req_id	inc/core/agent-client-manager.h	/^    long req_id;$/;"	m	language:C++	struct:acm_msg_head
 req_id	inc/core/agent-client-manager.h	/^    unsigned long req_id;$/;"	m	language:C++	struct:acm_request_map_entry
-request_id	inc/core/agent-client-manager.h	/^    long request_id;$/;"	m	language:C++	struct:acm_channel
-request_map	inc/core/agent-client-manager.h	/^    struct acm_request_map_entry* request_map;$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_request_map_entry
+request_id	inc/core/agent-client-manager.h	/^    long request_id;$/;"	m	language:C++	struct:acm_handle
+request_map	inc/core/agent-client-manager.h	/^    struct acm_request_map_entry* request_map;$/;"	m	language:C++	struct:acm_handle	typeref:struct:acm_handle::acm_request_map_entry
 root	inc/com/rbtree.h	/^    struct rb_node *root;  \/\/指向根节点$/;"	m	language:C++	struct:rb_tree	typeref:struct:rb_tree::rb_node
 run	inc/com/tdpool.h	/^    sem_t run;  \/\/用来告知线程开始调用函数$/;"	m	language:C++	struct:tdpl_td_handle
 saturated_list	inc/core/service-discovery.h	/^    struct sd_endpoint *saturated_list;  \/\/ 饱和的列表$/;"	m	language:C++	struct:sd_service_node	typeref:struct:sd_service_node::sd_endpoint
+sd_add_and_init_service	src/core/service-discovery.c	/^struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char* service_name){$/;"	f	language:C
 sd_endpoint	inc/core/service-discovery.h	/^struct sd_endpoint {$/;"	s	language:C++
 sd_get_optimal_endpoint	src/core/service-discovery.c	/^struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *service_name){$/;"	f	language:C
-sd_get_or_add_service	src/core/service-discovery.c	/^struct sd_service_node* sd_get_or_add_service(struct sd_handle *p_handle, char* service_name){$/;"	f	language:C
 sd_get_service_node	src/core/service-discovery.c	/^struct sd_service_node* sd_get_service_node(struct sd_handle *p_handle, char* service_name){$/;"	f	language:C
 sd_handle	inc/core/service-discovery.h	/^struct sd_handle {$/;"	s	language:C++
 sd_hash_code	src/core/service-discovery.c	/^unsigned int sd_hash_code(char *str){$/;"	f	language:C
-sd_init	src/core/service-discovery.c	/^struct sd_handle* sd_init(const char* etcd_url){$/;"	f	language:C
+sd_init	src/core/service-discovery.c	/^struct sd_handle* sd_init(struct acm_handle *p_acm_handle, const char* etcd_url){$/;"	f	language:C
 sd_insert_endpoint	src/core/service-discovery.c	/^int sd_insert_endpoint(struct sd_endpoint *p_head, struct sd_endpoint *p_will_add){$/;"	f	language:C
 sd_parse_ip_and_port	src/core/service-discovery.c	/^int sd_parse_ip_and_port(char *src, char *ip_buf, int *port){$/;"	f	language:C
 sd_rls_endpoints	src/core/service-discovery.c	/^int sd_rls_endpoints(struct sd_service_node *p_service_node){$/;"	f	language:C
@@ -692,16 +527,14 @@ sd_service_node	inc/core/service-discovery.h	/^struct sd_service_node {$/;"	s	la
 server_port	inc/core/http-server.h	/^    int server_port;  \/\/ 服务器端口$/;"	m	language:C++	struct:hs_bootstrap
 service_name	inc/core/service-discovery.h	/^    char* service_name;  \/\/ 如果为null表明该节点是空的$/;"	m	language:C++	struct:sd_service_node
 service_tb	inc/core/service-discovery.h	/^    struct sd_service_node *service_tb[SERVICE_DISCOVERY_MAX_SERVICE_NUM];  \/\/ 服务表,静态$/;"	m	language:C++	struct:sd_handle	typeref:struct:sd_handle::sd_service_node
-service_tb_mutex	inc/core/service-discovery.h	/^    sem_t service_tb_mutex;  \/\/ 服务表锁$/;"	m	language:C++	struct:sd_handle
+service_tb_rwlock	inc/core/service-discovery.h	/^    pthread_rwlock_t service_tb_rwlock;  \/\/ 服务表读写锁$/;"	m	language:C++	struct:sd_handle
 service_tb_size	inc/core/service-discovery.h	/^    int service_tb_size;  \/\/ 服务表长度$/;"	m	language:C++	struct:sd_handle
 size	inc/com/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
-size	lib/cJSON/cJSON.h	/^CJSON_PUBLIC(void *) cJSON_malloc(size_t size);$/;"	v	language:C++
 socket	inc/core/http-server.h	/^    int socket;  \/\/ 套接字$/;"	m	language:C++	struct:hs_channel
 socket_fd	inc/core/agent-client-manager.h	/^    int socket_fd;  \/\/ 客户端套接字描述符$/;"	m	language:C++	struct:acm_channel
+socket_fd	inc/core/http-server.h	/^    int socket_fd;$/;"	m	language:C++	struct:hs_connection_entry
 sockfd	inc/core/http-server.h	/^    int sockfd;$/;"	m	language:C++	struct:hs_handle
 string	inc/com/cJSON.h	/^    char *string;$/;"	m	language:C++	struct:cJSON
-string	lib/cJSON/cJSON.h	/^    char *string;$/;"	m	language:C++	struct:cJSON
-suffix_object	lib/cJSON/cJSON.c	/^static void suffix_object(cJSON *prev, cJSON *item)$/;"	f	language:C	file:
 suffix_object	src/com/cJSON.c	/^static void suffix_object(cJSON *prev, cJSON *item)$/;"	f	language:C	file:
 td_handle_array	inc/com/tdpool.h	/^    struct tdpl_td_handle *td_handle_array; \/\/ 已创建的线程handle结构体数组$/;"	m	language:C++	struct:tdpl_s	typeref:struct:tdpl_s::tdpl_td_handle
 tdpl	inc/com/tdpool.h	/^}*tdpl;$/;"	t	language:C++	typeref:struct:tdpl_s
@@ -712,7 +545,6 @@ tdpl_close	inc/core/http-server.h	/^    tdpl tdpl_close;  \/\/ 负责关闭链�
 tdpl_create	src/com/tdpool.c	/^struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){$/;"	f	language:C
 tdpl_io	inc/core/agent-client-manager.h	/^    tdpl tdpl_io;  \/\/ io线程池$/;"	m	language:C++	struct:acm_handle
 tdpl_io	inc/core/http-server.h	/^    tdpl tdpl_io;  \/\/ IO线程池$/;"	m	language:C++	struct:hs_handle
-tdpl_master_thread	src/com/tdpool.c	/^void *tdpl_master_thread(void *arg){$/;"	f	language:C
 tdpl_mastertd_cleanup	src/com/tdpool.c	/^void tdpl_mastertd_cleanup(void *arg){$/;"	f	language:C
 tdpl_s	inc/com/tdpool.h	/^typedef struct tdpl_s{$/;"	s	language:C++
 tdpl_td_handle	inc/com/tdpool.h	/^struct tdpl_td_handle{$/;"	s	language:C++
@@ -722,46 +554,24 @@ tdpl_worker	inc/core/http-server.h	/^    tdpl tdpl_worker;  \/\/ 工作线程池
 tdpl_worker_thread	src/com/tdpool.c	/^void *tdpl_worker_thread(void *arg){$/;"	f	language:C
 thread_num	inc/com/tdpool.h	/^    int thread_num;  \/\/线程池拥有的线程数$/;"	m	language:C++	struct:tdpl_s
 tid	inc/com/tdpool.h	/^    unsigned long tid; \/\/线程id$/;"	m	language:C++	struct:tdpl_td_handle
-true	lib/cJSON/cJSON.c	46;"	d	language:C	file:
 true	src/com/cJSON.c	46;"	d	language:C	file:
 type	inc/com/cJSON.h	/^    int type;$/;"	m	language:C++	struct:cJSON
-type	lib/cJSON/cJSON.h	/^    int type;$/;"	m	language:C++	struct:cJSON
-u8	inc/com/ipc-uds.h	/^    unsigned char u8[sizeof(struct uds_umsg_h)];$/;"	m	language:C++	union:__anon1
-uds_accept	src/com/ipc-uds.c	/^int uds_accept(int listen_fd, uid_t *puid){$/;"	f	language:C
-uds_close	src/com/ipc-uds.c	/^void uds_close(int fd){$/;"	f	language:C
-uds_connect	src/com/ipc-uds.c	/^int uds_connect(char *servername){$/;"	f	language:C
-uds_create_umsg	src/com/ipc-uds.c	/^struct uds_umsg* uds_create_umsg(void *data,unsigned int data_size, unsigned int type){$/;"	f	language:C
-uds_free_umsg	src/com/ipc-uds.c	/^int uds_free_umsg(struct uds_umsg *pumsg){$/;"	f	language:C
-uds_init	src/com/ipc-uds.c	/^int uds_init(struct uds_init_opt *popt){$/;"	f	language:C
-uds_init_opt	inc/com/ipc-uds.h	/^struct uds_init_opt{$/;"	s	language:C++
-uds_listen	src/com/ipc-uds.c	/^int uds_listen(char *servername, int max_connection_num){$/;"	f	language:C
-uds_rcvfd	src/com/ipc-uds.c	/^int uds_rcvfd(int usockfd, int *pfd){$/;"	f	language:C
-uds_recv	src/com/ipc-uds.c	/^struct uds_umsg* uds_recv(int usockfd){$/;"	f	language:C
-uds_send	src/com/ipc-uds.c	/^int uds_send(int usockfd, struct uds_umsg *pumsg){$/;"	f	language:C
-uds_sendfd	src/com/ipc-uds.c	/^int uds_sendfd(int usockfd, int sfd){$/;"	f	language:C
-uds_umsg	inc/com/ipc-uds.h	/^struct uds_umsg{$/;"	s	language:C++
-uds_umsg_h	inc/com/ipc-uds.h	/^struct uds_umsg_h{$/;"	s	language:C++
-uds_umsg_h_un	inc/com/ipc-uds.h	/^}uds_umsg_h_un;$/;"	t	language:C++	typeref:union:__anon1
-umsg_h	inc/com/ipc-uds.h	/^    struct uds_umsg_h umsg_h;$/;"	m	language:C++	union:__anon1	typeref:struct:__anon1::uds_umsg_h
-update_offset	lib/cJSON/cJSON.c	/^static void update_offset(printbuffer * const buffer)$/;"	f	language:C	file:
 update_offset	src/com/cJSON.c	/^static void update_offset(printbuffer * const buffer)$/;"	f	language:C	file:
 use_flg	inc/com/mmpool.h	/^    int use_flg; \/\/使用标志，0表示没有在使用，1表示正在被使用$/;"	m	language:C++	struct:mm_node
 use_head	inc/com/mmpool.h	/^    struct mm_node use_head;  \/\/ 正在使用的内存节点的链表头$/;"	m	language:C++	struct:mm_pool_s	typeref:struct:mm_pool_s::mm_node
-utf16_literal_to_utf8	lib/cJSON/cJSON.c	/^static unsigned char utf16_literal_to_utf8(const unsigned char * const input_pointer, const unsigned char * const input_end, unsigned char **output_pointer)$/;"	f	language:C	file:
 utf16_literal_to_utf8	src/com/cJSON.c	/^static unsigned char utf16_literal_to_utf8(const unsigned char * const input_pointer, const unsigned char * const input_end, unsigned char **output_pointer)$/;"	f	language:C	file:
 value_start	inc/core/http-server.h	/^    int value_start;$/;"	m	language:C++	struct:hs_channel
 valuedouble	inc/com/cJSON.h	/^    double valuedouble;$/;"	m	language:C++	struct:cJSON
-valuedouble	lib/cJSON/cJSON.h	/^    double valuedouble;$/;"	m	language:C++	struct:cJSON
 valueint	inc/com/cJSON.h	/^    int valueint;$/;"	m	language:C++	struct:cJSON
-valueint	lib/cJSON/cJSON.h	/^    int valueint;$/;"	m	language:C++	struct:cJSON
 valuestring	inc/com/cJSON.h	/^    char *valuestring;$/;"	m	language:C++	struct:cJSON
-valuestring	lib/cJSON/cJSON.h	/^    char *valuestring;$/;"	m	language:C++	struct:cJSON
 worker_thread_num	inc/core/agent-client-manager.h	/^    int worker_thread_num;$/;"	m	language:C++	struct:acm_opt
 worker_thread_num	inc/core/http-server.h	/^    int worker_thread_num;  \/\/ 工作线程$/;"	m	language:C++	struct:hs_bootstrap
 write_index	inc/core/agent-client-manager.h	/^    int write_index;$/;"	m	language:C++	struct:acm_write_task
 write_index	inc/core/http-server.h	/^    int write_index;  \/\/ 写索引，io线程拷贝用$/;"	m	language:C++	struct:hs_channel
 write_queue	inc/core/agent-client-manager.h	/^    struct acm_write_task* write_queue;  \/\/ 写请求队列$/;"	m	language:C++	struct:acm_channel	typeref:struct:acm_channel::acm_write_task
+write_queue_consume_spinlock	inc/core/agent-client-manager.h	/^    pthread_spinlock_t write_queue_consume_spinlock;  \/\/ 写队列消费锁，只有一个线程消费$/;"	m	language:C++	struct:acm_channel
 write_queue_head	inc/core/agent-client-manager.h	/^    unsigned long write_queue_head;$/;"	m	language:C++	struct:acm_channel
-write_queue_mutex	inc/core/agent-client-manager.h	/^    sem_t write_queue_mutex;$/;"	m	language:C++	struct:acm_channel
+write_queue_spinlock	inc/core/agent-client-manager.h	/^    pthread_spinlock_t write_queue_spinlock;$/;"	m	language:C++	struct:acm_channel
 write_queue_tail	inc/core/agent-client-manager.h	/^    unsigned long write_queue_tail;$/;"	m	language:C++	struct:acm_channel
 write_size	inc/core/http-server.h	/^    int write_size;  \/\/ 表示要写的字节数$/;"	m	language:C++	struct:hs_channel
+writing_spinlock	inc/core/agent-client-manager.h	/^    pthread_spinlock_t writing_spinlock;$/;"	m	language:C++	struct:acm_channel

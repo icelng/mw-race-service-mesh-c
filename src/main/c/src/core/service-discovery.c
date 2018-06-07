@@ -100,8 +100,11 @@ struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char
     p_service_node->endpoint_list2_head.next = &p_service_node->endpoint_list2_head;
     p_service_node->endpoint_list2_head.prev = &p_service_node->endpoint_list2_head;
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list;
+    p_service_node->lb_list_len = 0;
+    p_service_node->next_select_ep = 0;
     //pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_mutex_init(&p_service_node->ep_link_lock, NULL);
+    pthread_rwlock_init(&p_service_node->lb_list_rwlock, NULL);
 
     /*链入链表，需抢写者锁*/
     log_info("SERVICD_FIND:Write lock before");
@@ -305,6 +308,7 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
         cJSON *value = cJSON_GetObjectItemCaseSensitive(node, "value");
         char ip[16];
         int port;
+        int i;
 
         log_info("SERVICE_FIND:Find the key:%s, value:%s", key->valuestring, value->valuestring);
 
@@ -324,11 +328,21 @@ int sd_service_find(struct sd_handle *p_handle, char* service_name){
         p_new_endpoint->load_level = atoi(value->valuestring);
         p_new_endpoint->p_agent_channel = p_new_channel;
         p_new_endpoint->remain = p_new_endpoint->load_level;
+
+        /*下面几行代码待删*/
         pthread_mutex_lock(&p_service_node->ep_link_lock);
         //pthread_spin_lock(&p_service_node->ep_link_spinlock);
         sd_insert_endpoint(p_service_node->comsuming_list, p_new_endpoint);
         //pthread_spin_unlock(&p_service_node->ep_link_spinlock);
         pthread_mutex_unlock(&p_service_node->ep_link_lock);
+
+        /*静态数组作负载均衡*/
+
+        pthread_rwlock_wrlock(&p_service_node->lb_list_rwlock);
+        for (i = 0;i < p_new_endpoint->load_level;i++) {
+            p_service_node->load_balance_list[p_service_node->lb_list_len++] = p_new_endpoint;
+        }
+        pthread_rwlock_unlock(&p_service_node->lb_list_rwlock);
     }
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list->next;
     log_info("SERVICE_DISCOVERY:Service found complete.");
@@ -346,7 +360,9 @@ err1_ret:
  * 返回值: 
  */
 struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *service_name){
+    struct sd_endpoint *p_endpoint;
     struct sd_service_node *p_service_node = sd_get_service_node(p_handle, service_name);
+
     if (p_service_node == NULL) {
         /*进行服务发现*/
         pthread_mutex_lock(&p_handle->find_mutex);
@@ -367,31 +383,36 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
     }
 
     /*使用自旋锁*/
-    pthread_mutex_lock(&p_service_node->ep_link_lock);
-    //pthread_spin_lock(&p_service_node->ep_link_spinlock);
-    struct sd_endpoint *p_endpoint = p_service_node->p_next_req_endpoint;
-    if (p_endpoint == p_service_node->comsuming_list) {
-        /*如果是头节点*/
-        log_debug("SERVICE_DISCOVERY:Is head node");
-        p_endpoint = p_endpoint->next;
-        if (p_endpoint == p_service_node->comsuming_list) {
-            log_debug("SERVICE_DISCOVERY:Is also head node");
-            /*还是头结点，说明消费链表已空，则交换链表(饱和链表转换成消费链表)*/
-            p_service_node->comsuming_list = p_service_node->saturated_list;
-            p_service_node->saturated_list = p_endpoint;
-            p_endpoint = p_service_node->comsuming_list->next;
-        }
-    }
-    p_service_node->p_next_req_endpoint = p_endpoint->next;
-    if (--p_endpoint->remain == 0) {
-        /*如果消费完了，则转移节点到饱和链表*/
-        p_endpoint->prev->next = p_endpoint->next;
-        p_endpoint->next->prev = p_endpoint->prev;
-        /*大多时候都是o(1)操作*/
-        sd_insert_endpoint(p_service_node->saturated_list, p_endpoint);
-    }
-    pthread_mutex_unlock(&p_service_node->ep_link_lock);
-    //pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+    //pthread_mutex_lock(&p_service_node->ep_link_lock);
+    ////pthread_spin_lock(&p_service_node->ep_link_spinlock);
+    //struct sd_endpoint *p_endpoint = p_service_node->p_next_req_endpoint;
+    //if (p_endpoint == p_service_node->comsuming_list) {
+    //    /*如果是头节点*/
+    //    log_debug("SERVICE_DISCOVERY:Is head node");
+    //    p_endpoint = p_endpoint->next;
+    //    if (p_endpoint == p_service_node->comsuming_list) {
+    //        log_debug("SERVICE_DISCOVERY:Is also head node");
+    //        /*还是头结点，说明消费链表已空，则交换链表(饱和链表转换成消费链表)*/
+    //        p_service_node->comsuming_list = p_service_node->saturated_list;
+    //        p_service_node->saturated_list = p_endpoint;
+    //        p_endpoint = p_service_node->comsuming_list->next;
+    //    }
+    //}
+    //p_service_node->p_next_req_endpoint = p_endpoint->next;
+    //if (--p_endpoint->remain == 0) {
+    //    /*如果消费完了，则转移节点到饱和链表*/
+    //    p_endpoint->prev->next = p_endpoint->next;
+    //    p_endpoint->next->prev = p_endpoint->prev;
+    //    /*大多时候都是o(1)操作*/
+    //    sd_insert_endpoint(p_service_node->saturated_list, p_endpoint);
+    //}
+    //pthread_mutex_unlock(&p_service_node->ep_link_lock);
+    ////pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+    
+    /*使用静态数组的负载均衡*/
+    pthread_rwlock_rdlock(&p_service_node->lb_list_rwlock);
+    p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
+    pthread_rwlock_unlock(&p_service_node->lb_list_rwlock);
 
     return p_endpoint->p_agent_channel;
 }
