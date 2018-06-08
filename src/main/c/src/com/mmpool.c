@@ -3,6 +3,7 @@
 #include "string.h"
 #include "stdio.h"
 #include "unistd.h"
+#include "log.h"
 
 
 
@@ -274,6 +275,7 @@ int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){
     mmpl_list_remove(p_mm_n);  //从使用链表中移除
     p_mm_n->use_flg = 0;
     if(index == 0){  //如果超过了最大index(此时index标为0)，则直接还给操作系统
+        log_info("rls large memory to system");
         free(p_mm_n);
         pthread_mutex_unlock(&mmpl->lock);
         //pthread_spin_unlock(&mmpl->spin_lock);
@@ -282,11 +284,11 @@ int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){
     }
     if(mmpl->current_free_index + index > mmpl->max_free_index){
         /*如果归还之后内存池的空闲空间超过了最大空闲空间大小则直接归还给操作系统*/
-        printf("rls memory to system");
+        log_info("rls memory to system");
         free(p_mm_n);
         if(mmpl_rls_oldestfree(mmpl) < 0){  // 并且释放最久没有申请的index对应空闲内存节点 
             pthread_mutex_unlock(&mmpl->lock);
-            printf("rls old memory");
+            log_info("rls old memory");
             //pthread_spin_unlock(&mmpl->spin_lock);
             //sem_post(&mmpl->mutex);
             return -2;
