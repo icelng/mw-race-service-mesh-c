@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
+#include "mmpool.h"
 
 
 void *tdpl_worker_thread(void *arg);
@@ -98,6 +99,14 @@ void *tdpl_worker_thread(void *arg){
     p_td_handle = (struct tdpl_td_handle *)arg;
     pts = p_td_handle->p_tdpl_s;
     pthread_cleanup_push(tdpl_wktd_cleanup,p_td_handle);
+
+    /*建立线程内存池(测试)*/
+    struct mmpl_opt mmpl_opt;
+    mmpl_opt.boundary = MMPL_BOUNDARY_1K;  // 1K对齐
+    mmpl_opt.max_free_index = 51200;  // 最大空闲
+    mmpl thread_mmpl = mmpl_create(&mmpl_opt);
+
+
     sem_post(&pts->ready_n);  // 表示工作线程已准备就绪
 
     while(1){
@@ -112,7 +121,7 @@ void *tdpl_worker_thread(void *arg){
 
         pthread_testcancel(); //设置线程取消点,在销毁线程池时，线程会被取消
         /*下一条语句为调用函数*/
-        (p_td_handle->call_func)(p_td_handle->arg); 
+        (p_td_handle->call_func)(p_td_handle->arg, thread_mmpl); 
         /* 函数执行完了之后，把该线程的信息结构体插入可用队列中,并且把参数所占用
          * 的内存空间还给内存池*/
         /* 有时候在调用函数的过程中接收到了线程取消信号,所以在函数执行完了之后马
@@ -249,7 +258,7 @@ err1_ret:
  * 返回值: 1,
  *        -1,
  */
-int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg), void *arg){
+int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg, void *mmpl), void *arg){
     struct tdpl_call_node *p_call_node;
 
     if(call_func == NULL){

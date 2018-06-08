@@ -9,7 +9,7 @@ struct tdpl_td_handle;
 /*调用队列的节点*/
 struct tdpl_call_node{
     void *arg;
-    void (*call_func)(void *arg); //需要调用的函数
+    void (*call_func)(void *arg, void* mmpl); //需要调用的函数
 };
 
 /*线程池结构体*/
@@ -47,7 +47,7 @@ typedef struct tdpl_s{
 struct tdpl_td_handle{
     struct tdpl_s *p_tdpl_s; //线程所属的线程池的结构体
     unsigned long tid; //线程id
-    void (*call_func)(void *arg); //需要调用的函数
+    void (*call_func)(void *arg, void* mmpl); //需要调用的函数
     void *arg;  //线程调用函数的参数
     sem_t run;  //用来告知线程开始调用函数
 };
@@ -57,5 +57,5 @@ struct tdpl_td_handle{
 /*创建线程池*/
 tdpl tdpl_create(int thread_num,int max_wait_n);
 /*使用线程池中的一个线程来调用指定的函数*/
-int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg),void *arg);
+int tdpl_call_func(struct tdpl_s *pts,void (*call_func)(void *arg, void* mmpl),void *arg);
 int tdpl_destroy(struct tdpl_s *pts);

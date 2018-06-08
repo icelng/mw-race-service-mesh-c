@@ -304,9 +304,10 @@ int acm_request(
  * 参数: void *arg, 指向channel
  * 返回值: 
  */
-void acm_io_read_thread(void *arg){
+void acm_io_read_thread(void *arg, void* local_mmpl){
     struct acm_channel *p_channel = arg;
     struct acm_handle *p_handle = p_channel->p_handle;
+    mmpl thread_mmpl = local_mmpl;
     int data_size;
     int read_size;
 
@@ -334,7 +335,7 @@ void acm_io_read_thread(void *arg){
             } else {
                 data_size = acm_bytes2int(p_channel->head, 8);
                 p_channel->is_head = 0;
-                p_channel->recv_msg = mmpl_getmem(p_handle->mmpl, sizeof(struct acm_msg) + data_size);
+                p_channel->recv_msg = mmpl_getmem(thread_mmpl, sizeof(struct acm_msg) + data_size);
                 p_channel->recv_msg->data = (void *)p_channel->recv_msg + sizeof(struct acm_msg);
                 p_channel->recv_msg->head.req_id = acm_bytes2long(p_channel->head, 0);
                 p_channel->recv_msg->head.data_size = data_size;
@@ -380,7 +381,7 @@ void acm_io_read_thread(void *arg){
             p_entry->listening(p_entry->arg, p_channel->recv_msg->data, p_channel->recv_msg->head.data_size);
             p_entry->listening = NULL;
             p_entry->req_id = 0;
-            mmpl_rlsmem(p_handle->mmpl, p_channel->recv_msg);
+            mmpl_rlsmem(thread_mmpl, p_channel->recv_msg);
 
             p_channel->is_head = 1;
             p_channel->head_read_index = 0;
@@ -400,10 +401,11 @@ void acm_io_read_thread(void *arg){
  * 参数: void *arg, 指向channel
  * 返回值: 
  */
-void acm_io_write_thread(void *arg){
+void acm_io_write_thread(void *arg, void* local_mmpl){
     //log_debug("ACM:Stated io-write thread!");
     static int full_cnt = 0;
 
+    mmpl thread_mmpl = local_mmpl;
     struct acm_channel *p_channel = arg;
     struct acm_handle *p_handle = p_channel->p_handle;
     struct acm_write_task *p_task;

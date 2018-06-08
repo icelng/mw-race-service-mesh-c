@@ -11,9 +11,9 @@
 #include "errno.h"
 #include "ctype.h"
 
-void hs_accept_thread(void *arg);
+void hs_accept_thread(void *arg, void*);
 int hs_bind(int port);
-void hs_event_loop(void *arg);
+void hs_event_loop(void *arg, void*);
 int hs_call_channel(struct hs_channel *p_hs_channel);
 int hs_attempt_recall_channel(struct hs_channel *p_channel);
 int hs_io_do_read(struct hs_channel *p_channel);
@@ -156,18 +156,19 @@ int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events){
  * 参数: int client_sockfd, 客户端套接字
  * 返回值: 
  */
-void hs_new_connection(void *arg){
+void hs_new_connection(void *arg, void* local_mmpl){
     struct hs_connection_entry *p_conection_entry = arg;
     int client_sockfd = p_conection_entry->socket_fd;
     struct hs_handle *p_hs_handle = p_conection_entry->p_handle;
     static unsigned long epoll_i = 0;
+    mmpl thread_mmpl = (mmpl) local_mmpl;
     int no = 1;
 
     log_debug("New connection");
 
     /*创建decode_handle*/
     struct hs_channel *p_channel;
-    p_channel = mmpl_getmem(p_hs_handle->mmpl, sizeof(struct hs_channel) + p_hs_handle->buffer_size);
+    p_channel = mmpl_getmem(thread_mmpl, sizeof(struct hs_channel) + p_hs_handle->buffer_size);
     if (p_channel == NULL) {
         goto err1_ret;
     }
@@ -221,7 +222,7 @@ void hs_new_connection(void *arg){
     return;
 
 err2_ret:
-    mmpl_rlsmem(p_hs_handle->mmpl, p_channel);
+    mmpl_rlsmem(thread_mmpl, p_channel);
 err1_ret:
     p_conection_entry->p_handle = NULL;
     return;
@@ -233,12 +234,13 @@ err1_ret:
  * 参数: void *arg, hs_handle指针的指针
  * 返回值: 无
  */
-void hs_accept_thread(void *arg){
+void hs_accept_thread(void *arg, void* local_mmpl){
     log_info("Start accept thread sucessfully!");
 
     struct sockaddr_in client_addr;
     struct hs_handle *hs_h = (struct hs_handle*)arg;
     struct hs_connection_entry *p_conection_entry;
+    mmpl thread_mmpl = local_mmpl;
     int sin_size;
     int client_sockfd;
 
@@ -280,11 +282,12 @@ void hs_accept_thread(void *arg){
  * 参数: void *arg, hs_handle指针的指针
  * 返回值: 
  */
-void hs_event_loop(void *arg){
+void hs_event_loop(void *arg, void* local_mmpl){
     log_info("Start event-loop thread successfully!");
 
     struct epoll_event events[MAX_EPOLL_EVENTS];
     struct hs_channel *p_channel;
+    mmpl thread_mmpl = local_mmpl;
     int epoll_fd = *(int* )arg;
     int ready_num, i;
 
@@ -334,14 +337,15 @@ void hs_event_loop(void *arg){
  * 参数: void *arg,
  * 返回值: 
  */
-void hs_io_write(void *arg){
+void hs_io_write(void *arg, void* local_mmpl){
     struct hs_channel *p_channel = arg;
+    mmpl thread_mmpl = local_mmpl;
     int hava_write_size;
 
     if (p_channel->write_index >= p_channel->write_size) {
         /*写完毕,关闭链接，释放channel*/
         close(p_channel->socket);
-        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        mmpl_rlsmem(thread_mmpl, p_channel);
     }
 
     if ((hava_write_size = send(p_channel->socket,
@@ -350,7 +354,7 @@ void hs_io_write(void *arg){
                     MSG_DONTWAIT)) == -1) {
         log_err("Some error occured when write data to socket!%s", strerror(errno));
         close(p_channel->socket);
-        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        mmpl_rlsmem(thread_mmpl, p_channel);
         return;
     }
     p_channel->write_index += hava_write_size;
@@ -359,13 +363,13 @@ void hs_io_write(void *arg){
         /*写完毕,关闭链接，释放channel*/
         close(p_channel->socket);
         //hs_close_channel(p_channel);
-        mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+        mmpl_rlsmem(thread_mmpl, p_channel);
     } else {
         /*继续监听写事件*/
         if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
             log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
             close(p_channel->socket);
-            mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+            mmpl_rlsmem(thread_mmpl, p_channel);
         }
     }
 }
@@ -393,9 +397,10 @@ int hs_io_do_write(struct hs_channel *p_channel){
  * 参数: void *arg, 为channel的指针
  * 返回值: 
  */
-void hs_io_read(void *arg){
+void hs_io_read(void *arg, void* local_mmpl){
     struct hs_channel *p_channel = arg;
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
+    mmpl thread_mmpl = local_mmpl;
     int read_size;
 
     /*开始把TCP读缓存上的数据拷贝到自己指定的buffer里*/
@@ -411,7 +416,7 @@ void hs_io_read(void *arg){
         if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
             log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
             close(p_channel->socket);
-            mmpl_rlsmem(p_channel->p_hs_handle->mmpl, p_channel);
+            mmpl_rlsmem(thread_mmpl, p_channel);
         }
         return;
     }
@@ -466,16 +471,16 @@ void hs_close_channel_thread(void *arg){
  * 参数: struct hs_channel *p_channel,
  * 返回值: 
  */
-int hs_close_channel(struct hs_channel *p_channel){
-    struct hs_handle *p_hs_handel = p_channel->p_hs_handle;
-
-    if (tdpl_call_func(p_hs_handel->tdpl_close, hs_close_channel_thread, p_channel) < 0) {
-        log_err("Failed to start thread for closing channel!");
-        return -1;
-    }
-    
-    return 1;
-}
+//int hs_close_channel(struct hs_channel *p_channel){
+//    struct hs_handle *p_hs_handel = p_channel->p_hs_handle;
+//
+//    if (tdpl_call_func(p_hs_handel->tdpl_close, hs_close_channel_thread, p_channel) < 0) {
+//        log_err("Failed to start thread for closing channel!");
+//        return -1;
+//    }
+//    
+//    return 1;
+//}
 
 /* 函数名: void hs_content_handler_thread(void *arg) 
  * 功能: 执行content_handler的线程
