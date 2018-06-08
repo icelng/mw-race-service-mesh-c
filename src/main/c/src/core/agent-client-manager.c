@@ -392,6 +392,7 @@ void acm_io_read_thread(void *arg){
  */
 void acm_io_write_thread(void *arg){
     //log_debug("ACM:Stated io-write thread!");
+    static int full_cnt = 0;
 
     struct acm_channel *p_channel = arg;
     struct acm_handle *p_handle = p_channel->p_handle;
@@ -474,6 +475,7 @@ void acm_io_write_thread(void *arg){
         /*非处理完毕的退出,写队列未消费为空，释放消费锁,允许有线程拿锁来消费队列*/
         //__sync_fetch_and_sub(&p_channel->is_writing, 1);
         //pthread_spin_unlock(&p_channel->writing_spinlock);
+        log_warning("ACM:The write buffer is full!cnt:%d", full_cnt++);
         pthread_spin_unlock(&p_channel->write_queue_consume_spinlock);
         if (acm_epoll_mod(p_handle->epoll_write_fd, p_channel, EPOLLOUT) < 0) {
             log_err("ACM:Failed to MOD sockfd to epoll for EPOLLOUT when doing write:%s",strerror(errno));
