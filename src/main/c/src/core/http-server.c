@@ -268,7 +268,7 @@ void hs_accept_thread(void *arg, void* local_mmpl){
         p_conection_entry->p_handle = hs_h;
         p_conection_entry->socket_fd = client_sockfd;
         /*使用io线程调用函数*/
-        if (tdpl_call_func(hs_h->tdpl_accept, hs_new_connection, p_conection_entry) < 0) {
+        if (tdpl_call_func(hs_h->tdpl_io, hs_new_connection, p_conection_entry) < 0) {
             log_err("Failed to start o thread for hs_new_connection:%s", strerror(errno));
             close(client_sockfd);
             continue;
@@ -409,6 +409,12 @@ void hs_io_read(void *arg, void* local_mmpl){
             p_hs_handle->buffer_size - p_channel->read_index, 
             MSG_DONTWAIT);
     if (read_size < 0) {
+        if (errno == EAGAIN) {
+            if (hs_epoll_mod(p_channel, EPOLLIN | EPOLLRDHUP) < 0) {
+                log_err("HS:Failed to mod sockfd to epoll for read-EAGAIN:%s",strerror(errno));
+            }
+            return;
+        }
         /*使用写事件来关闭连接*/
         log_err("Some error occured when reading data from socket!%s", strerror(errno));
         p_channel->write_index = 0;
