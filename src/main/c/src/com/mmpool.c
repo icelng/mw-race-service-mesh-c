@@ -240,7 +240,7 @@ void* mmpl_getmem(struct mm_pool_s *mmpl,unsigned int size){
         mmpl->current_free_index -= index; //空闲内存空间减少
     }
     p_mm_n->use_flg = 1; //表示正在被使用
-    mmpl_list_insert(&mmpl->use_head,p_mm_n); //插入到使用链表中
+    //mmpl_list_insert(&mmpl->use_head,p_mm_n); //插入到使用链表中
     mmpl->get_cnt += 1;  // 申请次数加一
     mmpl->latest_get_cnt[index] = mmpl->get_cnt;  // 记录最近访问统计
     //sem_post(&mmpl->mutex);
@@ -272,7 +272,7 @@ int mmpl_rlsmem(struct mm_pool_s *mmpl,void *rls_mmaddr){
     //while(sem_trywait(&mmpl->mutex) < 0);
     //pthread_spin_lock(&mmpl->spin_lock);
     pthread_mutex_lock(&mmpl->lock);
-    mmpl_list_remove(p_mm_n);  //从使用链表中移除
+    //mmpl_list_remove(p_mm_n);  //从使用链表中移除
     p_mm_n->use_flg = 0;
     if(index == 0){  //如果超过了最大index(此时index标为0)，则直接还给操作系统
         log_info("rls large memory to system");
