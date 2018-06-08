@@ -103,7 +103,7 @@ void *tdpl_worker_thread(void *arg){
     /*建立线程内存池(测试)*/
     struct mmpl_opt mmpl_opt;
     mmpl_opt.boundary = MMPL_BOUNDARY_1K;  // 1K对齐
-    mmpl_opt.max_free_index = 51200;  // 最大空闲
+    mmpl_opt.max_free_index = 512000;  // 最大空闲
     mmpl thread_mmpl = mmpl_create(&mmpl_opt);
 
 
