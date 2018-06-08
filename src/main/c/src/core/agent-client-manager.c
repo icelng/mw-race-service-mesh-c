@@ -379,6 +379,7 @@ void acm_io_read_thread(void *arg){
             p_entry = &p_handle->request_map[p_channel->recv_msg->head.req_id%p_handle->max_hold_req_num];
             p_entry->listening(p_entry->arg, p_channel->recv_msg->data, p_channel->recv_msg->head.data_size);
             p_entry->listening = NULL;
+            p_entry->req_id = 0;
             mmpl_rlsmem(p_handle->mmpl, p_channel->recv_msg);
 
             p_channel->is_head = 1;
