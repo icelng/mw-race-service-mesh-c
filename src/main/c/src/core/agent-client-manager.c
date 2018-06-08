@@ -367,11 +367,19 @@ void acm_io_read_thread(void *arg){
             /*表示一次报文接收完毕*/
             /*针对这次接收到的报文，执行工作线程*/
             __sync_sub_and_fetch(&p_channel->request_num, 1);  // 请求数减一
-            if (tdpl_call_func(p_channel->p_handle->tdpl_worker, acm_response, p_channel->recv_msg) < 0) {
-                log_err("Failed to start io thread for acm_io_do_write:%s", strerror(errno));
-                mmpl_rlsmem(p_handle->mmpl, p_channel->recv_msg);
-                break;
-            }
+
+            //if (tdpl_call_func(p_channel->p_handle->tdpl_worker, acm_response, p_channel->recv_msg) < 0) {
+            //    log_err("Failed to start io thread for acm_io_do_write:%s", strerror(errno));
+            //    mmpl_rlsmem(p_handle->mmpl, p_channel->recv_msg);
+            //    break;
+            //}
+            
+            /*直接调用响应函数*/
+            struct acm_request_map_entry *p_entry;
+            p_entry = &p_handle->request_map[p_channel->recv_msg->head.req_id%p_handle->max_hold_req_num];
+            p_entry->listening(p_entry->arg, p_channel->recv_msg->data, p_channel->recv_msg->head.data_size);
+            p_entry->listening = NULL;
+            mmpl_rlsmem(p_handle->mmpl, p_channel->recv_msg);
 
             p_channel->is_head = 1;
             p_channel->head_read_index = 0;
