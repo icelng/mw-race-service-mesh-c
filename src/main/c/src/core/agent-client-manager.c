@@ -157,6 +157,7 @@ struct acm_channel* acm_connect(
     //p_channel->events = EPOLLIN | EPOLLRDHUP | EPOLLET | EPOLLONESHOT;  // 初始化为读边缘出发
     pthread_spin_init(&p_channel->write_queue_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_spin_init(&p_channel->write_queue_consume_spinlock, PTHREAD_PROCESS_PRIVATE);
+    pthread_spin_lock(&p_channel->write_queue_consume_spinlock);  // 初始时，写队列是空的，不能消费
     pthread_spin_init(&p_channel->reading_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_spin_init(&p_channel->writing_spinlock, PTHREAD_PROCESS_PRIVATE);
     p_channel->is_reding = 0;
