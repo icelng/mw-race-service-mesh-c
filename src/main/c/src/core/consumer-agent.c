@@ -54,10 +54,10 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
         return;
     }
 
-    int i;
-    int cnt = rand()%100000;  // 随机睡眠防止集中并发
-    //usleep(rand()%1000);  // 分散链接，防止集中并发
-    for (i = 0;i < cnt;i++);
+    //int i;
+    //int cnt = rand()%100000;  // 随机睡眠防止集中并发
+    usleep(rand()%3000);  // 分散链接，防止集中并发
+    //for (i = 0;i < cnt;i++);
 
     int param_start = get_parameter_start_index(content);
     if (acm_request(p_optimal_agent_channel, &content[param_start], content_size - param_start, acm_listening, p_channel) < 0) {
