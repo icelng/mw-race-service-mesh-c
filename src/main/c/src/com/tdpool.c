@@ -268,7 +268,7 @@ int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg, void *mmpl),
     /*因为没有加锁，所以被判断成满的那一瞬间，队列的节点被消费了*/
 
     /*请求队列节点入队,需要抢写者锁*/
-    //pthread_spin_lock(&pts->call_queue_write_spinlock);
+    pthread_spin_lock(&pts->call_queue_write_spinlock);
     //pthread_mutex_lock(&pts->call_queue_write_lock);
     if(pts->call_queue_head == pts->call_queue_tail){  // 查看请求队列是否已满
         pthread_spin_unlock(&pts->call_queue_write_spinlock);
