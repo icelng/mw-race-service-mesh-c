@@ -35,10 +35,10 @@ typedef struct tdpl_s{
     //sem_t avali_queue_write_mutex;
     //用信号量表示当前调用请求等待数, 因为该队列只有master线程读，所以不用加读锁
     sem_t call_wait_n;   
-    //sem_t call_queue_write_mutex;  // 调用队列写着锁
+   // sem_t call_queue_write_mutex;  // 调用队列写着锁
     //sem_t call_queue_read_mutex;  /// 调用队列读者锁
-    //pthread_spinlock_t call_queue_write_spinlock;  // 请求队列写者锁
-    //pthread_spinlock_t call_queue_read_spinlock;  // 请求队列读者锁
+    pthread_spinlock_t call_queue_write_spinlock;  // 请求队列写者锁
+    pthread_spinlock_t call_queue_read_spinlock;  // 请求队列读者锁
     pthread_mutex_t call_queue_write_lock;
     pthread_mutex_t call_queue_read_lock;
 }*tdpl;

@@ -197,7 +197,7 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     //sem_init(&p_new_tdpl_s->avali_queue_write_mutex, 0, 1);
     //sem_init(&p_new_tdpl_s->call_queue_read_mutex, 0, 1);
     //pthread_spin_init(&p_new_tdpl_s->call_queue_read_spinlock, PTHREAD_PROCESS_PRIVATE);
-    //pthread_spin_init(&p_new_tdpl_s->call_queue_write_spinlock, PTHREAD_PROCESS_PRIVATE);
+    pthread_spin_init(&p_new_tdpl_s->call_queue_write_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_mutex_init(&p_new_tdpl_s->call_queue_read_lock, NULL);
     pthread_mutex_init(&p_new_tdpl_s->call_queue_write_lock, NULL);
     
@@ -267,19 +267,19 @@ int tdpl_call_func(struct tdpl_s *pts, void (*call_func)(void *arg, void *mmpl),
 
     /*因为没有加锁，所以被判断成满的那一瞬间，队列的节点被消费了*/
 
-    /*请求队列节点入队,需要抢读者锁*/
+    /*请求队列节点入队,需要抢写者锁*/
     //pthread_spin_lock(&pts->call_queue_write_spinlock);
-    pthread_mutex_lock(&pts->call_queue_write_lock);
+    //pthread_mutex_lock(&pts->call_queue_write_lock);
     if(pts->call_queue_head == pts->call_queue_tail){  // 查看请求队列是否已满
-        //pthread_spin_unlock(&pts->call_queue_write_spinlock);
-        pthread_mutex_unlock(&pts->call_queue_write_lock);
+        pthread_spin_unlock(&pts->call_queue_write_spinlock);
+        //pthread_mutex_unlock(&pts->call_queue_write_lock);
         return -2;  // 如果满则放弃请求
     }
     p_call_node = &pts->call_queue[(pts->call_queue_tail++)%pts->call_queue_period];
     p_call_node->call_func = call_func;
     p_call_node->arg = arg;
-    pthread_mutex_unlock(&pts->call_queue_write_lock);
-    //pthread_spin_unlock(&pts->call_queue_write_spinlock);
+    //pthread_mutex_unlock(&pts->call_queue_write_lock);
+    pthread_spin_unlock(&pts->call_queue_write_spinlock);
     sem_post(&pts->call_wait_n);  // 告知有调用请求
 
     return 1;
