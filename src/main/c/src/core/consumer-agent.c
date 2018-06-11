@@ -6,6 +6,7 @@
 #include "stdio.h"
 #include "unistd.h"
 #include "service-discovery.h"
+#include "stdlib.h"
 
 int get_parameter_start_index(char *str);
 int hash_code(char *str);
@@ -32,30 +33,37 @@ void acm_listening(void *arg, char *data, int data_size){
 void test_response(void *arg, void *mmpl) {
     struct hs_channel *p_hs_channel = arg;
 
+    int i;
+    int cnt = rand()%100000;  // 随机睡眠防止集中并发
+    for (i = 0;i < cnt;i++);
+
     usleep(50000);
-    hs_response_ok(p_hs_channel, "failed", strlen("failed"));
+    hs_response_ok(p_hs_channel, "OK", strlen("OK"));
 }
 
 
 void content_handler(struct hs_channel *p_channel, int content_size, char *content){
-    //struct acm_channel *p_optimal_agent_channel;
-    //char service_name[128];
+    struct acm_channel *p_optimal_agent_channel;
+    char service_name[128];
 
-    //get_service_name(content, service_name);
-    //p_optimal_agent_channel = sd_get_optimal_endpoint(gp_sd_handle, service_name); 
-    //if (p_optimal_agent_channel == NULL) {
-    //    log_err("Failed to get optimal provider-agent!");
-    //    hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
-    //    return;
-    //}
-    //int param_start = get_parameter_start_index(content);
-    //if (acm_request(p_optimal_agent_channel, &content[param_start], content_size - param_start, acm_listening, p_channel) < 0) {
-    //    log_err("Failed to call acm_request!");
-    //    hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
-    //    return;
-    //}
+    get_service_name(content, service_name);
+    p_optimal_agent_channel = sd_get_optimal_endpoint(gp_sd_handle, service_name); 
+    if (p_optimal_agent_channel == NULL) {
+        log_err("Failed to get optimal provider-agent!");
+        hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
+        return;
+    }
+
+    usleep(rand()%1000);  // 分散链接，防止集中并发
+
+    int param_start = get_parameter_start_index(content);
+    if (acm_request(p_optimal_agent_channel, &content[param_start], content_size - param_start, acm_listening, p_channel) < 0) {
+        log_err("Failed to call acm_request!");
+        hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
+        return;
+    }
     
-    tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
+    //tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
 
     //hs_url_decode(content);
     //param_start = get_parameter_start_index(content);
@@ -76,6 +84,8 @@ void cagent_start(int argc, char *argv[]){
     acm_opt.worker_thread_num = 8;
     acm_opt.max_hold_req_num = 51200;
     acm_opt.max_write_queue_len = 51200;
+
+    srand(time(NULL));
 
     /*启动测试工作线程*/
     int i;
@@ -98,7 +108,7 @@ void cagent_start(int argc, char *argv[]){
     hs_bt.buffer_size = 2048;  // channel的buffer大小为2k,用于读写request reponse
     hs_bt.max_connection = 512;  // 最大连接等待数
     hs_bt.server_port = 20000;  // 端口
-    hs_bt.worker_thread_num = 1;  // 工作线程数
+    hs_bt.worker_thread_num = 512;  // 工作线程数
     hs_bt.io_thread_num = 16;  // io线程数
     hs_bt.event_loop_num = 1;  // 一个事件循环
     hs_bt.content_handler = content_handler;  // content处理函数

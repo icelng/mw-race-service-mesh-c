@@ -493,7 +493,7 @@ void hs_close_channel_thread(void *arg){
  * 参数: void *arg, 对应hs_channel的指针
  * 返回值: 
  */
-void hs_content_handler_thread(void *arg){
+void hs_content_handler_thread(void *arg, void *mmpl){
     struct hs_channel *p_channel = arg;
     struct hs_handle *p_hs_handle = p_channel->p_hs_handle;
 
@@ -524,6 +524,10 @@ void hs_decoder(struct hs_channel *p_channel){
                 /*回车*/
                 buffer[p_channel->decode_index] = 0;
                 log_debug("Request line:%s", buffer);
+                buffer[3] = 0;
+                if (!strcmp("GET", buffer)) {
+                    hs_content_handler_thread(p_channel, NULL);  // Get 方法直接调用
+                }
                 continue;
             }
             if (parse_char == 0x0A) {
@@ -592,11 +596,11 @@ void hs_decoder(struct hs_channel *p_channel){
     if (p_channel->is_read_done == 1) {
         /*调用使用woker线程池执行content处理函数*/
         if (p_hs_handle->content_handler != NULL) {
-            //if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_content_handler_thread, p_channel) < 0) {
-            //    log_err("Failed to start io thread for content handler:%s", strerror(errno));
-            //    return;
-            //}
-            hs_content_handler_thread(p_channel);  // 直接调用
+            if (tdpl_call_func(p_hs_handle->tdpl_worker, hs_content_handler_thread, p_channel) < 0) {
+                log_err("Failed to start io thread for content handler:%s", strerror(errno));
+                return;
+            }
+            //hs_content_handler_thread(p_channel);  // 直接调用
         } else {
             log_warning("The content handler is not setted!");
         }
