@@ -641,7 +641,7 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     p_channel->write_size = write_index + body_size;
 
     /*调用io线程池里的线程来进行读写*/
-    hs_io_do_write(p_channel);
+    //hs_io_do_write(p_channel);
 
     /*使用io线程池里的线程来进行写操作*/
     //if (tdpl_call_func(p_channel->p_hs_handle->tdpl_io, hs_io_write, p_channel) < 0) {
@@ -649,9 +649,9 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     //    return -2;
     //}
     /*不跟event-lopp抢线程锁,IO线程皆由event-loop调用*/
-    //if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
-    //    log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
-    //}
+    if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
+        log_err("Failed to add sockfd to epoll for EPOLLOUT when continue writing:%s",strerror(errno));
+    }
     
     return 1;
 }

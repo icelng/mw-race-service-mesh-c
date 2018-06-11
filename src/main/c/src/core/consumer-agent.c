@@ -13,7 +13,8 @@ void get_service_name(char *src, char *dst_buf);
 
 struct acm_channel *gp_acm_channel;
 struct sd_handle *gp_sd_handle;
-tdpl g_tdpl_worker;
+tdpl g_tdpl_worker[8];
+unsigned long call_cnt = 0;
 
 void acm_listening(void *arg, char *data, int data_size){
     struct hs_channel *p_channel = arg;
@@ -54,7 +55,7 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
     //    return;
     //}
     
-    tdpl_call_func(g_tdpl_worker, test_response, p_channel);
+    tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
 
     //hs_url_decode(content);
     //param_start = get_parameter_start_index(content);
@@ -77,7 +78,10 @@ void cagent_start(int argc, char *argv[]){
     acm_opt.max_write_queue_len = 51200;
 
     /*启动测试工作线程*/
-    g_tdpl_worker = tdpl_create(512, 512000);
+    int i;
+    for (i = 0;i < 8;i++) {
+        g_tdpl_worker[i] = tdpl_create(64, 512);
+    }
 
     /*启动agent-client-manager*/
     p_acm_handle = acm_start(&acm_opt);
