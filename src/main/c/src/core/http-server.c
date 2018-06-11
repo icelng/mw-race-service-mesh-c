@@ -624,9 +624,9 @@ int hs_response_ok(struct hs_channel *p_channel, char *response_body, int body_s
     memcpy(&buffer[write_index], HTTP_SERVER_RESPONSE_OK, response_line_length);
     write_index += response_line_length;
 
-    head_length = strlen(HTTP_SERVER_CONTENT_TYPE);
-    memcpy(&buffer[write_index], HTTP_SERVER_CONTENT_TYPE, head_length);
-    write_index += head_length;
+    //head_length = strlen(HTTP_SERVER_CONTENT_TYPE);
+    //memcpy(&buffer[write_index], HTTP_SERVER_CONTENT_TYPE, head_length);
+    //write_index += head_length;
 
     sprintf(head, "content-length:%d\r\n\r\n", body_size);
     head_length = strlen(head);

@@ -33,11 +33,11 @@ void acm_listening(void *arg, char *data, int data_size){
 void test_response(void *arg, void *mmpl) {
     struct hs_channel *p_hs_channel = arg;
 
-    int i;
-    int cnt = rand()%60000;  // 防止集中并发
-    for (i = 0;i < cnt;i++);
+    //int i;
+    //int cnt = rand()%60000;  // 防止集中并发
+    //for (i = 0;i < cnt;i++);
 
-    usleep(50000);
+    usleep(50000 + rand() % 3000);
     hs_response_ok(p_hs_channel, "OK", strlen("OK"));
 }
 
