@@ -56,7 +56,7 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
 
     //int i;
     //int cnt = rand()%100000;  // 随机睡眠防止集中并发
-    usleep(rand()%10000);  // 分散链接，防止集中并发
+    usleep(rand()%30000);  // 分散链接，防止集中并发
     //for (i = 0;i < cnt;i++);
 
     int param_start = get_parameter_start_index(content);
