@@ -12,6 +12,7 @@ import com.yiran.dubbo.model.RpcInvocation;
 import com.yiran.dubbo.model.RpcResponse;
 import com.yiran.registry.ServiceInfo;
 import io.netty.channel.Channel;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,14 +73,19 @@ public class ServiceSwitcher {
         //formDataParser.release();
 
         RpcInvocation invocation = new RpcInvocation();
-        invocation.setMethodName(formData.get("method"));
-        invocation.setAttachment("path", formData.get("interface"));
+        //invocation.setMethodName(formData.get("method"));
+        //invocation.setAttachment("path", formData.get("interface"));
+        invocation.setMethodName("hash");
+        invocation.setAttachment("path", "com.alibaba.dubbo.performance.demo.provider.IHelloService");
         /*先写死一个参数*/
-        String parameterTypeName = formData.get("parameterTypesString");
-        invocation.setParameterTypes(parameterTypeName);    // Dubbo内部用"Ljava/lang/String"来表示参数类型是String
+        //String parameterTypeName = formData.get("parameterTypesString");
+        //invocation.setParameterTypes(parameterTypeName);    // Dubbo内部用"Ljava/lang/String"来表示参数类型是String
+        invocation.setParameterTypes("Ljava/lang/String;");    // Dubbo内部用"Ljava/lang/String"来表示参数类型是String
 
         /*转换参数，先固定成一个，并且是String类型的*/
-        String parameter = formData.get("parameter");
+        String parameter = agentServiceRequest.getData().toString(CharsetUtil.UTF_8);
+        agentServiceRequest.getData().release();
+        //String parameter = formData.get("parameter");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
         JsonUtils.writeObject(parameter, writer);
