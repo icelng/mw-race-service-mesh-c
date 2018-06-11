@@ -33,40 +33,40 @@ void acm_listening(void *arg, char *data, int data_size){
 void test_response(void *arg, void *mmpl) {
     struct hs_channel *p_hs_channel = arg;
 
-    int i;
-    int cnt = rand()%100000;  // 随机睡眠防止集中并发
-    for (i = 0;i < cnt;i++);
+    //int i;
+    int cnt = rand()%3000;  // 随机睡眠防止集中并发
+    //for (i = 0;i < cnt;i++);
 
-    usleep(50000);
+    usleep(50000 + cnt);
     hs_response_ok(p_hs_channel, "OK", strlen("OK"));
 }
 
 
 void content_handler(struct hs_channel *p_channel, int content_size, char *content){
-    struct acm_channel *p_optimal_agent_channel;
-    char service_name[128];
+    //struct acm_channel *p_optimal_agent_channel;
+    //char service_name[128];
 
-    get_service_name(content, service_name);
-    p_optimal_agent_channel = sd_get_optimal_endpoint(gp_sd_handle, service_name); 
-    if (p_optimal_agent_channel == NULL) {
-        log_err("Failed to get optimal provider-agent!");
-        hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
-        return;
-    }
+    //get_service_name(content, service_name);
+    //p_optimal_agent_channel = sd_get_optimal_endpoint(gp_sd_handle, service_name); 
+    //if (p_optimal_agent_channel == NULL) {
+    //    log_err("Failed to get optimal provider-agent!");
+    //    hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
+    //    return;
+    //}
 
-    //int i;
-    //int cnt = rand()%100000;  // 随机睡眠防止集中并发
-    usleep(rand()%30000);  // 分散链接，防止集中并发
-    //for (i = 0;i < cnt;i++);
+    ////int i;
+    ////int cnt = rand()%100000;  // 随机睡眠防止集中并发
+    //usleep(rand()%30000);  // 分散链接，防止集中并发
+    ////for (i = 0;i < cnt;i++);
 
-    int param_start = get_parameter_start_index(content);
-    if (acm_request(p_optimal_agent_channel, &content[param_start], content_size - param_start, acm_listening, p_channel) < 0) {
-        log_err("Failed to call acm_request!");
-        hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
-        return;
-    }
+    //int param_start = get_parameter_start_index(content);
+    //if (acm_request(p_optimal_agent_channel, &content[param_start], content_size - param_start, acm_listening, p_channel) < 0) {
+    //    log_err("Failed to call acm_request!");
+    //    hs_response_ok(p_channel, "Failed!", strlen("Failed!"));
+    //    return;
+    //}
     
-    //tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
+    tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
 
     //hs_url_decode(content);
     //param_start = get_parameter_start_index(content);
