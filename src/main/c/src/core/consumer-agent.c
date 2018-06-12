@@ -70,6 +70,7 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
     //test_response(p_channel, NULL);
     
     int i, cnt = 20000;
+    usleep(50000);
     for (i = 0;i < cnt;i++);
 
     hs_response_ok(p_channel, "OK", strlen("OK"));
