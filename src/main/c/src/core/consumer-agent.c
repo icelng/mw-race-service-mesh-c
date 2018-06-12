@@ -66,9 +66,13 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
     //    return;
     //}
     
-    tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
+    //tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
     //test_response(p_channel, NULL);
+    
+    int i, cnt = 20000;
+    for (i = 0;i < cnt;i++);
 
+    hs_response_ok(p_channel, "OK", strlen("OK"));
     //hs_url_decode(content);
     //param_start = get_parameter_start_index(content);
     //sprintf(response_body, "%d", hash_code(&content[param_start]));
