@@ -37,7 +37,7 @@ void test_response(void *arg, void *mmpl) {
     //int cnt = rand()%60000;  // 防止集中并发
     //for (i = 0;i < cnt;i++);
 
-    usleep(50000 + rand() % 3000);
+    usleep(50000);
     hs_response_ok(p_hs_channel, "OK", strlen("OK"));
 }
 
@@ -66,8 +66,8 @@ void content_handler(struct hs_channel *p_channel, int content_size, char *conte
     //    return;
     //}
     
-    //tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
-    test_response(p_channel, NULL);
+    tdpl_call_func(g_tdpl_worker[__sync_fetch_and_add(&call_cnt, 1) % 8], test_response, p_channel);
+    //test_response(p_channel, NULL);
 
     //hs_url_decode(content);
     //param_start = get_parameter_start_index(content);
@@ -93,9 +93,9 @@ void cagent_start(int argc, char *argv[]){
 
     /*启动测试工作线程*/
     int i;
-    //for (i = 0;i < 8;i++) {
-    //    g_tdpl_worker[i] = tdpl_create(64, 512);
-    //}
+    for (i = 0;i < 8;i++) {
+        g_tdpl_worker[i] = tdpl_create(64, 512);
+    }
 
     /*启动agent-client-manager*/
     p_acm_handle = acm_start(&acm_opt);
@@ -112,8 +112,8 @@ void cagent_start(int argc, char *argv[]){
     hs_bt.buffer_size = 2048;  // channel的buffer大小为2k,用于读写request reponse
     hs_bt.max_connection = 512;  // 最大连接等待数
     hs_bt.server_port = 20000;  // 端口
-    hs_bt.worker_thread_num = 512;  // 工作线程数
-    hs_bt.io_thread_num = 16;  // io线程数
+    hs_bt.worker_thread_num = 1;  // 工作线程数
+    hs_bt.io_thread_num = 8 + 1;  // io线程数
     hs_bt.event_loop_num = 1;  // 一个事件循环
     hs_bt.content_handler = content_handler;  // content处理函数
 
