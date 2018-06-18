@@ -31,7 +31,7 @@ elif [[ "$1" == "provider-medium" ]]; then
        -Xms1536M \
        -Xmx1536M \
        -Dtype=provider \
-       -Dload.level=12 \
+       -Dload.level=8 \
        -Dio.netty.leakDetection.level=disabled \
        -Dserver.port0=30011\
        -Dserver.port1=30012\
