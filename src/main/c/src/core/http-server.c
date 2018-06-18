@@ -150,6 +150,29 @@ int hs_epoll_mod(struct hs_channel *p_channel, unsigned int events){
     return 1;
 }
 
+/* 函数名: void hs_init_channel(struct hs_channel *p_channel) 
+ * 功能: 
+ * 参数: struct hs_channel *p_channel,
+ * 返回值: 
+ */
+void hs_init_channel(struct hs_channel *p_channel){
+    p_channel->decode_index = 0;
+    p_channel->is_line = 1;
+    p_channel->is_head = 1;
+    p_channel->is_body = 1;
+    p_channel->is_read_done = 0;
+    p_channel->is_key = 1;
+    p_channel->is_content_length = 0;
+    p_channel->body_size = 0;
+    p_channel->key_start = -1;
+    p_channel->value_start = -1;
+    p_channel->processing_index = -1;  // 将要处理到的字节
+    p_channel->write_index = 0;
+    p_channel->read_index = 0;
+    p_channel->processing_index_now = -1;  // 当前将要处理到的字节
+    p_channel->is_processing = 0;
+}
+
 
 /* 函数名: int hs_new_connection(struct hs_handle* p_hs_h, int client_sockfd) 
  * 功能: 新建链接，进行各种初始化
@@ -186,21 +209,7 @@ void hs_new_connection(void *arg, void* local_mmpl){
     p_channel->epoll_fd = p_hs_handle->epoll_fd[(epoll_i++) % p_hs_handle->event_loop_num];
     p_channel->p_hs_handle = p_hs_handle;
     p_channel->socket = client_sockfd;
-    p_channel->decode_index = 0;
-    p_channel->is_line = 1;
-    p_channel->is_head = 1;
-    p_channel->is_body = 1;
-    p_channel->is_read_done = 0;
-    p_channel->is_key = 1;
-    p_channel->is_content_length = 0;
-    p_channel->body_size = 0;
-    p_channel->key_start = -1;
-    p_channel->value_start = -1;
-    p_channel->processing_index = -1;  // 将要处理到的字节
-    p_channel->write_index = 0;
-    p_channel->read_index = 0;
-    p_channel->processing_index_now = -1;  // 当前将要处理到的字节
-    p_channel->is_processing = 0;
+    hs_init_channel(p_channel);
     p_channel->buffer_size = p_hs_handle->buffer_size;
     p_channel->buffer = (char *)p_channel + sizeof(struct hs_channel);
     sem_init(&(p_channel->processing_mutex), 0, 1);
@@ -343,9 +352,13 @@ void hs_io_write(void *arg, void* local_mmpl){
     int hava_write_size;
 
     if (p_channel->write_index >= p_channel->write_size) {
-        /*写完毕,关闭链接，释放channel*/
-        close(p_channel->socket);
-        mmpl_rlsmem(thread_mmpl, p_channel);
+        /*写完毕,初始化channel*/
+        hs_init_channel(p_channel);
+        if (hs_epoll_mod(p_channel, EPOLLIN | EPOLLRDHUP) < 0) {
+            log_err("Failed to add sockfd to epoll for EPOLLIN when finish writing:%s",strerror(errno));
+            close(p_channel->socket);
+            mmpl_rlsmem(thread_mmpl, p_channel);
+        }
     }
 
     if ((hava_write_size = send(p_channel->socket,
@@ -360,10 +373,13 @@ void hs_io_write(void *arg, void* local_mmpl){
     p_channel->write_index += hava_write_size;
 
     if (p_channel->write_index >= p_channel->write_size) {
-        /*写完毕,关闭链接，释放channel*/
-        close(p_channel->socket);
-        //hs_close_channel(p_channel);
-        mmpl_rlsmem(thread_mmpl, p_channel);
+        /*写完毕,初始化channel,注册读事件*/
+        hs_init_channel(p_channel);
+        if (hs_epoll_mod(p_channel, EPOLLIN | EPOLLRDHUP) < 0) {
+            log_err("Failed to add sockfd to epoll for EPOLLIN when finish writing:%s",strerror(errno));
+            close(p_channel->socket);
+            mmpl_rlsmem(thread_mmpl, p_channel);
+        }
     } else {
         /*继续监听写事件*/
         if (hs_epoll_mod(p_channel, EPOLLOUT | EPOLLRDHUP) < 0) {
