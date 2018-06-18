@@ -68,8 +68,10 @@ public class ServiceSwitcher {
         HalfHardRequest request = new HalfHardRequest();
         request.setData(agentServiceRequest.getChannel().alloc().directBuffer(agentServiceRequest.getData().readableBytes()));
 
-        FormDataParser formDataParser = new FormDataParser(request.getData(), request.getData().readableBytes());
+        FormDataParser formDataParser = new FormDataParser(request.getData(), agentServiceRequest.getData().readableBytes());
         Map<String, ByteBuf> argumentMap = formDataParser.parse(agentServiceRequest.getData());
+        agentServiceRequest.getData().release();
+
         request.setServiceName(argumentMap.get("interface"));
         request.setMethod(argumentMap.get("method"));
         request.setParameterTypes(argumentMap.get("parameterTypesString"));
