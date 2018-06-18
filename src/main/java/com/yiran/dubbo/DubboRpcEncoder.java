@@ -77,7 +77,7 @@ public class DubboRpcEncoder extends MessageToByteEncoder {
         len += req.getMethod().readableBytes();
         len += req.getParameterTypes().readableBytes();
         len += req.getParameter().readableBytes();
-        len += (dubboVersionLen + serviceVersionLen + attachmentExtraLen + 12);  // 12为双引号和换行
+        len += (dubboVersionLen + serviceVersionLen + attachmentExtraLen + 12 + interfaceName.readableBytes());  // 12为双引号和换行
 
         out.writeBytes(header);
         out.writeLong(reqId);
