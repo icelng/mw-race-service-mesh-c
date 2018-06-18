@@ -5,6 +5,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -12,6 +14,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 public class DubboRpcEncoder extends MessageToByteEncoder {
+    private static Logger logger = LoggerFactory.getLogger(DubboRpcEncoder.class);
+
     // header length.
     protected static final int HEADER_LENGTH = 16;
     // magic header.
@@ -87,6 +91,8 @@ public class DubboRpcEncoder extends MessageToByteEncoder {
         out.writeBytes(attachmentStart);
         out.writeBytes(interfaceName);
         out.writeBytes(attachmentEnd);
+
+        logger.info(out.toString(CharsetUtil.UTF_8));
 
         req.getData().release();
     }
