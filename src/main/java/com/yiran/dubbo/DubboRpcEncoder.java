@@ -1,12 +1,10 @@
 package com.yiran.dubbo;
 
-import com.yiran.dubbo.model.Bytes;
-import com.yiran.dubbo.model.JsonUtils;
-import com.yiran.dubbo.model.Request;
-import com.yiran.dubbo.model.RpcInvocation;
+import com.yiran.dubbo.model.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.util.CharsetUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -23,8 +21,84 @@ public class DubboRpcEncoder extends MessageToByteEncoder {
     protected static final byte FLAG_TWOWAY = (byte) 0x40;
     protected static final byte FLAG_EVENT = (byte) 0x20;
 
+    private byte[] header;
+    private byte[] dubboVersion;
+    private byte[] serviceVersion;
+    private byte[] attachmentStart;
+    private byte[] attachmentEnd;
+
+    private int dubboVersionLen;
+    private int serviceVersionLen;
+    private int attachmentExtraLen;
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        header = new byte[4];
+
+        // set magic number.
+        Bytes.short2bytes(MAGIC, header);
+
+        // set request and serialization flag.
+        header[2] = (byte) (FLAG_REQUEST | 6);
+
+        header[2] |= FLAG_TWOWAY;
+
+        dubboVersion = "\"2.6.0\"\n".getBytes(CharsetUtil.UTF_8);
+        serviceVersion = "\"0.0.0\"\n".getBytes(CharsetUtil.UTF_8);
+        attachmentStart = "{\"path\":\"".getBytes(CharsetUtil.UTF_8);
+        attachmentEnd = "\"}\n".getBytes(CharsetUtil.UTF_8);
+
+        dubboVersionLen = dubboVersion.length;
+        serviceVersionLen = serviceVersion.length;
+        attachmentExtraLen = attachmentStart.length + attachmentEnd.length;
+
+        super.handlerAdded(ctx);
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf buffer) throws Exception {
+        if (msg instanceof Request) {
+            softEncode(ctx, msg, buffer);
+        } else if (msg instanceof HalfHardRequest) {
+            halfHardEncode(ctx, (HalfHardRequest) msg, buffer);
+        }
+    }
+
+    public void halfHardEncode(ChannelHandlerContext ctx, HalfHardRequest req, ByteBuf out) {
+        long reqId = req.getRequestId();
+        ByteBuf interfaceName = req.getServiceName().slice();
+
+        int len = 0;
+        len += req.getServiceName().readableBytes();
+        len += req.getMethod().readableBytes();
+        len += req.getParameterTypes().readableBytes();
+        len += req.getParameter().readableBytes();
+        len += (dubboVersionLen + serviceVersionLen + attachmentExtraLen + 12);  // 12为双引号和换行
+
+        out.writeBytes(header);
+        out.writeLong(reqId);
+        out.writeInt(len);
+        out.writeBytes(dubboVersion);
+        writeJson(req.getServiceName(), out);
+        out.writeBytes(serviceVersion);
+        writeJson(req.getMethod(), out);
+        writeJson(req.getParameterTypes(), out);
+        writeJson(req.getParameter(), out);
+        out.writeBytes(attachmentStart);
+        out.writeBytes(interfaceName);
+        out.writeBytes(attachmentEnd);
+
+        req.getData().release();
+    }
+
+    private void writeJson(ByteBuf data, ByteBuf out) {
+        out.writeByte('\"');
+        out.writeBytes(data);
+        out.writeByte('\"');
+        out.writeByte('\n');
+    }
+
+    public void softEncode(ChannelHandlerContext ctx, Object msg, ByteBuf buffer) throws Exception {
         Request req = (Request)msg;
 
         // header.
@@ -56,6 +130,7 @@ public class DubboRpcEncoder extends MessageToByteEncoder {
         buffer.writeBytes(header); // write header.
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH + len);
         req.release();
+
     }
 
     public void encodeRequestData(OutputStream out, Object data) throws Exception {

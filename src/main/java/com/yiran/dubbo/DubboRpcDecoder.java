@@ -40,7 +40,7 @@ public class DubboRpcDecoder extends ByteToMessageDecoder {
             return;
         }
         RpcResponse response = new RpcResponse();
-        response.setRequestId(String.valueOf(requestId));
+        response.setRequestId(requestId);
         byte[] data = new byte[dataLength];
         byteBuf.readBytes(data, 0, dataLength);
         response.setBytes(data);

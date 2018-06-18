@@ -31,32 +31,11 @@ public class AgentApp {
         logger.info("MaxMemory:{}", Runtime.getRuntime().maxMemory());
         logger.info("TotalMemory:{}", Runtime.getRuntime().totalMemory());
 
-        /*监听内存使用*/
-        //Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-        //    logger.info("<----------------------monitor------------------------>");
-        //    logger.info("----------------->Free memory:{}", Runtime.getRuntime().freeMemory());
-        //    logger.info("----------------->Max memory:{}", Runtime.getRuntime().maxMemory());
-        //    logger.info("----------------->Total memory:{}", Runtime.getRuntime().totalMemory());
-        //    logger.info("----------------->Cpu usage:{}", performanceMonitor.getCpuUsage());
-        //    logger.info("----------------->Ctxt per second:{}", performanceMonitor.getCtxtPerSecond());
-//      //      logger.info("----------------->gc:\n{}", performanceMonitor.jstatGc());
-        //}, 0, 2, TimeUnit.SECONDS);
-        /*provider-agent不需要启动web服务器*/
-        //new ProviderAgentBootstrap().boot();
 
         /*先与Dubbo进行连接*/
         DubboConnectManager dubboConnectManager = new DubboConnectManager(1);  // 4条链接
         logger.info("Connecting to Dubbo..");
         dubboConnectManager.connect();
-        //Channel dubboChannel = null;
-        //while (dubboChannel == null) {
-        //    try {
-        //        dubboChannel = dubboConnectManager.getChannel();
-        //    } catch (Exception e) {
-        //        logger.error(e.getMessage());
-        //        Thread.sleep(500);
-        //    }
-        //}
         /*往服务交换机注册支持的通道*/
         ServiceSwitcher.setRpcClientChannel(dubboConnectManager.getChannel());
 

@@ -5,7 +5,6 @@ import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.HttpConstants;
 import io.netty.util.ByteProcessor;
 import io.netty.util.Recycler;
-import io.netty.util.internal.AppendableCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FormDataParser implements ByteProcessor {
-    private static final Recycler<FormDataParser> RECYCLER = new Recycler<FormDataParser>() {
-        @Override
-        protected FormDataParser newObject(Handle<FormDataParser> handle) {
-            return new FormDataParser(handle);
-        }
-    };
 
     private static Logger logger = LoggerFactory.getLogger(FormDataParser.class);
     private static final byte CHAR_AND = 38;  // &符号
     private static final byte CHAR_EQUAL = 61;  // =号
 
+    private ByteBufAllocator alloc;
     private boolean nextIsValue = false;
     private int size;
     private ByteBuf seq;
@@ -38,25 +32,18 @@ public class FormDataParser implements ByteProcessor {
     private byte c1;
     private byte c0;
 
-    public FormDataParser(Recycler.Handle<FormDataParser> handle){
-        this.recyclerHandle = handle;
-        this.maxLength = 2048;
-        this.seq = Unpooled.directBuffer(2048);
-    }
 
-    public FormDataParser(ByteBuf seq) {
+    public FormDataParser(ByteBuf seq, int maxLength, ByteBufAllocator alloc) {
         this.seq = seq;
-        this.maxLength = 2048;
+        this.maxLength = maxLength;
+        this.alloc = alloc;
     }
 
-    public void release(){
-        this.seq.clear();
-        recyclerHandle.recycle(this);
+    public FormDataParser(ByteBuf seq, int maxLength) {
+        this.seq = seq;
+        this.maxLength = maxLength;
     }
 
-    public static FormDataParser get(){
-        return RECYCLER.get();
-    }
 
     public String parseInterface(ByteBuf buffer) throws UnsupportedEncodingException {
 
@@ -95,38 +82,41 @@ public class FormDataParser implements ByteProcessor {
 
     }
 
-    public Map<String, String> parse(ByteBuf buffer) throws UnsupportedEncodingException {
-        Map<String, String> parameterMap = new HashMap<>();
+    public Map<String, ByteBuf> parse(ByteBuf buffer) throws UnsupportedEncodingException {
+        Map<String, ByteBuf> parameterMap = new HashMap<>();
 
         int oldReaderIndex = buffer.readerIndex();
         int k = 0;
         this.nextIsValue = false;
         size = 0;
         String key = null;
-        String value = null;
+        ByteBuf value = null;
+        seq.clear();
         while(true){
-            seq.clear();
             isUrlDec = false;
+            seq.readerIndex(seq.writerIndex());
             int i = buffer.forEachByte(this);
             k++;
             if (k % 2 == 1) {
                 /*key*/
-                key = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
-                //key = seq.toString(Charset.forName("utf-8"));
+                //key = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                key = seq.toString(Charset.forName("utf-8"));
                 if (key == null) {
                     logger.error("Failed to parse key!");
                 }
             } else if (k % 2 == 0) {
                 /*value*/
-                value = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
+                //value = URLDecoder.decode(seq.toString(Charset.forName("utf-8")), "utf-8");
                 //value = seq.toString(Charset.forName("utf-8"));
-                if (value == null && this.nextIsValue) {
-                    parameterMap.put(key, "");
-                    //logger.info("key:{} value:{}", key, parameterMap.get(key));
-                } else {
-                    parameterMap.put(key, value);
-                    //logger.info("key:{} value:{}", key, parameterMap.get(key));
-                }
+                value = seq.slice();
+                parameterMap.put(key, value);
+                //if (value == null && this.nextIsValue) {
+                //    parameterMap.put(key, null);
+                //    //logger.info("key:{} value:{}", key, parameterMap.get(key));
+                //} else {
+                //    parameterMap.put(key, value);
+                //    //logger.info("key:{} value:{}", key, parameterMap.get(key));
+                //}
             }
             if (i == -1) {
                 buffer.readerIndex(oldReaderIndex);  // 恢复buffer
@@ -157,26 +147,26 @@ public class FormDataParser implements ByteProcessor {
             throw newException(maxLength);
         }
 
-        //if (value == '%') {
-        //    isUrlDec = true;
-        //    isC0 = true;
-        //    isC1 = true;
-        //    return true;
-        //}
+        if (value == '%') {
+            isUrlDec = true;
+            isC0 = true;
+            isC1 = true;
+            return true;
+        }
 
-        //if (isUrlDec) {
-        //    if (isC1) {
-        //        c1 = value;
-        //        isC1 = false;
-        //        return true;
-        //    } else if (isC0) {
-        //        c0 = value;
-        //        isC0 = false;
-        //        seq.writeByte((byte) ((hex2dec(c1) * 16 + hex2dec(c0)) & 0xFF));
-        //        isUrlDec = false;
-        //        return true;
-        //    }
-        //}
+        if (isUrlDec) {
+            if (isC1) {
+                c1 = value;
+                isC1 = false;
+                return true;
+            } else if (isC0) {
+                c0 = value;
+                isC0 = false;
+                seq.writeByte((byte) ((hex2dec(c1) * 16 + hex2dec(c0)) & 0xFF));
+                isUrlDec = false;
+                return true;
+            }
+        }
 
         seq.writeByte(value);
         return true;

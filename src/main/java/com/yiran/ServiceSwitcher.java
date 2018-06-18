@@ -6,11 +6,9 @@ import com.yiran.agent.AgentServiceResponse;
 import com.yiran.agent.Bytes;
 import com.yiran.agent.web.FormDataParser;
 import com.yiran.dubbo.DubboConnectManager;
-import com.yiran.dubbo.model.JsonUtils;
-import com.yiran.dubbo.model.Request;
-import com.yiran.dubbo.model.RpcInvocation;
-import com.yiran.dubbo.model.RpcResponse;
+import com.yiran.dubbo.model.*;
 import com.yiran.registry.ServiceInfo;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
@@ -32,7 +30,7 @@ public class ServiceSwitcher {
     private static Channel dubboChannel;
     private static CountDownLatch rpcChannelReady = new CountDownLatch(1);
     /*使用可并发Hash表*/
-    private static ConcurrentHashMap<String, AgentServiceRequest> processingRequest = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, AgentServiceRequest> processingRequest = new ConcurrentHashMap<>();
 
     /*一个转换两个表,使用普通Hash表，但是要保证一次操作两个表*/
     /*service*/
@@ -65,39 +63,20 @@ public class ServiceSwitcher {
             return;
         }
 
-        Map<String, String> formData = agentServiceRequest.getFormDataMap();
         long requestId = agentServiceRequest.getRequestId();
-        //logger.info("Switch service for requestId:{}", requestId);
-        //FormDataParser formDataParser = FormDataParser.get();
-        //Map<String, String> formData = formDataParser.parse(agentServiceRequest.getData());
-        //formDataParser.release();
 
-        RpcInvocation invocation = new RpcInvocation();
-        //invocation.setMethodName(formData.get("method"));
-        //invocation.setAttachment("path", formData.get("interface"));
-        invocation.setMethodName("hash");
-        invocation.setAttachment("path", "com.alibaba.dubbo.performance.demo.provider.IHelloService");
-        /*先写死一个参数*/
-        //String parameterTypeName = formData.get("parameterTypesString");
-        //invocation.setParameterTypes(parameterTypeName);    // Dubbo内部用"Ljava/lang/String"来表示参数类型是String
-        invocation.setParameterTypes("Ljava/lang/String;");    // Dubbo内部用"Ljava/lang/String"来表示参数类型是String
+        HalfHardRequest request = new HalfHardRequest();
+        request.setData(agentServiceRequest.getChannel().alloc().directBuffer(agentServiceRequest.getData().readableBytes()));
 
-        /*转换参数，先固定成一个，并且是String类型的*/
-        String parameter = agentServiceRequest.getData().toString(CharsetUtil.UTF_8);
-        agentServiceRequest.getData().release();
-        //String parameter = formData.get("parameter");
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
-        JsonUtils.writeObject(parameter, writer);
-        invocation.setArguments(out.toByteArray());
+        FormDataParser formDataParser = new FormDataParser(request.getData(), request.getData().readableBytes());
+        Map<String, ByteBuf> argumentMap = formDataParser.parse(agentServiceRequest.getData());
+        request.setServiceName(argumentMap.get("interface"));
+        request.setMethod(argumentMap.get("method"));
+        request.setParameterTypes(argumentMap.get("parameterTypesString"));
+        request.setParameter(argumentMap.get("parameter"));
+        request.setRequestId(requestId);
 
-        Request request = Request.get();
-        request.setVersion("2.0.0");
-        request.setTwoWay(true);
-        request.setData(invocation);
-        request.setId(requestId);
-
-        processingRequest.put(String.valueOf(requestId), agentServiceRequest);
+        processingRequest.put(requestId, agentServiceRequest);
 
         //dubboConnectManager.getChannel().writeAndFlush(request);
         dubboChannel.writeAndFlush(request);
@@ -117,7 +96,7 @@ public class ServiceSwitcher {
             return;
         }
         //logger.info("Receive response(id:{}) from provider:{}", rpcResponse.getRequestId(), new String(rpcResponse.getBytes()));
-        processingRequest.remove(String.valueOf(rpcResponse.getRequestId()));
+        processingRequest.remove(rpcResponse.getRequestId());
 
         /*获取得到consumer-agent 与 provider-agent之间的Channel*/
         Channel agentChannel = agentServiceRequest.getChannel();

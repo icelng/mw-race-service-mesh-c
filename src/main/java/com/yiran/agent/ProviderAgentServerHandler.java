@@ -23,19 +23,13 @@ import java.util.concurrent.Executors;
  */
 public class ProviderAgentServerHandler extends SimpleChannelInboundHandler<AgentServiceRequest> {
     private static Logger logger = LoggerFactory.getLogger(ProviderAgentServerHandler.class);
-    private Executor executor = Executors.newFixedThreadPool(256);
 
-    private ByteBuf formDataTemp = UnpooledByteBufAllocator.DEFAULT.buffer(2048);
     //private AppendableCharSequence formDataTemp = new AppendableCharSequence(2048);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AgentServiceRequest agentServiceRequest) throws Exception {
 
         /*协议转换*/
-        //logger.info("reqId:{}", agentServiceRequest.getRequestId());
-        //FormDataParser formDataParser = new FormDataParser(formDataTemp);
-        //agentServiceRequest.setFormDataMap(formDataParser.parse(agentServiceRequest.getData()));
-        //formDataParser.release();
         agentServiceRequest.setChannel(ctx.channel());
         ServiceSwitcher.switchToDubbo(agentServiceRequest);
     }
