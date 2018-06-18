@@ -1,9 +1,11 @@
 package com.yiran.dubbo.model;
 
+import io.netty.buffer.ByteBuf;
+
 public class RpcResponse {
 
     private long requestId;
-    private byte[] bytes;
+    private ByteBuf retValue;
 
     public long getRequestId() {
         return requestId;
@@ -13,11 +15,11 @@ public class RpcResponse {
         this.requestId = requestId;
     }
 
-    public byte[] getBytes() {
-        return bytes;
+    public ByteBuf getRetValue() {
+        return retValue;
     }
 
-    public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
+    public void setRetValue(ByteBuf retValue) {
+        this.retValue = retValue;
     }
 }

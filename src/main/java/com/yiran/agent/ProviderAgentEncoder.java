@@ -15,9 +15,9 @@ public class ProviderAgentEncoder extends MessageToByteEncoder {
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         AgentServiceResponse agentServiceResponse = (AgentServiceResponse) msg;
-        byte[] data = agentServiceResponse.getReturnValue();
+        ByteBuf data = agentServiceResponse.getReturnValue();
         Bytes.long2bytes(agentServiceResponse.getRequestId(), header, 0);
-        Bytes.int2bytes(data.length, header, 8);
+        Bytes.int2bytes(data.readableBytes(), header, 8);
         out.writeBytes(header, 0, HEADER_LENGTH);
         out.writeBytes(data);
     }

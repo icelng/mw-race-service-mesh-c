@@ -1,19 +1,20 @@
 package com.yiran.agent;
 
+import io.netty.buffer.ByteBuf;
+
 public class AgentServiceResponse {
     private long requestId;
-    private byte[] returnValue;
+    private ByteBuf returnValue;
 
     public AgentServiceResponse(){
 
     }
 
-
-    public byte[] getReturnValue() {
+    public ByteBuf getReturnValue() {
         return returnValue;
     }
 
-    public void setReturnValue(byte[] returnValue) {
+    public void setReturnValue(ByteBuf returnValue) {
         this.returnValue = returnValue;
     }
 

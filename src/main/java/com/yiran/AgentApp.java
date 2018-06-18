@@ -35,7 +35,7 @@ public class AgentApp {
 
 
         /*先与Dubbo进行连接*/
-        EventLoopGroup workerGroup = new EpollEventLoopGroup(4);
+        EventLoopGroup workerGroup = new EpollEventLoopGroup(2);
         DubboConnectManager dubboConnectManager = new DubboConnectManager(1, workerGroup);  // 4条链接
         logger.info("Connecting to Dubbo..");
         dubboConnectManager.connect();

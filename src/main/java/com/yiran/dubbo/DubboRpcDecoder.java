@@ -41,9 +41,9 @@ public class DubboRpcDecoder extends ByteToMessageDecoder {
         }
         RpcResponse response = new RpcResponse();
         response.setRequestId(requestId);
-        byte[] data = new byte[dataLength];
-        byteBuf.readBytes(data, 0, dataLength);
-        response.setBytes(data);
+        ByteBuf retValue = channelHandlerContext.alloc().directBuffer(dataLength);
+        byteBuf.readBytes(retValue, dataLength);
+        response.setRetValue(retValue);
 
         list.add(response);
 

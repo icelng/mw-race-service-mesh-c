@@ -106,14 +106,8 @@ public class ServiceSwitcher {
         /*生成响应报文*/
         AgentServiceResponse agentServiceResponse = new AgentServiceResponse();
         agentServiceResponse.setRequestId(agentServiceRequest.getRequestId());
-        //agentServiceRequest.release();
 
-        /*设置返回值为整形，hashcode*/
-        //String returnStr = new String(rpcResponse.getBytes(), "utf-8");
-        //String intStr = returnStr.substring(2, returnStr.length() - 1);
-        //byte[] intBytes = new byte[4];
-        //Bytes.int2bytes(Integer.valueOf(intStr), intBytes, 0);
-        agentServiceResponse.setReturnValue(rpcResponse.getBytes());
+        agentServiceResponse.setReturnValue(rpcResponse.getRetValue());
 
         /*向客户端发送响应*/
         agentChannel.writeAndFlush(agentServiceResponse);
