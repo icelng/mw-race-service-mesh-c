@@ -118,7 +118,7 @@ public class FormDataParser implements ByteProcessor {
                 //    parameterMap.put(key, value);
                 //    //logger.info("key:{} value:{}", key, parameterMap.get(key));
                 //}
-                logger.info("key:{}  value:{}", key, value.toString(CharsetUtil.UTF_8));
+                //logger.info("key:{}  value:{}", key, value.toString(CharsetUtil.UTF_8));
             }
             if (i == -1) {
                 buffer.readerIndex(oldReaderIndex);  // 恢复buffer

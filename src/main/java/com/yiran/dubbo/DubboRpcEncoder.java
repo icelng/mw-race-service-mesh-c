@@ -92,8 +92,6 @@ public class DubboRpcEncoder extends MessageToByteEncoder {
         out.writeBytes(interfaceName);
         out.writeBytes(attachmentEnd);
 
-        logger.info(out.toString(CharsetUtil.UTF_8));
-
         req.getData().release();
     }
 
