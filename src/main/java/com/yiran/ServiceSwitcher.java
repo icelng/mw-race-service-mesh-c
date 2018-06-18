@@ -92,7 +92,7 @@ public class ServiceSwitcher {
     public static void responseFromDubbo(RpcResponse rpcResponse) throws UnsupportedEncodingException {
 
         /*获取到rpc请求相应的agent的请求*/
-        AgentServiceRequest agentServiceRequest = processingRequest.get(String.valueOf(rpcResponse.getRequestId()));
+        AgentServiceRequest agentServiceRequest = processingRequest.get(rpcResponse.getRequestId());
         if (agentServiceRequest == null){
             logger.warn("No rpcResponse for requestId:{}", rpcResponse.getRequestId());
             return;
