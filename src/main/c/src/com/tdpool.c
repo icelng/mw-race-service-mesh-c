@@ -190,7 +190,7 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
     p_new_tdpl_s->max_wait_n = max_wait_n;
 
     /*初始化各种信号量*/
-    sem_init(&p_new_tdpl_s->ready_n, 0, 0 - thread_num + 1);
+    sem_init(&p_new_tdpl_s->ready_n, 0, 0);
     //sem_init(&p_new_tdpl_s->avali_td_n, 0, thread_num);
     sem_init(&p_new_tdpl_s->call_wait_n, 0, 0);
     //sem_init(&p_new_tdpl_s->call_queue_write_mutex, 0, 1);
@@ -227,7 +227,11 @@ struct tdpl_s* tdpl_create(int thread_num,int max_wait_n){
             goto err4_ret;
         }
     }
-    sem_wait(&p_new_tdpl_s->ready_n);  // 等待工作线程建立完毕
+
+    for (i = 0;i < thread_num;i++) {
+        sem_wait(&p_new_tdpl_s->ready_n);  // 等待工作线程建立完毕
+    }
+
     return p_new_tdpl_s;
 
     /*下面是线程池的创建发生了错误之后需要处理的事情的代码*/
