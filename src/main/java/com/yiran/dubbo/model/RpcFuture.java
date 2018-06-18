@@ -29,7 +29,7 @@ public class RpcFuture implements Future<Object> {
          //boolean b = latch.await(100, TimeUnit.MICROSECONDS);
         latch.await();
         try {
-            return response.getBytes();
+            return response.getRetValue();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -39,7 +39,7 @@ public class RpcFuture implements Future<Object> {
     @Override
     public Object get(long timeout, TimeUnit unit) throws InterruptedException {
         boolean b = latch.await(timeout,unit);
-        return response.getBytes();
+        return response.getRetValue();
     }
 
     public void done(RpcResponse response){
