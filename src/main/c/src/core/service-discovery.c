@@ -102,7 +102,7 @@ struct sd_service_node* sd_add_and_init_service(struct sd_handle *p_handle, char
     p_service_node->p_next_req_endpoint = p_service_node->comsuming_list;
     p_service_node->lb_list_len = 0;
     p_service_node->next_select_ep = 0;
-    //pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
+    pthread_spin_init(&p_service_node->ep_link_spinlock, PTHREAD_PROCESS_PRIVATE);
     pthread_mutex_init(&p_service_node->ep_link_lock, NULL);
     pthread_rwlock_init(&p_service_node->lb_list_rwlock, NULL);
 
@@ -410,13 +410,38 @@ struct acm_channel* sd_get_optimal_endpoint(struct sd_handle *p_handle, char *se
     ////pthread_spin_unlock(&p_service_node->ep_link_spinlock);
     
     /*使用静态数组的负载均衡*/
-    pthread_rwlock_rdlock(&p_service_node->lb_list_rwlock);
-    p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
-    while(__sync_add_and_fetch(&p_endpoint->p_agent_channel->request_num, 1) >= 200){
-        __sync_sub_and_fetch(&p_endpoint->p_agent_channel->request_num, 1);
-        p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
+    //pthread_rwlock_rdlock(&p_service_node->lb_list_rwlock);
+    //p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
+    //while(__sync_add_and_fetch(&p_endpoint->p_agent_channel->request_num, 1) >= 200){
+    //    __sync_sub_and_fetch(&p_endpoint->p_agent_channel->request_num, 1);
+    //    p_endpoint = p_service_node->load_balance_list[__sync_fetch_and_add(&p_service_node->next_select_ep, 1) % p_service_node->lb_list_len];
+    //}
+    //pthread_rwlock_unlock(&p_service_node->lb_list_rwlock);
+
+    pthread_spin_lock(&p_service_node->ep_link_spinlock);
+
+    float min_ppl = 999999999;
+    float cur_ppl = 0;
+    int cur_req_num;
+    struct sd_endpoint *p_optimal_endpoint;
+
+    p_endpoint = p_service_node->comsuming_list->next;
+
+    while (p_endpoint != p_service_node->comsuming_list) {
+        cur_req_num = p_endpoint->p_agent_channel->request_num;
+        cur_ppl = (float)cur_req_num / (float)p_endpoint->load_level;
+        if (cur_ppl < min_ppl && cur_req_num < 200) {
+            min_ppl = cur_ppl;
+            p_optimal_endpoint = p_endpoint;
+        }
+
+        p_endpoint = p_endpoint->next;
     }
-    pthread_rwlock_unlock(&p_service_node->lb_list_rwlock);
+    __sync_add_and_fetch(&p_optimal_endpoint->p_agent_channel->request_num, 1);
+
+    pthread_spin_unlock(&p_service_node->ep_link_spinlock);
+
+    p_endpoint = p_optimal_endpoint;
 
     return p_endpoint->p_agent_channel;
 }

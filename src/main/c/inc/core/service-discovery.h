@@ -32,7 +32,7 @@ struct sd_service_node {
     int lb_list_len;
     unsigned long next_select_ep;
     struct sd_endpoint endpoint_list1_head, endpoint_list2_head;
-    //pthread_spinlock_t ep_link_spinlock;  // 节点链表自旋锁
+    pthread_spinlock_t ep_link_spinlock;  // 节点链表自旋锁
     pthread_rwlock_t lb_list_rwlock;  // 负载均衡列表读写锁
     pthread_mutex_t ep_link_lock;  // 节点链表锁
     //sem_t endpoint_link_mutex;
