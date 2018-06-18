@@ -4,6 +4,8 @@ import com.yiran.agent.AgentServer;
 import com.yiran.agent.web.HttpServer;
 import com.yiran.dubbo.DubboConnectManager;
 import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +35,8 @@ public class AgentApp {
 
 
         /*先与Dubbo进行连接*/
-        DubboConnectManager dubboConnectManager = new DubboConnectManager(1);  // 4条链接
+        EventLoopGroup workerGroup = new EpollEventLoopGroup(4);
+        DubboConnectManager dubboConnectManager = new DubboConnectManager(1, workerGroup);  // 4条链接
         logger.info("Connecting to Dubbo..");
         dubboConnectManager.connect();
         /*往服务交换机注册支持的通道*/
@@ -44,7 +47,7 @@ public class AgentApp {
             try {
                 //int port = 1090;
                 int port = Integer.valueOf(System.getProperty("server.port" + i));
-                new AgentServer(port).run();
+                new AgentServer(port, workerGroup).run();
             } catch (Exception e) {
                 logger.error(e.getLocalizedMessage(), e);
             }

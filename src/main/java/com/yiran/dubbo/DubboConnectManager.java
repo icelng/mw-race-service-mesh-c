@@ -6,6 +6,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
@@ -24,9 +25,9 @@ public class DubboConnectManager {
     private Channel channels[];
     private Object lock = new Object();
 
-    public DubboConnectManager(int connectionNum) {
+    public DubboConnectManager(int connectionNum, EventLoopGroup workerGroup) {
         this.connectionNum = connectionNum;
-        eventLoopGroup = new NioEventLoopGroup(connectionNum + 8);
+        eventLoopGroup = workerGroup;
         channels = new Channel[connectionNum];
         channelSelectNum = new AtomicLong(0);
     }
@@ -69,7 +70,7 @@ public class DubboConnectManager {
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .channel(NioSocketChannel.class)
+                .channel(EpollSocketChannel.class)
                 .handler(new RpcClientInitializer());
     }
 }

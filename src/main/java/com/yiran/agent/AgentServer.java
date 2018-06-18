@@ -21,11 +21,13 @@ import org.slf4j.LoggerFactory;
 public class AgentServer {
     private static Logger logger = LoggerFactory.getLogger(AgentServer.class);
     private EtcdSecondRegistry registry;
+    private EventLoopGroup workerGroup;
 
     private int port;
 
-    public AgentServer(int port){
+    public AgentServer(int port, EventLoopGroup workerGroup){
         this.port = port;
+        this.workerGroup = workerGroup;
     }
 
     public void run() throws Exception {
@@ -33,7 +35,6 @@ public class AgentServer {
         /*启动netty服务*/
         logger.info("Starting netty server for agent...");
         EventLoopGroup bossGroup = new EpollEventLoopGroup(1);
-        EventLoopGroup workerGroup = new EpollEventLoopGroup(16);
         ServerBootstrap b = new ServerBootstrap();
 
         b.group(bossGroup, workerGroup)
@@ -70,12 +71,4 @@ public class AgentServer {
 
     }
 
-    public static void main(String[] args) throws Exception {
-        try {
-            logger.info("starting server");
-            new AgentServer(2334).run();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }
