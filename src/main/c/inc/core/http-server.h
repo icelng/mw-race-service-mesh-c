@@ -2,7 +2,7 @@
 #include "mmpool.h"
 #include "semaphore.h"
 
-#define MAX_EPOLL_EVENTS 16
+#define MAX_EPOLL_EVENTS 32
 #define MAX_IO_THREAD_NUM 64
 #define MAX_EPOLL_EVENT_LOOP_NUM 64
 
