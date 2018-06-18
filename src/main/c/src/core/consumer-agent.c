@@ -79,7 +79,7 @@ void cagent_start(int argc, char *argv[]){
     struct acm_handle *p_acm_handle;
 
 
-    acm_opt.io_thread_num = 4;
+    acm_opt.io_thread_num = 1;
     acm_opt.worker_thread_num = 8;
     acm_opt.max_hold_req_num = 51200;
     acm_opt.max_write_queue_len = 51200;
@@ -101,7 +101,7 @@ void cagent_start(int argc, char *argv[]){
     hs_bt.max_connection = 512;  // 最大连接等待数
     hs_bt.server_port = 20000;  // 端口
     hs_bt.worker_thread_num = 1;  // 工作线程数
-    hs_bt.io_thread_num = 2;  // io线程数
+    hs_bt.io_thread_num = 1;  // io线程数
     hs_bt.event_loop_num = 1;  // 一个事件循环
     hs_bt.content_handler = content_handler;  // content处理函数
 
