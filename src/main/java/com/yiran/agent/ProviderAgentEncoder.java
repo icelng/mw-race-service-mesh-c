@@ -20,5 +20,7 @@ public class ProviderAgentEncoder extends MessageToByteEncoder {
         Bytes.int2bytes(data.readableBytes(), header, 8);
         out.writeBytes(header, 0, HEADER_LENGTH);
         out.writeBytes(data);
+
+        data.release();
     }
 }
